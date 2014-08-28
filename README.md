@@ -3,4 +3,6 @@
 
 Data are accessed through a SOAP client interface on the centralized data management office and converted to R objects for analysis
 
-Data retrieval is achieved using the SSOAP package, currently deprecated but accessible at <a href="http://www.omegahat.org/R">http://www.omegahat.org/R</a>
+Data retrieval uses SSOAP package, currently off CRAN but accessible at <a href="http://www.omegahat.org/R">http://www.omegahat.org/R</a>
+
+More info on the CDMO web services and available functions are <a href="http://cdmo.baruch.sc.edu/webservices.cfm">here</a>
