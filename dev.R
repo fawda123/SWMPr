@@ -5,5 +5,11 @@ meta <- stat_codes()
 stat_code('acebbnut')
 
 # get all parameters for number of records back from current date
-tmp <- all_params('acebbnut', 100)
+# current max is 100
+tmp <- all_params('apaebmet', 100)
 
+# get all records within a date range, current max is 1000
+tmp <- all_params_dtrng('apaesnut', c('08/01/2014', '08/10/2014'))
+
+# get single parameter for number of records back from current date
+tmp <- single_param('acebbnut', 10, 'CHLA_N')

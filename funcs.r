@@ -4,34 +4,31 @@
 ######
 # generic parsing function for objects returned from SOAP server
 # called internally from other functions
-parser <- function(soap_in){
+# 'soap_in'is soap object returned from server
+# 'parent_in' is a text string of parent nodes to parse
+parser <- function(soap_in, parent_in = 'data'){
   
   # sanity check
   if(!'SOAPHTTPReply' %in% class(soap_in))
     stop('Input must be of class SOAPHTTPReply')
   
   library(XML)
+  library(plyr)
   
   # convert to XMLDocumentContent for parsing
   raw <- htmlTreeParse(soap_in$content, useInternalNodes = T)
 
-  # get children of data parent nodes
+  # get parent data nodes
   parents <- xpathSApply(
     raw,
-    '//data'
+    paste0('//', parent_in)
   )
-  children <- names(xmlChildren(parents[[1]]))
   
-  # arrange data nodes as data.frame
-  out <- adply(children, 
-    1,
-    .fun = function(x)
-      xpathSApply(raw, paste0('//data//', x), xmlValue),
-    .expand = F
+  # get children nodes from data parents
+  out <- ldply(parents, 
+    .fun = function(x) getChildrenStrings(x)
     )
-  out <- data.frame(t(out)[-1,])
-  names(out) <- children
-  
+
   # return output
   return(out)
   
@@ -43,6 +40,8 @@ parser <- function(soap_in){
 # CDMO equivalent of exportStationCodesXML
 stat_codes <- function(){
 
+  library(SSOAP)
+  
   # access CDMO web services
   serv <- SOAPServer(
     "http://cdmo.baruch.sc.edu/webservices2/requests.cfc?wsdl"
@@ -67,6 +66,7 @@ stat_codes <- function(){
 ######
 # get metadata for single station
 # wrapper to params
+# 'Station_Code' is text string of station 
 stat_code <- function(Station_Code){
   
   # get all data from params and subset
@@ -80,7 +80,11 @@ stat_code <- function(Station_Code){
 
 ######
 # get data for a station back to x number of records
+# 'Station_Code' is text string of station
+# 'Max' is numeric of no. of records
 all_params <- function(Station_Code, Max = 100){
+  
+  library(SSOAP)
   
   # access CDMO web services
   serv <- SOAPServer(
@@ -105,16 +109,71 @@ all_params <- function(Station_Code, Max = 100){
   
   }
 
+######
+# get records from date range, max of 1000 records
+# 'Station_Code' is text string of station
+# 'dtrng' is two element character vector, each of format MM/DD/YYYY
+all_params_dtrng <- function(Station_Code, dtrng){
+  
+  library(SSOAP)
+  
+  # access CDMO web services
+  serv <- SOAPServer(
+    "http://cdmo.baruch.sc.edu/webservices2/requests.cfc?wsdl"
+    )
+  
+  # request data
+  dat <- .SOAP(
+    serv,
+    method = 'exportAllParamsDateRangeXMLNew',
+    .soapArgs = list(
+      Station_Code = Station_Code,
+      mindate = dtrng[1],
+      maxdate = dtrng[2]
+      ), 
+    action = '',
+    .convert = F
+    )
+  
+  # parse reply from server 
+  out <- parser(dat)
+  
+  # return output
+  return(out)
+  
+  }
 
-# # get records from date range, max of 1000 records
-# tmp <- .SOAP(
-#   nerrs_webserv,
-#   method = 'exportAllParamsDateRangeXMLNew',
-#   .soapArgs = list(
-#     Station_Code = 'saphdwq',
-#     mindate = '10/06/2006',
-#     maxdate = '11/07/2006'
-#     ), 
-#   action = '',
-#   .convert = F
-#   )
+######
+# get records from date range, max of 1000 records
+# 'Station_Code' is text string of station
+# 'Max' is numeric of no. of records
+# 'param' is text string of parameter to return
+single_param <- function(Station_Code, Max, param){
+  
+  library(SSOAP)
+  
+  # access CDMO web services
+  serv <- SOAPServer(
+    "http://cdmo.baruch.sc.edu/webservices2/requests.cfc?wsdl"
+    )
+  
+  # request data
+  dat <- .SOAP(
+    serv,
+    method = 'exportSingleParamXML',
+    .soapArgs = list(
+      Station_Code = Station_Code,
+      Max = Max,
+      param = param
+      ),
+    action = '',
+    .convert = F
+    )
+  
+  # parse reply from server 
+  out <- parser(dat, parent_in = 'data//r')
+  
+  # return output
+  return(out)
+  
+  }

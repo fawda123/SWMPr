@@ -11,6 +11,7 @@ library(SSOAP)
 library(XML)
 library(RCurl)
 library(ggplot2)
+library(plyr)
 
 # functions to use
 source('funcs.r')
