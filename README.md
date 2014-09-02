@@ -9,6 +9,4 @@ More info on the CDMO web services and available functions are <a href="http://c
 
 <H5>to do</H5>
 
-Generic date structure
-
-Correct parser for single_param function
+test functions for retrieving data (common column name format?)

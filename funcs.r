@@ -34,6 +34,43 @@ parser <- function(soap_in, parent_in = 'data'){
   
   }
 
+######
+# convert datetimestamp string to POSIXct, using correct tz (no daylight saving)
+# uses hardcoded timezone data for each reserve
+# 'chr_in' is datetimestamp vector
+# 'Station_Code' is character string for station
+# output is POSIX vector
+time_vec <- function(chr_in, Station_Code){
+  
+  # lookup table for time zones based on gmt offset - no DST!
+  gmt_tab <- data.frame(
+    gmt_off=c(-4,-5,-6,-8,-9),
+    tz = c('America/Virgin', 'America/Jamaica', 'America/Regina',
+      'Pacific/Pitcairn', 'Pacific/Gambier'),
+    stringsAsFactors = F
+    )
+  
+  # hard-coded gmt offset for each site, from metadata direct from CDMO
+  sites <- c('ace', 'apa', 'cbm', 'cbv', 'del', 'elk', 
+    'gnd', 'grb', 'gtm', 'hud', 'jac', 'job', 'kac', 
+    'lks', 'mar', 'nar', 'niw', 'noc', 'owc', 'pdb', 
+    'rkb', 'sap', 'sfb', 'sos', 'tjr', 'wel', 'wkb',
+    'wqb')
+  gmt_offsets <- c(-5, -5, -5, -5, -5, -8, -6, -5, -5, -5, -5, -4, 
+    -9, -6, -6, -5, -5, -5, -5, -8, -5, -5, -8, -8, -8,
+    -5, -6, -5)  
+  
+  # get timezone from above information
+  gmt_offset <- gmt_offsets[which(sites %in% substr(Station_Code, 1, 3))]
+  tzone <- gmt_tab[gmt_tab$gmt_off %in% gmt_offset, 'tz']
+
+  # format datetimestamp
+  out <- as.POSIXct(chr_in, tz = tzone, format = '%m/%d/%Y %H:%M')
+  
+  # return output
+  return(out)
+  
+  }
 
 ######
 # data frame of station metadata
@@ -104,6 +141,11 @@ all_params <- function(Station_Code, Max = 100){
   # parse reply from server 
   out <- parser(dat)
   
+  # format datetimestamp and sort
+  out[, 'datetimestamp'] <- time_vec(out[, 'datetimestamp'], Station_Code)
+  out <- out[order(out$datetimestamp), ]
+  out <- data.frame(out, row.names = 1:nrow(out))
+  
   # return output
   return(out)
   
@@ -138,6 +180,11 @@ all_params_dtrng <- function(Station_Code, dtrng){
   # parse reply from server 
   out <- parser(dat)
   
+  # format datetimestamp and sort
+  out[, 'datetimestamp'] <- time_vec(out[, 'datetimestamp'], Station_Code)
+  out <- out[order(out$datetimestamp), ]
+  out <- data.frame(out, row.names = 1:nrow(out))
+  
   # return output
   return(out)
   
@@ -148,9 +195,12 @@ all_params_dtrng <- function(Station_Code, dtrng){
 # 'Station_Code' is text string of station
 # 'Max' is numeric of no. of records
 # 'param' is text string of parameter to return
+# does not use parser as above, slight mod 
 single_param <- function(Station_Code, Max, param){
   
   library(SSOAP)
+  library(XML)
+  library(plyr)
   
   # access CDMO web services
   serv <- SOAPServer(
@@ -170,8 +220,26 @@ single_param <- function(Station_Code, Max, param){
     .convert = F
     )
   
-  # parse reply from server 
-  out <- parser(dat, parent_in = 'data//r')
+  # convert to XMLDocumentContent for parsing
+  raw <- htmlTreeParse(dat$content, useInternalNodes = T)
+
+  # get node attributes for c after parsing
+  attrs <- xpathSApply(
+    raw,
+    '//data//r//c',
+    fun = xmlAttrs
+  )
+  
+  # arrange as data frame
+  out <- matrix(attrs, ncol = 2, byrow = T)
+  colnames(out) <- out[1, ]
+  out <- data.frame(out[-1,], stringsAsFactors = F)
+  out[, param] <- as.numeric(out[, param])
+  
+  # format datetimestamp and sort
+  out[, 'DateTimeStamp'] <- time_vec(out[, 'DateTimeStamp'], Station_Code)
+  out <- out[order(out$DateTimeStamp), ]
+  out <- data.frame(out, row.names = 1:nrow(out))
   
   # return output
   return(out)
