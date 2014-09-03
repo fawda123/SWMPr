@@ -2,9 +2,26 @@
 # functions for SWMPr
 
 ######
+# function for creating SWMPr object class
+# used  for output in data retrieval functions
+# input to other methods
+SWMPr <- function(site_in, meta_in){
+    
+  if(!is.data.frame(site_in)) 
+    stop('site_in must be data frame')
+  
+  structure(
+    site_in, 
+    class = 'SWMPr', 
+    stat_meta = stat_code(meta_in)
+    )
+  
+  } 
+
+######
 # generic parsing function for objects returned from SOAP server
 # called internally from other functions
-# 'soap_in'is soap object returned from server
+# 'soap_in' is soap object returned from server
 # 'parent_in' is a text string of parent nodes to parse
 parser <- function(soap_in, parent_in = 'data'){
   
@@ -119,6 +136,7 @@ stat_code <- function(Station_Code){
 # get data for a station back to x number of records
 # 'Station_Code' is text string of station
 # 'Max' is numeric of no. of records
+# output is SWMPr class object
 all_params <- function(Station_Code, Max = 100){
   
   library(SSOAP)
@@ -141,10 +159,18 @@ all_params <- function(Station_Code, Max = 100){
   # parse reply from server 
   out <- parser(dat)
   
-  # format datetimestamp and sort
-  out[, 'datetimestamp'] <- time_vec(out[, 'datetimestamp'], Station_Code)
-  out <- out[order(out$datetimestamp), ]
-  out <- data.frame(out, row.names = 1:nrow(out))
+  # format datetimetamp if output is not empty
+  if(ncol(out) != 0 & nrow(out) != 0){
+    
+    # format datetimestamp and sort
+    out[, 'datetimestamp'] <- time_vec(out[, 'datetimestamp'], Station_Code)
+    out <- out[order(out$datetimestamp), ]
+    out <- data.frame(out, row.names = 1:nrow(out))
+    
+    }
+
+  # assign to swmpr class
+  out <- SWMPr(out, meta_in = Station_Code)
   
   # return output
   return(out)
@@ -191,16 +217,21 @@ all_params_dtrng <- function(Station_Code, dtrng){
   }
 
 ######
-# get records from date range, max of 1000 records
+# get records for a single parameter, max 100 records
 # 'Station_Code' is text string of station
 # 'Max' is numeric of no. of records
 # 'param' is text string of parameter to return
 # does not use parser as above, slight mod 
-single_param <- function(Station_Code, Max, param){
+single_param <- function(Station_Code, Max = 100, param){
   
   library(SSOAP)
   library(XML)
   library(plyr)
+  
+  # stop if requested parameter not available for station
+  params <- stat_code(Station_Code)$params_reported
+  if(params != "" & !grepl(param, params))
+    stop(paste0('Requested parameter must be in ', params))
   
   # access CDMO web services
   serv <- SOAPServer(
@@ -245,3 +276,14 @@ single_param <- function(Station_Code, Max, param){
   return(out)
   
   }
+
+######
+# clean the data 
+# deal with qaqc flags
+# fill missing data - approx
+# standard time step
+clean_dat <- function(SWMPr){}
+
+######
+# combine data from multiple stations
+comb_dat <- function(SWMPr){}
