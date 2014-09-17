@@ -3,20 +3,16 @@
 
 In development! 
 
-Data are accessed through a SOAP client interface on the centralized data management office and converted to R objects for analysis
+Data are accessed through a SOAP client interface on the centralized data management office (CDMO) and converted to R objects for analysis.  <bold>User's IP address must be registered with CDMO database, see contact info in the link.</bold> More info on the CDMO web services and available functions are <a href="http://cdmo.baruch.sc.edu/webservices.cfm">here</a>
 
-Data retrieval uses SSOAP package, currently off CRAN but accessible at <a href="http://www.omegahat.org/R">http://www.omegahat.org/R</a>
-
-More info on the CDMO web services and available functions are <a href="http://cdmo.baruch.sc.edu/webservices.cfm">here</a>
+Data retrieval uses SSOAP package, currently removed from CRAN but accessible at <a href="http://www.omegahat.org/R">http://www.omegahat.org/R</a>
 
 ---
 <H5>to do</H5>
 
-test functions for retrieving data (common column name format?)
+test functions for retrieving data
 
-create swmp data class - sort of done
-
-add 'fieldlist' to date range function
+create cleanup, combine functions
 
 ---
 <H5>random</H5>

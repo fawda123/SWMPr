@@ -2,21 +2,27 @@
 # functions for SWMPr
 
 ######
-# function for creating SWMPr object class
-# used  for output in data retrieval functions
-# input to other methods
-SWMPr <- function(site_in, meta_in){
+# function for creating swmpr class
+# used to create output in data retrieval functions - 'all_params', 'all_params_dtrng', 'single_param'
+# generic methods defined for swmpr below
+swmpr <- function(stat_in, meta_in){
     
-  if(!is.data.frame(site_in)) 
-    stop('site_in must be data frame')
+  if(!is.data.frame(stat_in)) 
+    stop('stat_in must be data.frame')
+
+  # get meta data for the station from 'site_codes'
+  meta <- site_codes()
+  meta <- meta[meta$station_code %in% meta_in, ]
+  meta <- data.frame(meta, row.names = 1:nrow(meta))
   
+  # create class, with two attributes (class and stat_meta)
   structure(
-    site_in, 
-    class = 'SWMPr', 
-    stat_meta = stat_code(meta_in)
+    list(stat_in), 
+    class = 'swmpr', 
+    stat_meta = meta
     )
   
-  } 
+  }
 
 ######
 # generic parsing function for objects returned from SOAP server
@@ -92,7 +98,7 @@ time_vec <- function(chr_in, Station_Code){
 ######
 # data frame of station metadata
 # CDMO equivalent of exportStationCodesXML
-stat_codes <- function(){
+site_codes <- function(){
 
   library(SSOAP)
   
@@ -118,16 +124,30 @@ stat_codes <- function(){
   }
 
 ######
-# get metadata for single station
-# wrapper to params
-# 'Station_Code' is text string of station 
-stat_code <- function(Station_Code){
+# get metadata for single site
+# 'nerr_site_id' is text string of site, three letters
+site_codes_ind <- function(nerr_site_id){
   
-  # get all data from params and subset
-  meta <- stat_codes()
-  out <- subset(meta, station_code == Station_Code)
+  library(SSOAP)
   
-  # output
+  # access CDMO web services
+  serv <- SOAPServer(
+    "http://cdmo.baruch.sc.edu/webservices2/requests.cfc?wsdl"
+    )
+
+  # get all station codes
+  reply <- .SOAP(
+    serv,
+    method = 'NERRFilterStationCodesXMLNew',
+    NERRFilter = nerr_site_id,
+    action="", 
+    .convert = F
+    )
+
+  # parse reply from server
+  out <- parser(reply)
+  
+  # return output
   return(out)
   
   }
@@ -136,7 +156,7 @@ stat_code <- function(Station_Code){
 # get data for a station back to x number of records
 # 'Station_Code' is text string of station
 # 'Max' is numeric of no. of records
-# output is SWMPr class object
+# output is swmpr class object
 all_params <- function(Station_Code, Max = 100){
   
   library(SSOAP)
@@ -151,7 +171,7 @@ all_params <- function(Station_Code, Max = 100){
     serv,
     method = 'exportAllParamsXMLNew',
     Station_Code = Station_Code,
-    Max = Max,
+    tbl = Max,
     action="",
     .convert = F
     )
@@ -170,7 +190,7 @@ all_params <- function(Station_Code, Max = 100){
     }
 
   # assign to swmpr class
-  out <- SWMPr(out, meta_in = Station_Code)
+  out <- swmpr(out, meta_in = Station_Code)
   
   # return output
   return(out)
@@ -181,7 +201,8 @@ all_params <- function(Station_Code, Max = 100){
 # get records from date range, max of 1000 records
 # 'Station_Code' is text string of station
 # 'dtrng' is two element character vector, each of format MM/DD/YYYY
-all_params_dtrng <- function(Station_Code, dtrng){
+# 'param' is character vector of a single parameter to return, see results from 'stat_codes' function for availability, default is all specific to station type
+all_params_dtrng <- function(Station_Code, dtrng, param = NULL){
   
   library(SSOAP)
   
@@ -190,15 +211,21 @@ all_params_dtrng <- function(Station_Code, dtrng){
     "http://cdmo.baruch.sc.edu/webservices2/requests.cfc?wsdl"
     )
   
+  # arguments to pass to function on server
+  soap_args = list(
+      station_code = Station_Code,
+      mindate = dtrng[1],
+      maxdate = dtrng[2]
+      )
+  
+  # add a parameter argument if provided
+  if(!is.null(param)) soap_args$fieldlist <- param
+  
   # request data
   dat <- .SOAP(
     serv,
     method = 'exportAllParamsDateRangeXMLNew',
-    .soapArgs = list(
-      Station_Code = Station_Code,
-      mindate = dtrng[1],
-      maxdate = dtrng[2]
-      ), 
+    .soapArgs = soap_args, 
     action = '',
     .convert = F
     )
@@ -210,6 +237,9 @@ all_params_dtrng <- function(Station_Code, dtrng){
   out[, 'datetimestamp'] <- time_vec(out[, 'datetimestamp'], Station_Code)
   out <- out[order(out$datetimestamp), ]
   out <- data.frame(out, row.names = 1:nrow(out))
+  
+  # assign to swmpr class
+  out <- swmpr(out, meta_in = Station_Code)
   
   # return output
   return(out)
@@ -229,7 +259,8 @@ single_param <- function(Station_Code, Max = 100, param){
   library(plyr)
   
   # stop if requested parameter not available for station
-  params <- stat_code(Station_Code)$params_reported
+  params <- site_codes()
+  params <- params[params$station_code %in% Station_Code, 'params_reported']
   if(params != "" & !grepl(param, params))
     stop(paste0('Requested parameter must be in ', params))
   
@@ -243,8 +274,8 @@ single_param <- function(Station_Code, Max = 100, param){
     serv,
     method = 'exportSingleParamXML',
     .soapArgs = list(
-      Station_Code = Station_Code,
-      Max = Max,
+      station_code = Station_Code,
+      recs = Max,
       param = param
       ),
     action = '',
@@ -272,18 +303,25 @@ single_param <- function(Station_Code, Max = 100, param){
   out <- out[order(out$DateTimeStamp), ]
   out <- data.frame(out, row.names = 1:nrow(out))
   
+  # assign to swmpr class
+  out <- swmpr(out, meta_in = Station_Code)  
+
   # return output
   return(out)
   
   }
 
 ######
-# clean the data 
+# clean the data, generic method for swmpr class
+# 'clean_dat' is the generic, 'clean_dat.swmpr' is the method applied to swmpr class
 # deal with qaqc flags
 # fill missing data - approx
 # standard time step
-clean_dat <- function(SWMPr){}
+
+clean_dat <- function(x) UseMethod('clean_dat') 
+clean_dat.swmpr <- function(x) 'test'
 
 ######
-# combine data from multiple stations
-comb_dat <- function(SWMPr){}
+# combine data from multiple stations, generic method for SWMPr class
+comb_dat <- function(x) UseMethod('comb_dat')
+comb_dat.swmpr <- function(x) 'test'
