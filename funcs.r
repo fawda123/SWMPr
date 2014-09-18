@@ -15,11 +15,11 @@ swmpr <- function(stat_in, meta_in){
   meta <- meta[meta$station_code %in% meta_in, ]
   meta <- data.frame(meta, row.names = 1:nrow(meta))
   
-  # create class, with two attributes (class and stat_meta)
+  # create class, with three attributes (station_data, class, station_meta)
   structure(
-    list(stat_in), 
+    list(station_data = stat_in), 
     class = 'swmpr', 
-    stat_meta = meta
+    station_meta = meta
     )
   
   }
@@ -137,12 +137,12 @@ site_codes_ind <- function(nerr_site_id){
 
   # get all station codes
   reply <- .SOAP(
-    serv,
-    method = 'NERRFilterStationCodesXMLNew',
-    NERRFilter = nerr_site_id,
-    action="", 
-    .convert = F
-    )
+      serv,
+      method = 'NERRFilterStationCodesXMLNew',
+      NERRFilter = nerr_site_id,
+      action="", 
+      .convert = F
+      )
 
   # parse reply from server
   out <- parser(reply)
@@ -161,20 +161,29 @@ all_params <- function(Station_Code, Max = 100){
   
   library(SSOAP)
   
+  # sanity check
+  if(Max > 100) warning('Maximum of 100 records')
+  
   # access CDMO web services
   serv <- SOAPServer(
     "http://cdmo.baruch.sc.edu/webservices2/requests.cfc?wsdl"
     )
   
   # get from current date
-  dat <- .SOAP(
-    serv,
-    method = 'exportAllParamsXMLNew',
-    Station_Code = Station_Code,
-    tbl = Max,
-    action="",
-    .convert = F
-    )
+  dat <- try({
+    .SOAP(
+      serv,
+      method = 'exportAllParamsXMLNew',
+      Station_Code = Station_Code,
+      tbl = Max,
+      action="",
+      .convert = F
+      )
+    }, silent = T)
+  
+  # stop if retrieval error
+  if('try-error' %in% class(dat))
+    stop('Error retrieving data, check metadata for station availability.')
   
   # parse reply from server 
   out <- parser(dat)
@@ -222,13 +231,18 @@ all_params_dtrng <- function(Station_Code, dtrng, param = NULL){
   if(!is.null(param)) soap_args$fieldlist <- param
   
   # request data
-  dat <- .SOAP(
-    serv,
-    method = 'exportAllParamsDateRangeXMLNew',
-    .soapArgs = soap_args, 
-    action = '',
-    .convert = F
-    )
+  dat <- try({
+    .SOAP(
+      serv,
+      method = 'exportAllParamsDateRangeXMLNew',
+      .soapArgs = soap_args, 
+      action = '',
+      .convert = F
+      )}, silent = T)
+  
+  # stop if retrieval error
+  if('try-error' %in% class(dat))
+    stop('Error retrieving data, check metadata for station availability.')
   
   # parse reply from server 
   out <- parser(dat)
@@ -258,11 +272,8 @@ single_param <- function(Station_Code, Max = 100, param){
   library(XML)
   library(plyr)
   
-  # stop if requested parameter not available for station
-  params <- site_codes()
-  params <- params[params$station_code %in% Station_Code, 'params_reported']
-  if(params != "" & !grepl(param, params))
-    stop(paste0('Requested parameter must be in ', params))
+  # sanity check
+  if(Max > 100) warning('Maximum of 100 records')
   
   # access CDMO web services
   serv <- SOAPServer(
@@ -270,17 +281,23 @@ single_param <- function(Station_Code, Max = 100, param){
     )
   
   # request data
-  dat <- .SOAP(
-    serv,
-    method = 'exportSingleParamXML',
-    .soapArgs = list(
-      station_code = Station_Code,
-      recs = Max,
-      param = param
-      ),
-    action = '',
-    .convert = F
-    )
+  dat <- try({
+    .SOAP(
+      serv,
+      method = 'exportSingleParamXML',
+      .soapArgs = list(
+        station_code = Station_Code,
+        recs = Max,
+        param = param
+        ),
+      action = '',
+      .convert = F
+      )}, silent = T)
+    
+  
+  # stop if retrieval error
+  if('try-error' %in% class(dat))
+    stop('Error retrieving data, check metadata for station availability.')
   
   # convert to XMLDocumentContent for parsing
   raw <- htmlTreeParse(dat$content, useInternalNodes = T)
