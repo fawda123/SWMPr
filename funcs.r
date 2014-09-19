@@ -1,5 +1,11 @@
-######
-# functions for SWMPr
+#######################
+# functions for SWMPr #
+# Sep 2014            #
+#######################
+
+########################
+# misc functions
+########################
 
 ######
 # function for creating swmpr class
@@ -152,6 +158,10 @@ site_codes_ind <- function(nerr_site_id){
   
   }
 
+########################
+# retrieval functions
+########################
+
 ######
 # get data for a station back to x number of records
 # 'Station_Code' is text string of station
@@ -247,6 +257,10 @@ all_params_dtrng <- function(Station_Code, dtrng, param = NULL){
   # parse reply from server 
   out <- parser(dat)
   
+  # sometimes data request is good, but empty data frame returned
+  if(nrow(out) == 0)
+    stop('Empty data frame, check metadata for station availability')
+  
   # format datetimestamp and sort
   out[, 'datetimestamp'] <- time_vec(out[, 'datetimestamp'], Station_Code)
   out <- out[order(out$datetimestamp), ]
@@ -328,6 +342,10 @@ single_param <- function(Station_Code, Max = 100, param){
   
   }
 
+########################
+# organize functions
+########################
+
 ######
 # clean the data, generic method for swmpr class
 # 'clean_dat' is the generic, 'clean_dat.swmpr' is the method applied to swmpr class
@@ -342,3 +360,7 @@ clean_dat.swmpr <- function(x) 'test'
 # combine data from multiple stations, generic method for SWMPr class
 comb_dat <- function(x) UseMethod('comb_dat')
 comb_dat.swmpr <- function(x) 'test'
+
+########################
+# evaluate functions
+########################
