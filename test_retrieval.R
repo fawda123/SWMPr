@@ -14,12 +14,15 @@ tmp <- all_params('apadbnut')
 
 # get all records within a date range, current max is 1000
 # returns swmpr object
-tmp <- all_params_dtrng('marabwq', c('09/10/2009', '02/8/2010'))#, 
+tmp <- all_params_dtrng('marabwq', c('09/10/2009', '02/8/2010')), 
   param = 'DO_mgl')
 
 # get single parameter for number of records back from current date
 # returns swmpr object
 tmp <- single_param('marabwq', 100, 'DO_mgl')
+
+# import data from a folder with csv files from CDMO
+# tmp <- import_local('apa', '2013', 
 
 ######
 # comprehensive test of data retrieval functions

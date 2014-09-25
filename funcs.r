@@ -67,9 +67,10 @@ parser <- function(soap_in, parent_in = 'data'){
 # convert datetimestamp string to POSIXct, using correct tz (no daylight saving)
 # uses hardcoded timezone data for each reserve
 # 'chr_in' is datetimestamp vector
-# 'Station_Code' is character string for station
-# output is POSIX vector
-time_vec <- function(chr_in, Station_Code){
+# 'Station_Code' is character string for station (three or more characters)
+# 'tz_only' is logical that returns only the timezone
+# otherwise output is POSIX vector
+time_vec <- function(chr_in, Station_Code, tz_only = F){
   
   # lookup table for time zones based on gmt offset - no DST!
   gmt_tab <- data.frame(
@@ -93,6 +94,9 @@ time_vec <- function(chr_in, Station_Code){
   gmt_offset <- gmt_offsets[which(sites %in% substr(Station_Code, 1, 3))]
   tzone <- gmt_tab[gmt_tab$gmt_off %in% gmt_offset, 'tz']
 
+  # timezone only if T
+  if(tz_only) return(tzone)
+  
   # format datetimestamp
   out <- as.POSIXct(chr_in, tz = tzone, format = '%m/%d/%Y %H:%M')
   
@@ -342,24 +346,32 @@ single_param <- function(Station_Code, Max = 100, param){
   
   }
 
+######
+# import local data from CDMO
+import_local <- function(station, year, path){
+  
+  file_nms <- dir(path)
+  
+  expr <- paste(station, year, 'csv', sep = '|')
+  file_in <- grepl(expr, file_nms, value = T)
+  
+  }
+  
 ########################
 # organize functions
 ########################
 
 ######
-# clean the data, generic method for swmpr class
+# combine, clean the data, generic method for swmpr class
 # 'clean_dat' is the generic, 'clean_dat.swmpr' is the method applied to swmpr class
 # deal with qaqc flags
 # fill missing data - approx
 # standard time step
 
-clean_dat <- function(x) UseMethod('clean_dat') 
-clean_dat.swmpr <- function(x) 'test'
-
-######
-# combine data from multiple stations, generic method for SWMPr class
 comb_dat <- function(x) UseMethod('comb_dat')
-comb_dat.swmpr <- function(x) 'test'
+comb_dat.swmpr <- function(station, path){
+  
+  }
 
 ########################
 # evaluate functions
