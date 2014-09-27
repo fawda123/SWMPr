@@ -22,7 +22,7 @@ tmp <- all_params_dtrng('marabwq', c('09/10/2009', '02/8/2010')),
 tmp <- single_param('marabwq', 100, 'DO_mgl')
 
 # import data from a folder with csv files from CDMO
-# tmp <- import_local('apa', '2013', 
+# tmp <- import_local() 
 
 ######
 # comprehensive test of data retrieval functions

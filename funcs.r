@@ -348,30 +348,187 @@ single_param <- function(Station_Code, Max = 100, param){
 
 ######
 # import local data from CDMO
-import_local <- function(station, year, path){
+# data are .csv files for a station, all parameters and years, from zip downloads
+# 'path' is chr string of full path with .csv files
+# 'Station_Code' is 7 or 8 chr string of station to load, single parameter
+# 'trace' is logical indicating if progress is sent to console
+import_local <- function(path, Station_Code, trace){
   
+  # sanity check
+  if(!nchar(Station_Code) %in% c(7, 8)) stop('Station_Code invalid.')
+  
+  ##
+  # find station files in path
   file_nms <- dir(path)
+  expr <- paste0('^', Station_Code, '.*', '\\.csv$')
+  files_in <- grep(expr, file_nms, value = T)
   
-  expr <- paste(station, year, 'csv', sep = '|')
-  file_in <- grepl(expr, file_nms, value = T)
+  if(length(files_in) == 0) stop('File(s) not found.')
   
+  # import all data files for a station
+  dat <- vector('list', length(files_in))
+  names(dat) <- gsub('.csv', '', files_in)
+  
+  if(trace) cat('Loading files...\n\n')
+  
+  for(file_in in files_in){
+    
+    if(trace) cat(file_in, '\t')
+    
+    # import file
+    tmp <- read.csv(file.path(path, file_in), stringsAsFactors = F)
+    
+    # convert date time to posix
+    names(tmp)[grep('datetimestamp', names(tmp), ignore.case = T)] <- 'DateTimeStamp'
+    tmp$DateTimeStamp <- time_vec(tmp$DateTimeStamp, Station_Code)
+    
+    # append to output list
+    nm <-  gsub('.csv', '', file_in)
+    dat[[nm]] <- tmp
+    
+    }
+  
+  ##
+  # column names for each parameter type, used to subset combined data
+  
+  nut_nms <- c('PO4F', 'CHLA_N', 'NO3F', 'NO2F', 'NH4F', 'NO23F', 'Ke_N',
+    'UREA')
+  nut_nms <- paste0(c('', 'F_'), rep(nut_nms, each = 2))
+  
+  wq_nms <- c('Temp', 'SpCond', 'Sal', 'DO_pct', 'DO_mgl', 'Depth', 
+    'cDepth', 'Level', 'cLevel', 'pH', 'Turb', 'ChlFluor')
+  wq_nms <- paste0(c('', 'F_'), rep(wq_nms, each = 2))
+  
+  met_nms <- c('ATemp', 'RH', 'BP', 'WSpd', 'MaxWSpd', 'Wdir', 'SDWDir',
+    'TotPAR', 'TotPrcp', 'CumPrcp', 'TotSoRad')
+  met_nms <- paste0(c('', 'F_'), rep(met_nms, each = 2))
+    
+  # names to use
+  parm <- substring(Station_Code, 6)
+  nms <- get(paste0(parm, '_nms'))
+  
+  ##
+  # convert output from 'import_local' to data frame and appropriate columns
+  
+  if(trace) cat('\n\nCombining data...')
+  
+  out <- do.call('rbind', dat)
+  out <- data.frame(
+    DateTimeStamp = out$DateTimeStamp,
+    StatParam = parm, 
+    out[, names(out) %in% nms], 
+    row.names = seq(1, nrow(out))
+    )
+  
+  if(trace) cat('\n\nData imported...')
+  
+  # return data frame
+  return(out)
+    
   }
-  
+
 ########################
 # organize functions
 ########################
 
 ######
-# combine, clean the data, generic method for swmpr class
+# combine data for a single station
 # 'clean_dat' is the generic, 'clean_dat.swmpr' is the method applied to swmpr class
-# deal with qaqc flags
-# fill missing data - approx
 # standard time step
 
 comb_dat <- function(x) UseMethod('comb_dat')
 comb_dat.swmpr <- function(station, path){
-  
+
+#   # find date ranges for files
+#   tz <- time_vec('01/01/2014 0:00', Station_Code, T)
+#   time_rng <- llply(dat, .fun = function(x) range(x$DateTimeStamp))
+#   time_rng <- range(unlist(time_rng))
+#   time_rng <- as.POSIXct(time_rng, origin="1970-01-01 00:00", tz = tz)
+#   
+#   # create continuous time vector based on step
+#   times <- seq(time_rng[1], time_rng[2], by = step * 60)
+#   times <- data.frame(DateTimeStamp = times)
+    
   }
+
+######
+# qaqc filtering for data imported from local path
+# 'dat_in' is data frame returned from 'import_local'
+# 'qaqc_in' is numeric vector of qaqc flags to remove from data, default is all but zero
+# 'trace' is logical for progress
+qaqc_local <- function(dat_in, 
+  qaqc_in = c(seq(-5, -1), seq(1,5)),
+  trace = T){
+  
+  # sanity check
+  if(!class(qaqc_in) %in% c('numeric', 'NULL'))
+    stop('qaqc_in argument must be numeric or NULL')
+    
+  ##
+  #remove values flagged by QA/QC, see cdmo website for flag numbers
+
+  if(trace) cat('Processing QAQC columns...')
+  
+  #names of qaqc columns
+  qaqc_sel <- grep('F_', names(dat_in), value = T)
+
+  # remove qaqc column if NULL, otherwise process qaqc
+  if(is.null(qaqc_in)){ 
+    
+    rm_col <- c('DateTimeStamp', 'StatParam', qaqc_sel)
+    qaqc <- dat_in[, !names(dat_in) %in% rm_col]
+
+  } else {
+      
+    #matrix of TF values for those that don't pass qaqc
+    qaqc_vec <- dat_in[, names(dat_in) %in% qaqc_sel]
+    qaqc_vec <- apply(qaqc_vec, 2, 
+      function(x) grepl(paste(qaqc_in, collapse = '|'), x)
+      )
+    #replace T values with NA
+    #qaqc is corrected
+    qaqc_sel <- gsub('F_', '', qaqc_sel)
+    qaqc <- dat_in[, names(dat_in) %in% qaqc_sel]
+    qaqc <- data.frame(sapply(
+      names(qaqc),
+      function(x){
+        out <- qaqc[, x]
+        out[qaqc_vec[, paste0('F_',x)]] <- NA
+        out
+        },
+      USE.NAMES = T
+      ), stringsAsFactors = F)
+    
+    }
+   
+  ##
+  # addl misc processing
+  
+  #combine with DateTimeStamp and append to output list
+  out <- data.frame(DateTimeStamp = dat_in[,1], qaqc)
+  
+  #remove duplicate time stamps (some minutely), do not use aggregate
+	out<-out[!duplicated(out$DateTimeStamp),]  
+    
+	#convert columns to numeric, missing converted to NA
+	#NA values from qaqc still included as NA
+	out <- data.frame(
+    DateTimeStamp = out[,1],
+    apply(out[, -1], 2 , as.numeric)
+    )
+
+  if(trace) cat('\n\nQAQC processed...')
+  return(out)
+
+  }
+
+######
+# qaqc filter for data imported from CDMO server
+# 'dat_in' 
+# 'qaqc_in' is numeric vector of qaqc flags to remove from data, default is all but zero
+# 'trace' is logical for progress
+qaqc_remote <- function(dat_in, qaqc_in = c(seq(-5, -1), seq(1,5)),
+  trace = T){}
 
 ########################
 # evaluate functions

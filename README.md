@@ -12,7 +12,7 @@ install.packages("SSOAP", repos="http://www.omegahat.org/R", dependencies = T,  
 
 ##Install the Package
 
-This package is currently under development and will be later uploaded as an official package repository following standard procedures.  This will allow use of the standard `install.packages` method for direct install within R.  For now, Github users can fork and pull the materials to create a local clone of the current form.  Otherwise, the `funcs.r` file  
+This package is currently under development and will be later uploaded as an official package repository following standard procedures.  This will allow use of the standard `install.packages` method for direct install within R.  For now, Github users can fork and pull the materials to create a local clone of the current form.  Otherwise, the `funcs.r` file contains all currently developed (and partially tested) functions.  Package dependencies can be found in `.RProfile`.  Files ending in `retrieval.r` were used to test the functions.   
 
 ##Package scope and workflow
 
@@ -46,9 +46,11 @@ Three main categories of functions are available: retrieve, organize, analyze.  
 
 `single_param` Retrieve up to 100 records for a single parameter starting with the most recent at a given station.  Wrapper to `exportSingleParamXMLNew` function on web services. 
 
+`import_local` Import files from a local path.  The files must be in a specific format, specifically those returned from the CDMO using the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> option for a reserve.  Data returned from this function are generally not in a usable format and are processed with other functions.
+
 <b>organize</b>
 
-Not yet available.
+`qaqc_local` Remove QAQC columns and remove data based on QAQC flag values.  This function is used on data returned from `import_loca`.  
 
 <b>analyze</b>
 
@@ -62,6 +64,8 @@ Not yet available.
 
 `test_retrieval.r` Evaluation of retrieval functions.
 
+`test_organize.r` Evaluation of organize funcitons.
+
 `.Rprofile` File that is run after opening the project in R, contains all package dependencies.
 
 `.gitignore` List of files that Git ignores, not on repository.
@@ -72,8 +76,8 @@ Not yet available.
 
 Actual 'package' repository after all functions are complete.
 
-Retrieval functions for importing data exported first from CDMO.
-
-Organize functions...
+Organize functions... combine functions with common time step, CDMO and remote data
 
 Analysis functions... aggregations on diff time periods, EDA, etc.
+
+Test - `import_local`, `qaqc_sel` (make test_organize)
