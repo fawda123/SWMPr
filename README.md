@@ -4,7 +4,7 @@ In development!
 
 This repository contains materials to retrieve, organize, and analyze estuarine monitoring data from the System Wide Monitoring Program (<a href="http://nerrs.noaa.gov/RCDefault.aspx?ID=18">SWMP</a>) implemented by the National Estuarine Research Reserve System (<a href="http://nerrs.noaa.gov/">NERRS</a>).  SWMP was initiated in 1995 to provide continuous monitoring data at over 300 stations in 28 estuaries across the United States.  SWMP data are maintained and stored online by the Centralized Data Management Office (CDMO). This R package provides several functions to access, prepare, and analyze estuary data from the CDMO.  More info on the CDMO web services are available <a href="http://cdmo.baruch.sc.edu/webservices.cfm">here</a>.  <b>Your computer's IP address must be registered with the CDMO website to use the data retrieval functions, see contact info in the link.</b>  All other functions can be used after obtaining data from the CDMO, as described below. 
 
-The package has many dependencies, the most important being the SSOAP package for retrieving data from the CDMO using a SOAP client interface.  The SSOAP package is currently removed from CRAN but accessible at <a href="http://www.omegahat.org/SSOAP/">http://www.omegahat.org/SSOAP/</a>.  The SSOAP package can be installed as follows:
+The package has many dependencies, the most important being the SSOAP package for retrieving data from the CDMO using a SOAP client interface.  The SSOAP package is not required to use the package but is necessary for using specific functions, see below.  The SSOAP package is currently removed from CRAN but accessible at <a href="http://www.omegahat.org/SSOAP/">http://www.omegahat.org/SSOAP/</a>.  It can be installed as follows:
 
 ```{r}
 install.packages("SSOAP", repos="http://www.omegahat.org/R", dependencies = T,  type =  "source")
@@ -12,7 +12,7 @@ install.packages("SSOAP", repos="http://www.omegahat.org/R", dependencies = T,  
 
 ##Install the Package
 
-This package is currently under development and will be later uploaded as an official package repository following standard procedures.  This will allow use of the standard `install.packages` method for direct install within R.  For now, Github users can fork and pull the materials to create a local clone of the current form.  Otherwise, the `funcs.r` file contains all currently developed (and partially tested) functions.  Package dependencies can be found in `.RProfile`.  Files ending in `retrieval.r` were used to test the functions.   
+This package is currently under development and will be later uploaded as an official package repository following standard procedure.  This will allow use of the `install.packages` method for direct install within R.  For now, Github users can fork and pull the materials to create a local clone of the current form.  Otherwise, the `funcs.r` file contains all currently developed (and partially tested) functions.  Package dependencies can be found in `.RProfile`.  Files ending in `retrieval.r` were used to test the functions.   
 
 ##Package scope and workflow
 
@@ -38,6 +38,8 @@ Three main categories of functions are available: retrieve, organize, analyze.  
 
 `site_codes_ind` Metadata for all stations at a single site, wrapper  to `NERRFilterStationCodesXMLNew` function on web services.
 
+`param_names` Vector of column names for a given parameter type (nutrients, weather, or water quality).  Includes QAQC columns with 'F_' prefix. Used internally in retrieval functions.
+
 <b>retrieval</b>
 
 `all_params` Retrieve up to 100 records starting with the most recent at a given station, all parameters.  Wrapper to `exportAllParamsXMLNew` function on web services. 
@@ -50,7 +52,7 @@ Three main categories of functions are available: retrieve, organize, analyze.  
 
 <b>organize</b>
 
-`qaqc_local` Remove QAQC columns and remove data based on QAQC flag values.  This function is used on data returned from `import_loca`.  
+`qaqc` Remove QAQC columns and remove data based on QAQC flag values.  This function is used on data returned from any of the retrieval functions.  Only applies if QAQC columns are present.  
 
 <b>analyze</b>
 
@@ -76,8 +78,8 @@ Not yet available.
 
 Actual 'package' repository after all functions are complete.
 
-Organize functions... combine functions with common time step, CDMO and remote data
+Add parameters attribute to swmpr class
+
+Organize functions... test/debug subset function, combine functions with common time step, CDMO and remote data
 
 Analysis functions... aggregations on diff time periods, EDA, etc.
-
-Test - `import_local`, `qaqc_sel` (make test_organize)

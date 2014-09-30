@@ -10,19 +10,19 @@ tmp <- site_codes_ind('tjr')
 # get all parameters for number of records back from current date
 # current max is 100
 # returns swmpr object
-tmp <- all_params('apadbnut')
+tmp <- all_params('sfbfmwq')
 
 # get all records within a date range, current max is 1000
 # returns swmpr object
-tmp <- all_params_dtrng('marabwq', c('09/10/2009', '02/8/2010')), 
-  param = 'DO_mgl')
+tmp <- all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013'))#, 
+  param = 'do_mgl')
 
 # get single parameter for number of records back from current date
 # returns swmpr object
-tmp <- single_param('marabwq', 100, 'DO_mgl')
+tmp <- single_param('tjrtlmet', 100, 'wspd')
 
 # import data from a folder with csv files from CDMO
-# tmp <- import_local() 
+tmp <- import_local('C:/Users/mbeck/Desktop/zip_download2', 'apaebmet') 
 
 ######
 # comprehensive test of data retrieval functions
