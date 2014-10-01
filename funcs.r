@@ -18,8 +18,12 @@ swmpr <- function(stat_in, meta_in){
   if(!is.data.frame(stat_in)) 
     stop('stat_in must be data.frame')
   
+  # qaqc attribute
+  qaqc_cols <- F
   if(any(grepl('^f_', names(stat_in)))) qaqc_cols <- T
-  else qaqc_cols <- F
+  
+  # parameters attribute
+  parameters <- grep('datetimestamp|^f_', names(stat_in), invert = T, value = T)
   
   # create class, with three attributes (station_data, class, station_meta)
   structure(
@@ -27,7 +31,9 @@ swmpr <- function(stat_in, meta_in){
     class = 'swmpr', 
     station = meta_in,
     qaqc_cols = qaqc_cols,
-    date_rng = range(stat_in$datetimestamp)
+    date_rng = range(stat_in$datetimestamp),
+    timezone = attr(stat_in$datetimestamp, 'tzone'), 
+    parameters = parameters
     )
   
   }
@@ -465,7 +471,6 @@ import_local <- function(path, station_code, trace = T){
   out <- do.call('rbind', dat)
   out <- data.frame(
     datetimestamp = out$datetimestamp,
-    statparam = parm, 
     out[, names(out) %in% nms], 
     row.names = seq(1, nrow(out))
     )
@@ -489,32 +494,22 @@ import_local <- function(path, station_code, trace = T){
 
 ######
 # combine data for a single station
-# 'clean_dat' is the generic, 'clean_dat.swmpr' is the method applied to swmpr class
-# standard time step
+# 'comb' is the generic, 'comb.swmpr' is the method applied to swmpr class
+# standard time step, combine multiple files, etc.
 
-comb_dat <- function(x) UseMethod('comb_dat')
-comb_dat.swmpr <- function(station, path){
-
-#   # find date ranges for files
-#   tz <- time_vec('01/01/2014 0:00', station_code, T)
-#   time_rng <- llply(dat, .fun = function(x) range(x$DateTimeStamp))
-#   time_rng <- range(unlist(time_rng))
-#   time_rng <- as.POSIXct(time_rng, origin="1970-01-01 00:00", tz = tz)
-#   
-#   # create continuous time vector based on step
-#   times <- seq(time_rng[1], time_rng[2], by = step * 60)
-#   times <- data.frame(DateTimeStamp = times)
-    
-  }
+# comb <- function(x, ...) UseMethod('comb')
+# comb.swmpr <- function(..., step, comb, step_diff){
+# 
+#   }
 
 ######
 # qaqc filtering for data obtained from retrieval functions, local and remote
 # qaqc is generic, qaqc.swmpr is method
-# 'dat_in' is data frame returned from any of the above retrieval functions
+# 'swmpr_in' is data frame returned from any of the above retrieval functions
 # 'qaqc_keep' is numeric vector of qaqc flags to keep, default 'zero'
 # 'trace' is logical for progress
-qaqc <- function(x) UseMethod('qaqc')
-qaqc.swmpr <- function(dat_in, 
+qaqc <- function(x, ...) UseMethod('qaqc')
+qaqc.swmpr <- function(swmpr_in, 
   qaqc_keep = 0,
   trace = T){
   
@@ -525,14 +520,14 @@ qaqc.swmpr <- function(dat_in,
   
   ##
   # swmpr data and attributes
-  dat <- dat_in$station_data
-  qaqc_cols <- attr(dat_in, 'qaqc_cols')
-  station <- attr(dat_in, 'station')
+  dat <- swmpr_in$station_data
+  qaqc_cols <- attr(swmpr_in, 'qaqc_cols')
+  station <- attr(swmpr_in, 'station')
   
   # exit function if no qaqc columns
   if(!qaqc_cols){
     warning('No qaqc columns in input data')
-    return(dat_in)
+    return(swmpr_in)
     }
   
   ##
@@ -555,14 +550,14 @@ qaqc.swmpr <- function(dat_in,
   } else {
       
     #matrix of TF values for those that don't pass qaqc
-    qaqc_vec <- dat[, names(dat) %in% qaqc_sel]
+    qaqc_vec <- dat[, names(dat) %in% qaqc_sel, drop = F]
     qaqc_vec <- apply(qaqc_vec, 2, 
       function(x) grepl(paste(qaqc_rm, collapse = '|'), x)
       )
     #replace T values with NA
     #qaqc is corrected
     qaqc_sel <- gsub('f_', '', qaqc_sel)
-    qaqc <- dat[, names(dat) %in% qaqc_sel]
+    qaqc <- dat[, names(dat) %in% qaqc_sel, drop = F]
     qaqc <- data.frame(sapply(
       names(qaqc),
       function(x){
@@ -588,7 +583,7 @@ qaqc.swmpr <- function(dat_in,
 	#NA values from qaqc still included as NA
 	out <- data.frame(
     datetimestamp = out[,1],
-    apply(out[, -1], 2 , as.numeric)
+    apply(out[, -1, drop = F], 2 , as.numeric)
     )
 
   # create swmpr class
@@ -602,23 +597,28 @@ qaqc.swmpr <- function(dat_in,
 
 ######
 # subset a swmpr data object by a date range or parameter
-# 'subset' is chr string of form 'YYYY-MM-DD hh:mm'
-subset.swmpr <- function(dat_in, subset = NULL, select = NULL, 
+# 'subset' is chr string of form 'YYYY-mm-dd HH:MM', or using POSIX terms '%Y-%m-%d %H:%M'
+subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL, 
   operator = NULL){
     
   ##
   # swmpr data and attributes
-  dat <- dat_in$station_data
-  station <- attr(dat_in, 'station')
+  dat <- swmpr_in$station_data
+  station <- attr(swmpr_in, 'station')
+  timezone <- attr(swmpr_in, 'timezone')
   
   ##
   # subset
   
   # create posix object from subset input
+  date_sel <- rep(T, nrow(dat)) # created based on subset arg
   if(!is.null(subset)){
+
+    subset <- as.POSIXct(subset, format = '%Y-%m-%d %H:%M', tz = timezone)
     
-    tzone <- attr(attr(tmp, 'date_rng'), 'tzone')
-    subset <- as.POSIXct(subset, format = '%Y-%m-%d %H:%M', tz = tzone)
+    # exit function of subset input is incorrect format
+    if(any(is.na(subset))) 
+      stop('subset must be of format %Y-%m-%d %H:%M')
     
     # exit function if operator not provided for one subset value
     if(length(subset) == 1){
@@ -637,10 +637,17 @@ subset.swmpr <- function(dat_in, subset = NULL, select = NULL,
 
     }
   
+  # exit function if date_sel has no matches
+  if(sum(date_sel) == 0)
+    stop('No records matching subset criteria')
+  
+  # columns to select, includes qaqc cols if present
+  # all if null
   if(is.null(select)) select <- names(dat)
+  else select <- names(dat)[names(dat) %in% c('datetimestamp', select, paste0('f_', select))]
   
   # subset data
-  out <- subset(dat, date_sel, c('datetimestamp', select))
+  out <- subset(dat, date_sel, select)
   out <- data.frame(out, row.names = 1:nrow(out))
   
   # create swmpr class

@@ -1,32 +1,151 @@
-##SWMPr package for estuarine monitoring data
+# SWMPr package for estuarine monitoring data
 
-In development! 
+This repository contains materials to retrieve, organize, and analyze estuarine monitoring data from the System Wide Monitoring Program (<a href="http://nerrs.noaa.gov/RCDefault.aspx?ID=18">SWMP</a>) implemented by the National Estuarine Research Reserve System (<a href="http://nerrs.noaa.gov/">NERRS</a>).  SWMP was initiated in 1995 to provide continuous monitoring data at over 300 stations in 28 estuaries across the United States.  SWMP data are maintained online by the Centralized Data Management Office (CDMO). This R package provides several functions to retrieve, organize, and analyze estuary data from the CDMO.  Information on the CDMO web services are available <a href="http://cdmo.baruch.sc.edu/webservices.cfm">here</a>.  Your computer's IP address must be registered with the CDMO website to use most of the data retrieval functions, see contact info in the link.  All other functions can be used after obtaining data from the CDMO, as described below. 
 
-This repository contains materials to retrieve, organize, and analyze estuarine monitoring data from the System Wide Monitoring Program (<a href="http://nerrs.noaa.gov/RCDefault.aspx?ID=18">SWMP</a>) implemented by the National Estuarine Research Reserve System (<a href="http://nerrs.noaa.gov/">NERRS</a>).  SWMP was initiated in 1995 to provide continuous monitoring data at over 300 stations in 28 estuaries across the United States.  SWMP data are maintained and stored online by the Centralized Data Management Office (CDMO). This R package provides several functions to access, prepare, and analyze estuary data from the CDMO.  More info on the CDMO web services are available <a href="http://cdmo.baruch.sc.edu/webservices.cfm">here</a>.  <b>Your computer's IP address must be registered with the CDMO website to use the data retrieval functions, see contact info in the link.</b>  All other functions can be used after obtaining data from the CDMO, as described below. 
+The package has many dependencies, the most important being the SSOAP package for retrieving data from the CDMO using a SOAP client interface. The SSOAP package is not required to use the package but is necessary for using most of the data retrieval functions, see below.  The SSOAP package is currently removed from CRAN but accessible at <a href="http://www.omegahat.org/SSOAP/">http://www.omegahat.org/SSOAP/</a>.  It can be installed as follows:
 
-The package has many dependencies, the most important being the SSOAP package for retrieving data from the CDMO using a SOAP client interface.  The SSOAP package is not required to use the package but is necessary for using specific functions, see below.  The SSOAP package is currently removed from CRAN but accessible at <a href="http://www.omegahat.org/SSOAP/">http://www.omegahat.org/SSOAP/</a>.  It can be installed as follows:
 
-```{r}
+```r
 install.packages("SSOAP", repos="http://www.omegahat.org/R", dependencies = T,  type =  "source")
 ```
 
+All data obtained from the CDMO should be <a href="http://cdmo.baruch.sc.edu/data/citation.cfm">cited</a> using the format:
+
+National Estuarine Research Reserve System (NERRS). 2012. System-wide Monitoring Program. Data accessed from the NOAA NERRS Centralized Data Management Office website: http://cdmo.baruch.sc.edu/; accessed 12 October 2012.
+
+To cite this package:
+
+Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Beta version. https://github.com/fawda123/SWMPr
+
 ##Install the Package
 
-This package is currently under development and will be later uploaded as an official package repository following standard procedure.  This will allow use of the `install.packages` method for direct install within R.  For now, Github users can fork and pull the materials to create a local clone of the current form.  Otherwise, the `funcs.r` file contains all currently developed (and partially tested) functions.  Package dependencies can be found in `.RProfile`.  Files ending in `retrieval.r` were used to test the functions.   
+This package is currently under development and will later be uploaded as an official package repository.  This will allow use of the `install.packages` function for direct install within R.  For now, Github users can fork and pull the materials to create a local clone of the current form.  Otherwise, the `funcs.r` file contains all currently developed (and partially tested) functions.  Package dependencies can be found in `.RProfile`.  Files ending in `retrieval.r` were used to test the functions.   
 
-##Package scope and workflow
+##Data retrieval
 
-The SWMP database provides continuous monitoring data for water quality, nutrient, and meterological parameters at numerous locations and time periods. The desired parameters, locations, and date ranges for a specific analysis are of course dependent on the question of interest.  Regardless of the needs for a particular analysis, basic steps can be used for obtaining, organizing, and processing the data.  The functions provided in this package are meant to facilitate these initial processes following a basic workflow.  The end result of this workflow is a time series with combined water quality, nutrient, and meteorological data for a single station. For simplicity, the station is considered a relevant unit of analysis because observations are spatially and temporally synoptic, although it is acknowledged that weather stations do not always spatially co-occur with water quality or nutrient stations. Moreover, all paramaters are included as output from the data organization functions to allow greater flexibility in any following analyses.  That is, the researcher may choose to analyze a single parameter or multiple parameters from the resulting data.  The following discussion describes basic steps that should be taken to retrieve and organize SWMP data for analysis.
+SWMP data can be obtained directly from the CDMO through an online query or by using the retrieval functions provided in this package.  In the latter case, the IP address for the computer making the request must be registered with CDMO.  This can be done by following instructions <a href="http://cdmo.baruch.sc.edu/webservices.cfm">here</a>.  The <a href="http://cdmo.baruch.sc.edu/data/metadata.cfm">metadata</a> should also be consulted to determine the parameters and date ranges that are available for each station.  Metadata are included as a .csv file with data requested from the CDMO and can also be obtained using the `site_codes` (all sites) or `site_codes_ind` (individual site) functions.  
 
-SWMP data can be obtained directly from the CDMO through an online query or by using the retrieval functions provided in this package.  In either case, the metadata should be consulted to determine the parameters and date ranges that are available for each station.  Metadata are included as a .csv file with data requested from the CDMO and can also be obtained using the `site_codes` or `site_codes_ind` functions in the package.  Throughout, a station refers to either a nutrient, water quality, or meteorological station that occurs at a site or reserve to be combined as a single dataset that represents all data for a station.  Due to server constraints, the retrieval functions in this package return a limited number of records.  The functions are more amenable to analyses with short time periods, although savvy users could use these functions iteratively (i.e., with `for` or `while` loops) to obtain longer time series.  For larger requests, it is easier to obtain data using the online query system on the CDMO.  Date can be retrieved from the CDMO several ways.  Data from single stations can be requested from the <a href="http://cdmo.baruch.sc.edu/get/export.cfm">data export system</a>, whereas data from multiple stations can be requested from the <a href="http://cdmo.baruch.sc.edu/aqs/">advanced query system</a>.  The most general format for these  data are a .csv file for single station with rows as data records and columns indicating the time stamp, parameters, and quality assurance/quality control (QAQC) flags.  
 
-Several functions are provided for organizing the data after they are obtained using either the retrieval functions or through a direct query to the CDMO.  Your computer's IP address must be registered with the CDMO to use the retrieval functions.  The organization functions are generally used to combine the data at a single station (weather, nutrients, water quality).  Additional methods are available for dealing with QAQC flags, missing data, and incomplete time series. 
+```r
+# retrieve metadata for all sites
+site_codes()
+
+# retrieve metadata for a single site
+site_codes_ind('apa')
+```
+
+Due to rate limitations on the server, the retrieval functions in this package return a limited number of records.  The functions are more amenable to analyses with short time periods, although these functions could be used iteratively (i.e., with `for` or `while` loops) to obtain longer time series.  Data retrieval functions to access the CDMO directly include `all_params`, `all_params_dtrng`, and `single_param`.  `all_params` returns the most recent 100 records of all parameters at a station.  `all_params_dtrng` returns all records within a date range for all parameters or a single parameter.  `single_param` is identical to `all_params` except that a single parameter is requested.    
+
+
+```r
+# all parameters for a station, most recent
+all_params('sfbfmwq')
+
+# get all parameters within a date range
+all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013'))
+
+# get single parameter within a date range
+all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013')),
+  param = 'do_mgl')
+
+# single parameter for a station, most recent
+single_param('tjrtlmet', 'wspd')
+```
+
+For larger requests, it is easier to obtain data outside of R using the online query system on the CDMO.  Data can be retrieved from the CDMO several ways.  Data from single stations can be requested from the <a href="http://cdmo.baruch.sc.edu/get/export.cfm">data export system</a>, whereas data from multiple stations can be requested from the <a href="http://cdmo.baruch.sc.edu/aqs/">advanced query system</a>.  The `import_local` function is used to import data into R that were downloaded from the CDMO with the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> feature available within the advanced query system.  The downloaded data will include multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.).  It is recommended that all parameters and the complete date range are requested to avoid repeated requests to CDMO.  The `import_local` function can be used once the downloaded files are extracted to a local path. 
+
+
+```r
+# import data from a folder with csv files from CDMO
+import_local('zip_ex', 'apaebmet') 
+```
+
+In all cases, the imported data need to assigned to an object in the workspace for use with other functions:
+
+
+
+
+```r
+# import data
+dat <- import_local('zip_ex', 'apaebmet', trace = F) 
+```
+
+##swmpr object class
+
+All data retrieval functions return a swmpr object that includes relevant data and several attributes describing the dataset.  The data include a datetimestamp column converted to the appropriate timezone for a station.  Note that the datetimestamp is standard time for each timezone and does not include daylight savings. Additional columns include parameters for a given data type and correspondingg QAQC columns if returned from the initial data request.  The attributes for a swmpr object include `names` of the dataset (`station_data`), `class` (swmpr) `station name` (7 or 8 characters), `qaqc_cols` (logical), and `date_rng` (POSIXct vector), and `parameters` (character vector).  Attributes can be viewed as follows:
+
+
+```r
+# all attributes
+attributes(dat)
+
+# a single attribute
+attr(dat, 'station')
+```
+
+The data for a swmpr object can be assigned to an additional object in the workspace if working directly with the data is preferred (e.g., as a data frame).  However, the swmpr object class was created for use with specific methods and it is suggested that these methods be used for organization and analysis.  Available methods can be viewed:
+
+
+```r
+methods(class = 'swmpr')
+```
+
+##swmpr methods
+
+The organize and analyze functions are methods that can be applied to a swmpr object.  The organize functions are used to clean or prepare the data for analysis, including removal of QAQC flags, subsetting, or combining data of different types.  The `qaqc` function is a simple screen to retain values from the data with specified QAQC flags, described <a, href="http://cdmo.baruch.sc.edu/data/qaqc.cfm">here</a>.  Each parameter in the swmpr data typically has a corresponding QAQC column of the same name with the added prefix 'f_'.  Values in the QAQC column specify a flag from -5 to 5.  Generally, only data with the '0' QAQC flag should be used, which is the default option for the `qaqc` function.  Data that do not satisfy QAQC criteria are converted to NA values.  
+
+
+```r
+# qaqc screen for a swmpr object, retain only '0'
+qaqc(dat)
+
+# retain all
+qaqc(dat, qaqc_keep = NULL)
+
+# retain only '0' and '-1'
+qaqc(dat, qaqc_keep = c(0, -1))
+```
+
+Note the `qaqc_cols` attribute for the data before and after use of the `qaqc` function.  Processed data will have QAQC columns removed, in addition to removal of values in the actual parameter columns that do not meet the criteria.
+
+The `subset` function is a method for swmpr objects added to the existing generic subset function.  This function is used to subset the data by date and/or a selected parameter.  The date can be a single value or as two dates to select records within the range. The former case requires a binary operator input as a character string passed to the argument, such as `>` or `<`.  The subset argument for the date(s) must also be a character string of the format `YYYY-mm-dd HH:MM`.
+
+
+```r
+# subset by two parameters
+subset(dat, select = ')
+
+# subset records greater than a date
+subset(dat, subset = '2014
+
+# subset records within a date range
+```
 
 ##Functions
 
-Three main categories of functions are available: retrieve, organize, analyze.  Other miscellaneous functions are helpers/wrappers to the main functions or those used to obtain site/station metadata.
+Three main categories of functions are available: retrieve, organize, and analyze.  Other miscellaneous functions are helpers/wrappers to these  functions or those used to obtain site/station metadata.
 
-<b>misc</b>
+<b>retrieve</b>
+
+`all_params` Retrieve up to 100 records starting with the most recent at a given station, all parameters.  Wrapper to `exportAllParamsXMLNew` function on web services. 
+
+`all_params_dtrng` Retrieve records of all parameters within a given date range for a station.  Optional argument for a single parameter.  Maximum of 1000 records. Wrapper to `exportAllParamsDateRangeXMLNew`.
+
+`single_param` Retrieve up to 100 records for a single parameter starting with the most recent at a given station.  Wrapper to `exportSingleParamXMLNew` function on web services. 
+
+`import_local` Import files from a local path.  The files must be in a specific format, specifically those returned from the CDMO using the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> option for a reserve.
+
+<b>organize</b>
+
+`qaqc.swmpr` Remove QAQC columns and remove data based on QAQC flag values for a swmpr object.  This function is used on data returned from any of the retrieval functions.  Only applies if QAQC columns are present.  
+
+`subset.swmpr` Subset by dates and/or columns for a swmpr object dataset.  This is a method passed to the generic `subset' function provided in the base package.
+
+<b>analyze</b> 
+
+Not yet available.
+
+<b>miscellaneous</b>
 
 `swmpr` Creates object of swmpr class, used internally in retrieval functions.
 
@@ -40,24 +159,6 @@ Three main categories of functions are available: retrieve, organize, analyze.  
 
 `param_names` Vector of column names for a given parameter type (nutrients, weather, or water quality).  Includes QAQC columns with 'F_' prefix. Used internally in retrieval functions.
 
-<b>retrieval</b>
-
-`all_params` Retrieve up to 100 records starting with the most recent at a given station, all parameters.  Wrapper to `exportAllParamsXMLNew` function on web services. 
-
-`all_params_dtrng` Retrieve records of all parameters within a given date range for a station.  Optional argument for a single parameter.  Maximum of 1000 records. Wrapper to `exportAllParamsDateRangeXMLNew`.
-
-`single_param` Retrieve up to 100 records for a single parameter starting with the most recent at a given station.  Wrapper to `exportSingleParamXMLNew` function on web services. 
-
-`import_local` Import files from a local path.  The files must be in a specific format, specifically those returned from the CDMO using the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> option for a reserve.  Data returned from this function are generally not in a usable format and are processed with other functions.
-
-<b>organize</b>
-
-`qaqc` Remove QAQC columns and remove data based on QAQC flag values.  This function is used on data returned from any of the retrieval functions.  Only applies if QAQC columns are present.  
-
-<b>analyze</b>
-
-Not yet available.
-
 ##Files
 
 `funcs.r` Required functions, all categories.
@@ -70,7 +171,7 @@ Not yet available.
 
 `.Rprofile` File that is run after opening the project in R, contains all package dependencies.
 
-`.gitignore` List of files that Git ignores, not on repository.
+`.gitignore` List of files that Git ignores during commits/build, not on repository.
 
 `SWMPr.Rproj` RStudio project file used to create the package.
 
@@ -78,8 +179,6 @@ Not yet available.
 
 Actual 'package' repository after all functions are complete.
 
-Add parameters attribute to swmpr class
-
 Organize functions... test/debug subset function, combine functions with common time step, CDMO and remote data
 
-Analysis functions... aggregations on diff time periods, EDA, etc.
+Analysis functions... EDA, metab, trend analysis, etc.

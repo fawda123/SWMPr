@@ -14,7 +14,7 @@ tmp <- all_params('sfbfmwq')
 
 # get all records within a date range, current max is 1000
 # returns swmpr object
-tmp <- all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013'))#, 
+tmp <- all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013'), 
   param = 'do_mgl')
 
 # get single parameter for number of records back from current date
