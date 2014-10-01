@@ -52,7 +52,7 @@ all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013')),
 single_param('tjrtlmet', 'wspd')
 ```
 
-For larger requests, it is easier to obtain data outside of R using the online query system on the CDMO.  Data can be retrieved from the CDMO several ways.  Data from single stations can be requested from the <a href="http://cdmo.baruch.sc.edu/get/export.cfm">data export system</a>, whereas data from multiple stations can be requested from the <a href="http://cdmo.baruch.sc.edu/aqs/">advanced query system</a>.  The `import_local` function is used to import data into R that were downloaded from the CDMO with the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> feature available within the advanced query system.  The downloaded data will include multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.).  It is recommended that all parameters and the complete date range are requested to avoid repeated requests to CDMO.  The `import_local` function can be used once the downloaded files are extracted to a local path. 
+For larger requests, it is easier to obtain data outside of R using the CDMO query system.  Data can be retrieved from the CDMO several ways.  Data from single stations can be requested from the <a href="http://cdmo.baruch.sc.edu/get/export.cfm">data export system</a>, whereas data from multiple stations can be requested from the <a href="http://cdmo.baruch.sc.edu/aqs/">advanced query system</a>.  The `import_local` function is used to import data into R that were downloaded from the CDMO with the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> feature available within the advanced query system.  The downloaded data will include multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.).  It is recommended that all parameters and the complete date range are requested to avoid repeated requests to CDMO.  The `import_local` function can be used once the downloaded files are extracted to a local path. 
 
 
 ```r
@@ -72,7 +72,7 @@ dat <- import_local('zip_ex', 'apaebmet', trace = F)
 
 ##swmpr object class
 
-All data retrieval functions return a swmpr object that includes relevant data and several attributes describing the dataset.  The data include a datetimestamp column converted to the appropriate timezone for a station.  Note that the datetimestamp is standard time for each timezone and does not include daylight savings. Additional columns include parameters for a given data type and correspondingg QAQC columns if returned from the initial data request.  The attributes for a swmpr object include `names` of the dataset (`station_data`), `class` (swmpr) `station name` (7 or 8 characters), `qaqc_cols` (logical), and `date_rng` (POSIXct vector), and `parameters` (character vector).  Attributes can be viewed as follows:
+All data retrieval functions return a swmpr object that includes relevant data and several attributes describing the dataset.  The data include a datetimestamp column converted to the appropriate timezone for a station.  Note that the datetimestamp is standard time for each timezone and does not include daylight savings. Additional columns include parameters for a given data type and correspondingg QAQC columns if returned from the initial data request.  The attributes for a swmpr object include `names` of the dataset (`station_data`), `class` (swmpr) `station name` (7 or 8 characters), `qaqc_cols` (logical), `date_rng` (POSIXct vector), `timezone` (text string in country/city format), and `parameters` (character vector).  Attributes can be viewed as follows:
 
 
 ```r
@@ -112,14 +112,21 @@ The `subset` function is a method for swmpr objects added to the existing generi
 
 
 ```r
-# subset by two parameters
-subset(dat, select = ')
+# select two parameters
+subset(dat, select = c('rh', 'bp'))
 
 # subset records greater than a date
-subset(dat, subset = '2014
+subset(dat, subset = '2013-01-01 0:00', operator = '>=')
 
 # subset records within a date range
+subset(dat, subset = c('2012-07-01 6:00', '2012-08-01 18:15'))
+
+# subset records within a date range, two parameters
+subset(dat, subset = c('2012-07-01 6:00', '2012-08-01 18:15'),
+  select = c('atemp', 'totsorad'))
 ```
+
+The `comb_dat` function...
 
 ##Functions
 
@@ -179,6 +186,6 @@ Not yet available.
 
 Actual 'package' repository after all functions are complete.
 
-Organize functions... test/debug subset function, combine functions with common time step, CDMO and remote data
+Organize functions...combine or organize station data by common time series, need to test, develop for multiple stations, remove time_dum variable  
 
-Analysis functions... EDA, metab, trend analysis, etc.
+Analysis functions... EDA, metab, trend analysis, tidal decomp, etc.
