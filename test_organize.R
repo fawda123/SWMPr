@@ -61,4 +61,27 @@ subset(dat, subset = c('2013-12-4 13:00'),
   select = c('totpar'), operator = '>')
 
 ##
+# test setstep.swmpr
+
+dir('zip_ex')
+
+swmp1 <- import_local('zip_ex', 'apacpnut')
+swmp2 <- import_local('zip_ex', 'apacpwq')
+swmp3 <- import_local('zip_ex', 'apacpmet')
+
+test <- setstep(swmp1)
+test <- setstep(swmp2)
+test <- setstep(swmp3)
+
+##
 # test comb.swmpr
+
+dir('zip_ex')
+
+swmp1 <- import_local('zip_ex', 'apacpnut')
+swmp2 <- import_local('zip_ex', 'apacpwq')
+swmp3 <- import_local('zip_ex', 'apaebmet')
+
+test <- comb(swmp1, swmp2, method = 'union')
+test <- comb(swmp1, swmp2, method = 'intersect')
+test <- comb(swmp1, swmp2, swmp3, timestep = 120, method = 'apaebmet')

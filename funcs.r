@@ -658,6 +658,147 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
   
   }
 
+######
+# create a continous time vector at set time step for a swmpr object
+# 'swmpr_in' is swmpr object
+# 'timestep' numeric value of time step to use in minutes
+# 'differ' is buffer for merging time stamps to standardized time series
+setstep <- function(x, ...) UseMethod('setstep')
+setstep.swmpr <- function(swmpr_in, timestep = 30, differ= 5){ 
+
+  library(data.table)
+  library(plyr)  
+  
+  # sanity check
+  if(timestep/2 <= differ) 
+    stop('Value for differ must be less than one half of timestep')
+  
+  # swmpr data and attributes
+  dat <- swmpr_in$station_data
+  attrs <- attributes(swmpr_in)
+  
+  # round to nearest timestep
+  dts_std <- as.POSIXct(
+    round(as.double(attrs$date_rng)/(timestep * 60)) * (timestep * 60),
+    origin = '1970-01-01',
+    tz = attrs$timezone
+    )
+    
+  # create continuous vector
+  dts_std <- seq(dts_std[1], dts_std[2], by = timestep * 60)
+  dts_std <- data.frame(datetimestamp = dts_std)
+  
+  # convert swmpr data and standardized vector to data.table for merge
+  # time_dum is vector of original times for removing outside of differ
+  mrg_dat <- dat
+  mrg_dat$time_dum <- mrg_dat$datetimestamp
+  mrg_dat <- data.table(mrg_dat, key = 'datetimestamp')
+  mrg_std <- data.table(dts_std, key = 'datetimestamp')
+  
+  # merge all the data  using  mrg_std as master
+  mrg <- mrg_dat[mrg_std, roll = 'nearest']
+  mrg <- data.frame(mrg)
+  
+  # set values outside of differ to NA
+  time_diff <- abs(difftime(mrg$datetimestamp, mrg$time_dum, units='secs'))
+  time_diff <- time_diff >= 60 * differ
+  mrg[time_diff, !names(mrg) %in% c('datetimestamp', 'time_dum')] <- NA
+  
+  # output, back to swmpr object from data.table
+  out <- data.frame(mrg) # need to remove time_dum after testing
+  out <- swmpr(out, attrs$station)
+  
+  return(out)
+
+  } 
+
+######
+# combine data types for a station by common time series
+# 'timestep' numeric value of time step to use in minutes, passed to setstep
+# 'differ' is buffer for merging time stamps to standardized time series, passed to setstep
+# 'method' is chr string indicating method of combining
+#   * 'union' - all dates as continuous time series
+#   * 'intersect' - areas of overlap
+#   * 'station' - given station
+comb <- function(...) UseMethod('comb')
+comb.swmpr <- function(..., timestep = 30, differ= 5, method = 'union'){
+
+  library(plyr)
+  library(data.table) 
+  
+  # swmp objects list and attributes
+  all_dat <- list(...)
+  attrs <- llply(all_dat, attributes)
+  
+  ##
+  # sanity checks
+  if(length(all_dat) == 1)
+    stop('Input data must include more than one swmpr object')
+  
+  # stop if from more than one timezone
+  timezone <- unique(unlist(llply(attrs, function(x) x$timezone)))
+    
+  if(length(timezone) > 1)
+    stop('Input data are from multiple timezones')
+  
+  # stop of method is invalid
+  stations <- unlist(llply(attrs, function(x) x$station) )
+  
+  if(!method %in% c('intersect', 'union', stations))
+    stop('Method must be intersect, union, or station name')
+
+  # stop if more than one data type
+  types <- substring(stations, 6,)
+  
+  if(any(duplicated(types))) 
+    stop('Unable to combine duplicated data types')
+  
+  ##
+  # setstep applied to data before combining
+  all_dat <- llply(all_dat, setstep, timestep, differ)
+  
+  ##
+  # dates
+  date_vecs <- llply(all_dat, function(x) x[[1]]$datetimestamp)
+  
+  ## 
+  # date vector for combining
+  # for union, intersect
+  if(method %in% c('union', 'intersect')){
+    
+    date_vec <- Reduce(method, date_vecs)
+    date_vec <- as.POSIXct(date_vec, origin = '1970-01-01', tz = timezone)
+    
+  # for a station
+  } else {
+    
+    sel <- unlist(llply(attrs, function(x) x$station == method))
+    
+    date_vec <- date_vecs[sel][[1]]
+    
+  }
+    
+  ##
+  # merge stations by date_vec
+  out <- data.table(datetimestamp = date_vec, key = 'datetimestamp')
+  
+  for(dat in all_dat){
+    
+    dat <- data.table(dat$station_data, key = 'datetimestamp')
+    
+    # merge
+    out <- dat[out, roll = 'nearest']
+ 
+    }
+
+  # format as swmpr object, return
+  out <- data.frame(out)
+  out <- swmpr(out, stations)
+  
+  return(out)
+  
+  }
+
 ########################
 # evaluate functions
 ########################
