@@ -25,7 +25,13 @@ swmpr <- function(stat_in, meta_in){
   # parameters attribute
   parameters <- grep('datetimestamp|^f_', names(stat_in), invert = T, value = T)
   
-  # create class, with three attributes (station_data, class, station_meta)
+  # get stations attribute
+  dat_types <- param_names()
+  dat_types <- unlist(lapply(dat_types, function(x) any(x %in% parameters)))
+  dat_types <- names(param_names())[dat_types]
+  meta_in <- grep(paste(dat_types, collapse = '|'), meta_in, value = T)
+  
+  # create class, with multiple attributes
   structure(
     list(station_data = stat_in), 
     class = 'swmpr', 
@@ -175,13 +181,14 @@ site_codes_ind <- function(nerr_site_id){
 ######
 # returns parameter columns names for each parameter type - nut, wq, met
 # names are actual parameter and corresponding qaqc column name ('f_' prefix)
-# used in 'import_local', 'all_params', 'all_params_dtrng' (single parameter only)
+# output also used to check data type after subsetsfor attributes
+# used in 'import_local', 'all_params', 'all_params_dtrng' (single parameter only), 'swmpr'
 # 'param_type' is character string specifying 'nut', 'wq', or met'
-param_names <- function(param_type){
+param_names <- function(param_type = c('nut', 'wq', 'met')){
   
   # sanity check
-  if(!param_type %in% c('nut', 'wq', 'met'))
-    stop('parm_type must chr string of nut, wq, or met')
+  if(any(!param_type %in% c('nut', 'wq', 'met')))
+    stop('param_type must chr string of nut, wq, or met')
   
   nut_nms <- c('po4f', 'chla_n', 'no3f', 'no2f', 'nh4f', 'no23f', 'ke_n',
     'urea')
@@ -196,7 +203,7 @@ param_names <- function(param_type){
   met_nms <- paste0(c('', 'f_'), rep(met_nms, each = 2))
   
   # get names for a given parameter type
-  out <- get(paste0(param_type, '_nms'))
+  out <- sapply(param_type, function(x) get(paste0(x, '_nms')), simplify = F)
   
   return(out)
   
@@ -244,7 +251,7 @@ all_params <- function(station_code, Max = 100){
   
   # type of parameter requested - wq, nut, or met
   parm <- substring(station_code, 6)
-  nms <- param_names(parm)
+  nms <- param_names(parm)[[parm]]
   
   # format datetimetamp if output is not empty
   if(ncol(out) != 0 & nrow(out) != 0){
@@ -316,7 +323,7 @@ all_params_dtrng <- function(station_code, dtrng, param = NULL){
   
   # type of parameter requested - wq, nut, or met, NOT the param argument
   parm <- substring(station_code, 6)
-  nms <- param_names(parm)
+  nms <- param_names(parm)[[parm]]
   
   # format datetimestamp, sort, get relevant columns as data frame
   out[, 'datetimestamp'] <- time_vec(out[, 'datetimestamp'], station_code)
@@ -461,7 +468,7 @@ import_local <- function(path, station_code, trace = T){
 
   # names to use
   parm <- substring(station_code, 6)
-  nms <- param_names(parm)
+  nms <- param_names(parm)[[parm]]
   
   ##
   # convert output from 'import_local' to data frame and appropriate columns
@@ -491,16 +498,6 @@ import_local <- function(path, station_code, trace = T){
 ########################
 # organize functions
 ########################
-
-######
-# combine data for a single station
-# 'comb' is the generic, 'comb.swmpr' is the method applied to swmpr class
-# standard time step, combine multiple files, etc.
-
-# comb <- function(x, ...) UseMethod('comb')
-# comb.swmpr <- function(..., step, comb, step_diff){
-# 
-#   }
 
 ######
 # qaqc filtering for data obtained from retrieval functions, local and remote
@@ -598,14 +595,19 @@ qaqc.swmpr <- function(swmpr_in,
 ######
 # subset a swmpr data object by a date range or parameter
 # 'subset' is chr string of form 'YYYY-mm-dd HH:MM', or using POSIX terms '%Y-%m-%d %H:%M'
+# 'select' is chr string of parameters to keep
+# 'operator' is chr string specifiying binary operator (e.g., >, <=) if 'subset' is one date value
+# 'rem_empty' is logical indicating if rows w/ no data are removed, default F
 subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL, 
-  operator = NULL){
-    
+  operator = NULL, rem_empty = F){
+  
   ##
   # swmpr data and attributes
   dat <- swmpr_in$station_data
   station <- attr(swmpr_in, 'station')
   timezone <- attr(swmpr_in, 'timezone')
+  parameters <- attr(swmpr_in, 'parameters')
+  qaqc_cols <- attr(swmpr_in, 'qaqc_cols')
   
   ##
   # subset
@@ -650,6 +652,46 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
   out <- subset(dat, date_sel, select)
   out <- data.frame(out, row.names = 1:nrow(out))
   
+  # remove rows/columns w/ no data 
+  if(rem_empty){
+    
+    ##
+    # remove empty rows
+    
+    # get vector of rows that are empty
+    col_sel <- grepl(paste(parameters, collapse = '|'), names(out))
+    check_empty <- t(apply(as.matrix(out[, col_sel, drop = F]), 1, is.na))
+    if(nrow(check_empty) == 1) check_empty <- matrix(check_empty)
+    check_empty <- rowSums(check_empty) == ncol(check_empty)
+    
+    # remove empty rows
+    out <- out[!check_empty, , drop = F]
+    
+    if(nrow(out) == 0) stop('All data removed, select different parameters')
+    
+    out <- data.frame(out, row.names = 1:nrow(out))
+    
+    ##
+    # remove empty columns
+    
+    # get vector of empty columns
+    check_empty <- colSums(apply(out, 2, is.na)) == nrow(out)
+
+    # make sure qaqc columns match parameter columns if present
+    if(qaqc_cols){
+      
+      rem_vals <- check_empty[names(check_empty) %in% parameters]
+      check_empty[names(check_empty) %in% paste0('f_', parameters)] <- rem_vals
+      
+      }
+    
+    # subset output
+    out <- out[, !check_empty, drop = F]
+    
+    if(ncol(out) == 1) stop('All data removed, select different parameters')
+    
+    }
+  
   # create swmpr class
   out <- swmpr(out, station)
   
@@ -664,13 +706,13 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
 # 'timestep' numeric value of time step to use in minutes
 # 'differ' is buffer for merging time stamps to standardized time series
 setstep <- function(x, ...) UseMethod('setstep')
-setstep.swmpr <- function(swmpr_in, timestep = 30, differ= 5){ 
+setstep.swmpr <- function(swmpr_in, timestep = 30, differ= timestep/2){ 
 
   library(data.table)
   library(plyr)  
   
   # sanity check
-  if(timestep/2 <= differ) 
+  if(timestep/2 < differ) 
     stop('Value for differ must be less than one half of timestep')
   
   # swmpr data and attributes
@@ -705,7 +747,8 @@ setstep.swmpr <- function(swmpr_in, timestep = 30, differ= 5){
   mrg[time_diff, !names(mrg) %in% c('datetimestamp', 'time_dum')] <- NA
   
   # output, back to swmpr object from data.table
-  out <- data.frame(mrg) # need to remove time_dum after testing
+  out <- data.frame(mrg)
+  out <- out[, !names(out) %in% 'time_dum']
   out <- swmpr(out, attrs$station)
   
   return(out)

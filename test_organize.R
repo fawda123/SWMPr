@@ -60,6 +60,12 @@ subset(dat, subset = c('2012-07-01 6:00', '2012-08-01 18:15'),
 subset(dat, subset = c('2013-12-4 13:00'),
   select = c('totpar'), operator = '>')
 
+# subset records that contain data
+dat <- import_local('zip_ex', 'apacpnut')
+dat <- setstep(dat, timestep = 60)
+dat <- qaqc(dat)
+dat <- subset(dat, rem_empty = T)
+
 ##
 # test setstep.swmpr
 
@@ -67,11 +73,11 @@ dir('zip_ex')
 
 swmp1 <- import_local('zip_ex', 'apacpnut')
 swmp2 <- import_local('zip_ex', 'apacpwq')
-swmp3 <- import_local('zip_ex', 'apacpmet')
+swmp3 <- import_local('zip_ex', 'apaebmet')
 
-test <- setstep(swmp1)
-test <- setstep(swmp2)
-test <- setstep(swmp3)
+test1 <- setstep(swmp1, timestep = 60, differ = 30)
+test2 <- setstep(swmp2)
+test3 <- setstep(swmp3)
 
 ##
 # test comb.swmpr
@@ -82,6 +88,6 @@ swmp1 <- import_local('zip_ex', 'apacpnut')
 swmp2 <- import_local('zip_ex', 'apacpwq')
 swmp3 <- import_local('zip_ex', 'apaebmet')
 
-test <- comb(swmp1, swmp2, method = 'union')
-test <- comb(swmp1, swmp2, method = 'intersect')
-test <- comb(swmp1, swmp2, swmp3, timestep = 120, method = 'apaebmet')
+test1 <- comb(swmp1, swmp2, method = 'union')
+test2 <- comb(swmp1, swmp2, method = 'intersect')
+test3 <- comb(swmp1, swmp2, swmp3, timestep = 120, method = 'apacpnut')

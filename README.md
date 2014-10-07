@@ -34,7 +34,7 @@ site_codes()
 site_codes_ind('apa')
 ```
 
-Due to rate limitations on the server, the retrieval functions in this package return a limited number of records.  The functions are more amenable to analyses with short time periods, although these functions could be used iteratively (i.e., with `for` or `while` loops) to obtain longer time series.  Data retrieval functions to access the CDMO include `all_params`, `all_params_dtrng`, and `single_param`.  These are functions that call the available methods on the CDMO SOAP interface.  `all_params` returns the most recent 100 records of all parameters at a station, `all_params_dtrng` returns all records within a date range for all parameters or a single parameter, and `single_param` is identical to `all_params` except that a single parameter is requested.    
+Due to rate limitations on the server, the retrieval functions in this package return a limited number of records.  The functions are more useful for evaluating short time periods, although these functions could be used iteratively (i.e., with `for` or `while` loops) to obtain longer time series.  Data retrieval functions to access the CDMO include `all_params`, `all_params_dtrng`, and `single_param`.  These are functions that call the available methods on the CDMO SOAP interface.  `all_params` returns the most recent 100 records of all parameters at a station, `all_params_dtrng` returns all records within a date range for all parameters or a single parameter, and `single_param` is identical to `all_params` except that a single parameter is requested.    
 
 
 ```r
@@ -179,7 +179,7 @@ qaqc(dat, qaqc_keep = NULL)
 qaqc(dat, qaqc_keep = c(0, -1))
 ```
 
-A subset method added to the existing `subset` function is available for swmpr objects.  This function is used to subset the data by date and/or a selected parameter.  The date can be a single value or as two dates to select records within the range. The former case requires a binary operator input as a character string passed to the argument, such as `>` or `<`.  The subset argument for the date(s) must also be a character string of the format YYYY-mm-dd HH:MM for each element (i.e., %Y-%m%-%d %H:%M in POSIX standards).
+A subset method added to the existing `subset` function is available for swmpr objects.  This function is used to subset the data by date and/or a selected parameter.  The date can be a single value or as two dates to select records within the range. The former case requires a binary operator input as a character string passed to the argument, such as `>` or `<`.  The subset argument for the date(s) must also be a character string of the format YYYY-mm-dd HH:MM for each element (i.e., %Y-%m%-%d %H:%M in POSIX standards).  Finally, the function can be used to remove rows and columns that do not contain data. 
 
 
 ```r
@@ -195,11 +195,45 @@ subset(dat, subset = c('2012-07-01 6:00', '2012-08-01 18:15'))
 # subset records within a date range, select two parameters
 subset(dat, subset = c('2012-07-01 6:00', '2012-08-01 18:15'),
   select = c('atemp', 'totsorad'))
+
+# remove rows/columns that do not contain data
+subset(dat, rem_empty = T)
 ```
 
-The `setstep` function formats a swmpr object to a continuous time series at a given time step.  This function is not necessary for most stations but can be useful for combining data, see below.
+The `setstep` function formats a swmpr object to a continuous time series at a given time step.  This function is not necessary for most stations but can be useful for combining data or converting an existing time series to a set interval.  The first argument, `timestep` specifies the desired time step in minutes starting from the nearest hour of the first observation.  The second argument, `differ`, specifies the allowable tolerance in minutes for matching existing observations to user-defined time steps in cases where the two are dissimilar.  Values for `differ` that are greater than one half the value of `timestep` are not allowed to prevent duplication of existing data.  Likewise, the default value for `differ` is one half the time step.  Rows that do not match any existing data within the limits of the `differ` argument are not discarded.  Output from the `setstep` function can be used with `subset` and `rem_empty = T` to create a time series at a set interval with empty rows removed.
 
-The `comb` function
+
+```r
+# convert time series to two hour invervals
+# tolerance of +/- 30 minutes for matching existing data
+setstep(dat, timestep = 120, differ = 30)
+
+# convert a nutrient time series to a continuous time series
+# then remove empty rows
+dat_nut <- import_local('zip_ex', 'apacpnut')
+dat_nut <- setstep(dat_nut, timestep = 60)
+subset(dat_nut, rem_empty = T)
+```
+
+The `comb` function is used to combine multiple swmpr objects into a single object with a continuous time series at a given step.  The `timestep` function is used internally such that `timestep` and `differ` are accepted arguments for `comb`.  The function requires one or more swmpr objects as input as separate, undefined arguments.  The remaining arguments must be called explicitly since an arbitrary number of objects can be used as input.  In general, the function combines data by creating a master time series that is used to iteratively merge all swmpr objects.  The time series for merging depends on the value passed to the `method` argument.  Passing `union` to `method` will create a time series that is continuous starting from the earliest date and the latest date for all input objects.  Passing `intersect` to `method` will create a time series that is continuous from the set of dates that are shared between all input objects.  Finally, a seven or eight character station name passed to `method` will merge all input objects based on a continuous time series for the given station.  The specified station must be present in the input data.  Currently, combining data types from different stations is not possible, excluding weather data which are typically at a single, dedicated station.  
+
+
+```r
+# get nuts, wq, and met data as separate objects for the same station
+# note that most sites usually have one weather station
+swmp1 <- import_local('zip_ex', 'apacpnut')
+swmp2 <- import_local('zip_ex', 'apacpwq')
+swmp3 <- import_local('zip_ex', 'apaebmet')
+
+# combine nuts and wq data by union
+comb(swmp1, swmp2, method = 'union')
+
+# combine nuts and wq data by intersect
+comb(swmp1, swmp3, method = 'intersect')
+
+# combine nuts, wq, and met data by nuts time series, two hour time step
+comb(swmp1, swmp2, swmp3, timestep = 120, method = 'apacpnut')
+```
 
 ##Functions
 
@@ -241,7 +275,7 @@ Not yet available.
 
 `site_codes_ind` Metadata for all stations at a single site, wrapper  to `NERRFilterStationCodesXMLNew` function on web services.
 
-`param_names` Vector of column names for a given parameter type (nutrients, weather, or water quality).  Includes QAQC columns with 'F_' prefix. Used internally in retrieval functions.
+`param_names` Returns column names as a list for the parameter type(s) (nutrients, weather, or water quality).  Includes QAQC columns with 'F_' prefix. Used internally in other functions.
 
 ##Files
 
@@ -263,8 +297,6 @@ Not yet available.
 
 Actual 'package' repository after all functions are complete.
 
-Organize functions...  test setstep, com, remove time_dum variable from setstep after testing
-
-Analysis functions... EDA, metab, trend analysis, tidal decomp, etc.
+Analysis functions... EDA, metab, aggregate, trend analysis, tidal decomp, etc.
 
 DOI/release info when done (see <a href="http://computationalproteomic.blogspot.com/2014/08/making-your-code-citable.html">here</a>)
