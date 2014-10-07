@@ -138,7 +138,7 @@ subset(dat, rem_empty = T)
 
 ```
 
-The `setstep` function formats a swmpr object to a continuous time series at a given time step.  This function is not necessary for most stations but can be useful for combining data or converting an existing time series to a set interval.  The first argument, `timestep` specifies the desired time step in minutes starting from the nearest hour of the first observation.  The second argument, `differ`, specifies the allowable tolerance in minutes for matching existing observations to user-defined time steps in cases where the two are dissimilar.  Values for `differ` that are greater than one half the value of `timestep` are not allowed to prevent duplication of existing data.  Likewise, the default value for `differ` is one half the time step.  Rows that do not match any existing data within the limits of the `differ` argument are not discarded.  Output from the `setstep` function can be used with `subset` and `rem_empty = T` to create a time series at a set interval with empty rows removed.
+The `setstep` function formats a swmpr object to a continuous time series at a given time step.  This function is not necessary for most stations but can be useful for combining data or converting an existing time series to a set interval.  The first argument, `timestep` specifies the desired time step in minutes starting from the nearest hour of the first observation.  The second argument, `differ`, specifies the allowable tolerance in minutes for matching existing observations to user-defined time steps in cases where the two are dissimilar.  Values for `differ` that are greater than one half the value of `timestep` are not allowed to prevent duplication of existing data.  Likewise, the default value for `differ` is one half the time step.  Rows that do not match any existing data within the limits of the `differ` argument are not discarded.  Output from the `setstep` function can be used with `subset` and to create a time series at a set interval with empty data removed.
 
 ```{r eval = F}
 # convert time series to two hour invervals
@@ -146,10 +146,10 @@ The `setstep` function formats a swmpr object to a continuous time series at a g
 setstep(dat, timestep = 120, differ = 30)
 
 # convert a nutrient time series to a continuous time series
-# then remove empty rows
+# then remove empty rows and columns
 dat_nut <- import_local('zip_ex', 'apacpnut')
 dat_nut <- setstep(dat_nut, timestep = 60)
-subset(dat_nut, rem_empty = T)
+subset(dat_nut, rem_rows = T, rem_cols = T)
 ```
 
 The `comb` function is used to combine multiple swmpr objects into a single object with a continuous time series at a given step.  The `timestep` function is used internally such that `timestep` and `differ` are accepted arguments for `comb`.  The function requires one or more swmpr objects as input as separate, undefined arguments.  The remaining arguments must be called explicitly since an arbitrary number of objects can be used as input.  In general, the function combines data by creating a master time series that is used to iteratively merge all swmpr objects.  The time series for merging depends on the value passed to the `method` argument.  Passing `union` to `method` will create a time series that is continuous starting from the earliest date and the latest date for all input objects.  Passing `intersect` to `method` will create a time series that is continuous from the set of dates that are shared between all input objects.  Finally, a seven or eight character station name passed to `method` will merge all input objects based on a continuous time series for the given station.  The specified station must be present in the input data.  Currently, combining data types from different stations is not possible, excluding weather data which are typically at a single, dedicated station.  
@@ -198,7 +198,7 @@ Three main categories of functions are available: retrieve, organize, and analyz
 
 <b>analyze</b> 
 
-Not yet available.
+`aggregate.swmpr` Aggregate swmpr objects for different time periods - year, month,  week, day, or hour.  Aggregation function is user-supplied but defaults to mean. 
 
 <b>miscellaneous</b>
 
@@ -234,6 +234,10 @@ Not yet available.
 
 Actual 'package' repository after all functions are complete.
 
-Analysis functions... EDA, metab, aggregate, trend analysis, tidal decomp, etc.
+Analysis functions... aggregate - test, how to deal with output datetimestamp
+
+Other analysis funcitons... EDA, metab, approx, trend analysis, tidal decomp, etc.
+
+Should analysis functions return swmpr object?
 
 DOI/release info when done (see <a href="http://computationalproteomic.blogspot.com/2014/08/making-your-code-citable.html">here</a>)

@@ -597,9 +597,10 @@ qaqc.swmpr <- function(swmpr_in,
 # 'subset' is chr string of form 'YYYY-mm-dd HH:MM', or using POSIX terms '%Y-%m-%d %H:%M'
 # 'select' is chr string of parameters to keep
 # 'operator' is chr string specifiying binary operator (e.g., >, <=) if 'subset' is one date value
-# 'rem_empty' is logical indicating if rows w/ no data are removed, default F
+# 'rem_rows' is logical indicating if rows w/ no data are removed, default F
+# 'rem_cols' is logical indicating if cols w/ no data are removed, default = F
 subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL, 
-  operator = NULL, rem_empty = F){
+  operator = NULL, rem_rows = F, rem_cols = F){
   
   ##
   # swmpr data and attributes
@@ -652,11 +653,9 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
   out <- subset(dat, date_sel, select)
   out <- data.frame(out, row.names = 1:nrow(out))
   
-  # remove rows/columns w/ no data 
-  if(rem_empty){
-    
-    ##
-    # remove empty rows
+  ##
+  # remove empty rows
+  if(rem_rows){
     
     # get vector of rows that are empty
     col_sel <- grepl(paste(parameters, collapse = '|'), names(out))
@@ -671,9 +670,12 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
     
     out <- data.frame(out, row.names = 1:nrow(out))
     
-    ##
-    # remove empty columns
-    
+    }
+  
+  ##
+  # remove empty columns
+  if(rem_cols){
+
     # get vector of empty columns
     check_empty <- colSums(apply(out, 2, is.na)) == nrow(out)
 
@@ -845,3 +847,64 @@ comb.swmpr <- function(..., timestep = 30, differ= 5, method = 'union'){
 ########################
 # evaluate functions
 ########################
+
+######
+# aggregate data by specified time period and method
+# 'swmpr_in' is input swmpr object returned from any of the above functions
+# 'period' is time period for aggregation - arguments are text string or corresponding posix value
+#   * 'year' or '%Y'
+#   * 'month' or '%m'
+#   * 'week' or '%W'
+#   * 'day' or '%d'
+#   * 'hour' or '%H'
+# 'FUN' is aggregation functin, default mean
+# 'params' are names of parameters to aggregate
+# 'na.action' is function for treating missing data, default is na.pass
+aggregate.swmpr <- function(swmpr_in, period, FUN= mean, params = NULL, 
+  na.action = na.pass){
+
+  # data
+  to_agg <- swmpr_in$station_data
+
+  # attributes
+  timezone <- attr(swmpr_in, 'timezone')
+  parameters <- attr(swmpr_in, 'parameters')
+  
+  # sanity checks
+  if(any(!params %in% parameters))
+    stop('Aggregation parameters must be present in data')
+  if(attr(swmpr_in, 'qaqc_cols'))
+    warning('QAQC columns present, removed in output')
+  
+  # lookup table for agg period
+  agg_lookup <- data.frame(
+    input = c('year', 'month', 'week', 'day', 'hour'), 
+    input_pos = c('%Y', '%m', '%W', '%d', '%H'),
+    output = c('%Y', '%Y-%m', '%Y-%m-%W', '%Y-%m-%d', '%Y-%m-%d %H'), 
+    stringsAsFactors = F
+    )
+
+  # get aggregation format from table
+  agg_in <- with(agg_lookup, output[input == period])
+  if(grepl('%', period))
+    agg_in <- with(agg_lookup, output[input_pos == period])
+  
+  # create agg values from datetimestamp
+  to_agg$datetimestamp <- strftime(to_agg$datetimestamp, agg_in, tz = timezone)
+
+  # subset by parameters
+  if(!is.null(params)){ 
+    to_agg <- to_agg[, names(to_agg) %in% c('datetimestamp', params)]
+  } else {
+    to_agg <- to_agg[, names(to_agg) %in% c('datetimestamp', parameters)]
+  }
+
+  # aggregate
+  form_in <- formula(. ~ datetimestamp)
+  out <- aggregate(form_in, to_agg, FUN = FUN, na.action = na.action,
+    simplify = F)
+
+  # return output
+  return(out)
+  
+  }
