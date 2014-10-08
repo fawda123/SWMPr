@@ -25,24 +25,28 @@ swmpr <- function(stat_in, meta_in){
   # parameters attribute
   parameters <- grep('datetimestamp|^f_', names(stat_in), invert = T, value = T)
   
-  # get stations attribute
-  dat_types <- param_names()
-  dat_types <- unlist(lapply(dat_types, function(x) any(x %in% parameters)))
-  dat_types <- names(param_names())[dat_types]
-  meta_in <- grep(paste(dat_types, collapse = '|'), meta_in, value = T)
+  # get stations, param_types attribtues
+  param_types <- param_names()
+  param_types <- unlist(lapply(param_types, function(x) any(x %in% parameters)))
+  param_types <- names(param_names())[param_types]
+  station <- grep(paste0(param_types, collapse = '|'), meta_in, value = T)
   
+  # timezone using time_vec function
+  timezone <- time_vec(station_code = station, tz_only = T)
+
   # create class, with multiple attributes
   structure(
     list(station_data = stat_in), 
     class = 'swmpr', 
-    station = meta_in,
+    station = station,
+    parameters = parameters, 
     qaqc_cols = qaqc_cols,
     date_rng = range(stat_in$datetimestamp),
-    timezone = attr(stat_in$datetimestamp, 'tzone'), 
-    parameters = parameters
+    timezone = timezone, 
+    stamp_class = class(stat_in$datetimestamp)
     )
   
-  }
+}
 
 ######
 # generic parsing function for objects returned from SOAP server
@@ -75,7 +79,7 @@ parser <- function(soap_in, parent_in = 'data'){
   # return output
   return(out)
   
-  }
+}
 
 ######
 # convert datetimestamp string to POSIXct, using correct tz (no daylight saving)
@@ -84,7 +88,7 @@ parser <- function(soap_in, parent_in = 'data'){
 # 'station_code' is character string for station (three or more characters)
 # 'tz_only' is logical that returns only the timezone
 # otherwise output is POSIX vector
-time_vec <- function(chr_in, station_code, tz_only = F){
+time_vec <- function(chr_in = NULL, station_code, tz_only = F){
   
   # lookup table for time zones based on gmt offset - no DST!
   gmt_tab <- data.frame(
@@ -117,7 +121,7 @@ time_vec <- function(chr_in, station_code, tz_only = F){
   # return output
   return(out)
   
-  }
+}
 
 ######
 # data frame of station metadata
@@ -146,7 +150,7 @@ site_codes <- function(){
   # return output
   return(out)
   
-  }
+}
 
 ######
 # get metadata for single site
@@ -176,7 +180,7 @@ site_codes_ind <- function(nerr_site_id){
   # return output
   return(out)
   
-  }
+}
 
 ######
 # returns parameter columns names for each parameter type - nut, wq, met
@@ -207,7 +211,7 @@ param_names <- function(param_type = c('nut', 'wq', 'met')){
   
   return(out)
   
-  }
+}
 
 ########################
 # retrieval functions
@@ -274,7 +278,7 @@ all_params <- function(station_code, Max = 100){
   # return output
   return(out)
   
-  }
+}
 
 ######
 # get records from date range, max of 1000 records
@@ -341,7 +345,7 @@ all_params_dtrng <- function(station_code, dtrng, param = NULL){
   # return output
   return(out)
   
-  }
+}
 
 ######
 # get records for a single parameter, max 100 records
@@ -417,7 +421,7 @@ single_param <- function(station_code, Max = 100, param){
   # return output
   return(out)
   
-  }
+}
 
 ######
 # import local data from CDMO
@@ -493,7 +497,7 @@ import_local <- function(path, station_code, trace = T){
   # return data frame
   return(out)
     
-  }
+}
 
 ########################
 # organize functions
@@ -508,7 +512,7 @@ import_local <- function(path, station_code, trace = T){
 qaqc <- function(x, ...) UseMethod('qaqc')
 qaqc.swmpr <- function(swmpr_in, 
   qaqc_keep = 0,
-  trace = T){
+  trace = F){
   
   ##
   # sanity checks
@@ -590,7 +594,7 @@ qaqc.swmpr <- function(swmpr_in,
   if(trace) cat('\n\nQAQC processed...')
   return(out)
 
-  }
+}
 
 ######
 # subset a swmpr data object by a date range or parameter
@@ -609,6 +613,7 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
   timezone <- attr(swmpr_in, 'timezone')
   parameters <- attr(swmpr_in, 'parameters')
   qaqc_cols <- attr(swmpr_in, 'qaqc_cols')
+  stamp_class <- attr(swmpr_in, 'stamp_class')
   
   ##
   # subset
@@ -618,6 +623,10 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
   if(!is.null(subset)){
 
     subset <- as.POSIXct(subset, format = '%Y-%m-%d %H:%M', tz = timezone)
+    
+    # convert subset to date if input datetimestamp is date
+    if('Date' %in% stamp_class)
+      subset <- as.Date(subset, tz = timezone)
     
     # exit function of subset input is incorrect format
     if(any(is.na(subset))) 
@@ -700,7 +709,7 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
   # return output
   return(out)
   
-  }
+}
 
 ######
 # create a continous time vector at set time step for a swmpr object
@@ -713,13 +722,15 @@ setstep.swmpr <- function(swmpr_in, timestep = 30, differ= timestep/2){
   library(data.table)
   library(plyr)  
   
-  # sanity check
-  if(timestep/2 < differ) 
-    stop('Value for differ must be less than one half of timestep')
-  
   # swmpr data and attributes
   dat <- swmpr_in$station_data
   attrs <- attributes(swmpr_in)
+  
+  # sanity check
+  if(timestep/2 < differ) 
+    stop('Value for differ must be less than one half of timestep')
+  if('Date' %in% attrs$stamp_class) 
+    stop('Cannot use setstep with date class')
   
   # round to nearest timestep
   dts_std <- as.POSIXct(
@@ -755,7 +766,7 @@ setstep.swmpr <- function(swmpr_in, timestep = 30, differ= timestep/2){
   
   return(out)
 
-  } 
+} 
 
 ######
 # combine data types for a station by common time series
@@ -787,13 +798,13 @@ comb.swmpr <- function(..., timestep = 30, differ= 5, method = 'union'){
     stop('Input data are from multiple timezones')
   
   # stop of method is invalid
-  stations <- unlist(llply(attrs, function(x) x$station) )
+  stations <- unlist(llply(attrs, function(x) x$station))
   
   if(!method %in% c('intersect', 'union', stations))
     stop('Method must be intersect, union, or station name')
 
   # stop if more than one data type
-  types <- substring(stations, 6,)
+  types <- unlist(llply(attrs, function(x) x$param_types))
   
   if(any(duplicated(types))) 
     stop('Unable to combine duplicated data types')
@@ -842,56 +853,75 @@ comb.swmpr <- function(..., timestep = 30, differ= 5, method = 'union'){
   
   return(out)
   
-  }
+}
 
 ########################
 # evaluate functions
 ########################
 
 ######
-# aggregate data by specified time period and method
+# aggregate swmpr data by specified time period and method
 # 'swmpr_in' is input swmpr object returned from any of the above functions
-# 'period' is time period for aggregation - arguments are text string or corresponding posix value
-#   * 'year' or '%Y'
-#   * 'month' or '%m'
-#   * 'week' or '%W'
-#   * 'day' or '%d'
-#   * 'hour' or '%H'
-# 'FUN' is aggregation functin, default mean
-# 'params' are names of parameters to aggregate
-# 'na.action' is function for treating missing data, default is na.pass
-aggregate.swmpr <- function(swmpr_in, period, FUN= mean, params = NULL, 
+# 'by' is chr string of time period for aggregation 
+#   * 'years'
+#   * 'quarters'
+#   * 'months' 
+#   * 'weeks'
+#   * 'days'
+#   * 'hours' 
+# 'FUN' is aggregation function, default mean
+# 'params' are names of parameters to aggregate, default all
+# 'na.action' is function for treating missing data, default na.pass
+aggregate.swmpr <- function(swmpr_in, by, FUN = mean, params = NULL, 
   na.action = na.pass){
 
+  library(data.table)
+  
   # data
   to_agg <- swmpr_in$station_data
 
   # attributes
   timezone <- attr(swmpr_in, 'timezone')
   parameters <- attr(swmpr_in, 'parameters')
+  station  <- attr(swmpr_in, 'station')
   
   # sanity checks
   if(any(!params %in% parameters))
     stop('Aggregation parameters must be present in data')
   if(attr(swmpr_in, 'qaqc_cols'))
     warning('QAQC columns present, removed in output')
-  
-  # lookup table for agg period
-  agg_lookup <- data.frame(
-    input = c('year', 'month', 'week', 'day', 'hour'), 
-    input_pos = c('%Y', '%m', '%W', '%d', '%H'),
-    output = c('%Y', '%Y-%m', '%Y-%m-%W', '%Y-%m-%d', '%Y-%m-%d %H'), 
-    stringsAsFactors = F
-    )
-
-  # get aggregation format from table
-  agg_in <- with(agg_lookup, output[input == period])
-  if(grepl('%', period))
-    agg_in <- with(agg_lookup, output[input_pos == period])
-  
+  if(!by %in% c('years', 'quarters', 'months', 'weeks', 'days', 'hours'))
+    stop('Unknown value for by, see help documentation')
+    
   # create agg values from datetimestamp
-  to_agg$datetimestamp <- strftime(to_agg$datetimestamp, agg_in, tz = timezone)
+  # as posix if hours, as date if other
+  if(by == 'hours'){
+    
+    to_agg$datetimestamp <- as.POSIXct(
+      strftime(to_agg$datetimestamp, '%Y-%m-%d %H', 
+        tz = timezone), format = '%Y-%m-%d %H',
+      tz = timezone)
 
+  } else {
+    
+    if(by == 'days'){
+      
+      to_agg$datetimestamp <- as.Date(to_agg$datetimestamp,
+        tz = timezone)
+      
+    } else {
+      
+      to_agg$datetimestamp <- round(
+        as.IDate(to_agg$datetimestamp, tz = timezone),
+        digits = by
+      )
+      
+      to_agg$datetimestamp <- as.Date(to_agg$datetimestamp, tz = timezone)
+      
+    }
+   
+  }
+  
   # subset by parameters
   if(!is.null(params)){ 
     to_agg <- to_agg[, names(to_agg) %in% c('datetimestamp', params)]
@@ -904,7 +934,18 @@ aggregate.swmpr <- function(swmpr_in, period, FUN= mean, params = NULL,
   out <- aggregate(form_in, to_agg, FUN = FUN, na.action = na.action,
     simplify = F)
 
+  # format output as swmpr object
+  out <- swmpr(out, station)
+  
   # return output
   return(out)
   
-  }
+}
+
+######
+# filter swmpr data
+# 'swmpr_in' is input swmpr object returned from any of the above functions
+filter.swmpr <- function(swmpr_in, filter, sides, ...){
+  
+  
+}

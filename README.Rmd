@@ -19,7 +19,7 @@ National Estuarine Research Reserve System (NERRS). 2012. System-wide Monitoring
 
 To cite this package:
 
-Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Beta version. https://github.com/fawda123/SWMPr
+Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 0.2.0. https://github.com/fawda123/SWMPr
 
 ##Accessing the repository
 
@@ -79,7 +79,7 @@ head(dat$station_data)
 
 ##swmpr object class
 
-All data retrieval functions return a swmpr object that includes relevant data and several attributes describing the dataset.  The data include a datetimestamp column in the appropriate timezone for a station.  Note that the datetimestamp is standard time for each timezone and does not include daylight savings. Additional columns include parameters for a given data type (weather, nutrients, or wtaer quality) and correspondingg QAQC columns if returned from the initial data request.  The attributes for a swmpr object include `names` of the dataset, `class` (swmpr) `station name` (7 or 8 characters), `qaqc_cols` (logical), `date_rng` (POSIXct vector), `timezone` (text string in country/city format), and `parameters` (character vector).  Attributes of a swmpr object can be viewed as follows:
+All data retrieval functions return a swmpr object that includes relevant data and several attributes describing the dataset.  The data include a datetimestamp column in the appropriate timezone for a station.  Note that the datetimestamp is standard time for each timezone and does not include daylight savings. Additional columns include parameters for a given data type (weather, nutrients, or wtaer quality) and correspondingg QAQC columns if returned from the initial data request.  The attributes for a swmpr object include `names` of the dataset, `class` (swmpr) `station name` (7 or 8 characters), `qaqc_cols` (logical), `date_rng` (POSIX vector), `timezone` (text string in country/city format), `stamp_class` (class of datetimestamp vector, POSIX or Date), and `parameters` (character vector).  Attributes of a swmpr object can be viewed as follows:
 
 ```{r eval = T}
 # verify that dat is swmpr class
@@ -172,6 +172,31 @@ comb(swmp1, swmp2, swmp3, timestep = 120, method = 'apacpnut')
 
 ```
 
+The analysis functions range from general purpose tools for time series analysis to more specific functions for working with continuous monitoring data in estuaries.  The latter category includes a limited number of functions that were developed by myself or others.  The general purpose tools are swmpr methods that were developed for existing generic functions in the R base installation or relevant packages.  These functions include swmpr methods for `aggregate`, `filter`, and `approx` to deal with missing or noisy data and more general functions for exploratory data analaysis.  The analysis functions may or may not return a swmpr object depending on whether further processing with swmpr methods is possible from the output.    
+
+The `aggregate` function aggregates parameter data for a swmpr object by set periods of observation.  This function is most useful for aggregating noisy data to evaluate trends on longer time scales, or to simply reduce the size of a dataset.  Data can be aggregated by years, quarters, months, weeks, days, or hours for a user-defined function, which defaults to the mean.  A swmpr object is returned for the aggregated data, although the datetimestamp vector will be converted to a date object if the aggregation period is a day or longer.  Days are assigned to the date vector if the aggregation period is a week or longer based on the `round` method for IDate objects (<a href="http://cran.r-project.org/web/packages/data.table/index.html">data.table</a> package).  This approach was used to facilitate plotting using predefined methods for Date and POSIX objects.  Additionally, the method of treating NA values for the aggregation function should be noted since this may greatly affect the quantity of data that are returned (see the example below).  Finally, the default argument for `na.action` is set to `na.pass` for swmpr objects to preserve the time series of the input data.
+
+```{r eval = F}
+# combine, qaqc, remove empty columns
+dat <- comb(swmp1, swmp2, method = 'union')
+dat <- qaqc(dat)
+swmpr_in <- subset(dat, rem_cols = T)
+
+# get mean DO by quarters
+aggregate(swmpr_in, 'quarters', params = c('do_mgl'))
+
+# get mean DO by quarters, remove NA when calculating means
+fun_in <- function(x) mean(x, na.rm = T)
+aggregate(swmpr_in, FUN = fun_in, 'quarters', 
+  params = c('do_mgl'))
+
+# get variance of DO by years, remove NA when calculating variance
+# omit NA data in output
+fun_in <- function(x)  var(x, na.rm = T)
+aggregate(swmpr_in, FUN = fun_in, 'years', na.action = na.exclude)
+
+```
+
 ##Functions
 
 Three main categories of functions are available: retrieve, organize, and analyze.  Other miscellaneous functions are helpers/wrappers to these  functions or those used to obtain metadata.
@@ -198,7 +223,7 @@ Three main categories of functions are available: retrieve, organize, and analyz
 
 <b>analyze</b> 
 
-`aggregate.swmpr` Aggregate swmpr objects for different time periods - year, month,  week, day, or hour.  Aggregation function is user-supplied but defaults to mean. 
+`aggregate.swmpr` Aggregate swmpr objects for different time periods - years, quarters, months,  weeks, days, or hours.  Aggregation function is user-supplied but defaults to mean. 
 
 <b>miscellaneous</b>
 
@@ -222,7 +247,9 @@ Three main categories of functions are available: retrieve, organize, and analyz
 
 `test_retrieval.r` Evaluation of retrieval functions.
 
-`test_organize.r` Evaluation of organize funcitons.
+`test_organize.r` Evaluation of organize functions.
+
+`test_analyze.r` Evaluation of analyze functions.
 
 `.Rprofile` File that is run after opening the project in R, contains all package dependencies.
 

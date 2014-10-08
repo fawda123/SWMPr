@@ -2,7 +2,7 @@
 # simple test of data analysis functions
 
 ##
-# test aggregate
+# test aggregate.swmpr
 
 # local data
 # get nuts, wq, and met data as separate objects for the same station
@@ -16,5 +16,10 @@ dat <- qaqc(dat)
 swmpr_in <- subset(dat, rem_cols = T)
 
 # test function
-test <- aggregate(swmpr_in, 'week')
-test <- aggregate(swmpr_in, '%d', params = c('do_mgl', 'atemp'))
+fun_in <- function(x) var(x, na.rm = T)
+test <- aggregate(swmpr_in, FUN = fun_in, 'hours')
+test <- aggregate(swmpr_in, FUN = fun_in, 'quarters', 
+  params = c('do_mgl'))
+
+##
+# test filter.swmpr

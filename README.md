@@ -15,7 +15,7 @@ National Estuarine Research Reserve System (NERRS). 2012. System-wide Monitoring
 
 To cite this package:
 
-Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Beta version. https://github.com/fawda123/SWMPr
+Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 0.2.0. https://github.com/fawda123/SWMPr
 
 ##Accessing the repository
 
@@ -99,7 +99,7 @@ head(dat$station_data)
 
 ##swmpr object class
 
-All data retrieval functions return a swmpr object that includes relevant data and several attributes describing the dataset.  The data include a datetimestamp column in the appropriate timezone for a station.  Note that the datetimestamp is standard time for each timezone and does not include daylight savings. Additional columns include parameters for a given data type (weather, nutrients, or wtaer quality) and correspondingg QAQC columns if returned from the initial data request.  The attributes for a swmpr object include `names` of the dataset, `class` (swmpr) `station name` (7 or 8 characters), `qaqc_cols` (logical), `date_rng` (POSIXct vector), `timezone` (text string in country/city format), and `parameters` (character vector).  Attributes of a swmpr object can be viewed as follows:
+All data retrieval functions return a swmpr object that includes relevant data and several attributes describing the dataset.  The data include a datetimestamp column in the appropriate timezone for a station.  Note that the datetimestamp is standard time for each timezone and does not include daylight savings. Additional columns include parameters for a given data type (weather, nutrients, or wtaer quality) and correspondingg QAQC columns if returned from the initial data request.  The attributes for a swmpr object include `names` of the dataset, `class` (swmpr) `station name` (7 or 8 characters), `qaqc_cols` (logical), `date_rng` (POSIX vector), `timezone` (text string in country/city format), `stamp_class` (class of datetimestamp vector, POSIX or Date), and `parameters` (character vector).  Attributes of a swmpr object can be viewed as follows:
 
 
 ```r
@@ -126,6 +126,10 @@ attributes(dat)
 ## $station
 ## [1] "apaebmet"
 ## 
+## $parameters
+##  [1] "atemp"    "rh"       "bp"       "wspd"     "maxwspd"  "wdir"    
+##  [7] "sdwdir"   "totpar"   "totprcp"  "cumprcp"  "totsorad"
+## 
 ## $qaqc_cols
 ## [1] TRUE
 ## 
@@ -135,9 +139,8 @@ attributes(dat)
 ## $timezone
 ## [1] "America/Jamaica"
 ## 
-## $parameters
-##  [1] "atemp"    "rh"       "bp"       "wspd"     "maxwspd"  "wdir"    
-##  [7] "sdwdir"   "totpar"   "totprcp"  "cumprcp"  "totsorad"
+## $stamp_class
+## [1] "POSIXct" "POSIXt"
 ```
 
 ```r
@@ -158,7 +161,8 @@ methods(class = 'swmpr')
 ```
 
 ```
-## [1] comb.swmpr    qaqc.swmpr    setstep.swmpr subset.swmpr
+## [1] aggregate.swmpr comb.swmpr      qaqc.swmpr      setstep.swmpr  
+## [5] subset.swmpr
 ```
 
 ##swmpr methods
@@ -200,7 +204,7 @@ subset(dat, subset = c('2012-07-01 6:00', '2012-08-01 18:15'),
 subset(dat, rem_empty = T)
 ```
 
-The `setstep` function formats a swmpr object to a continuous time series at a given time step.  This function is not necessary for most stations but can be useful for combining data or converting an existing time series to a set interval.  The first argument, `timestep` specifies the desired time step in minutes starting from the nearest hour of the first observation.  The second argument, `differ`, specifies the allowable tolerance in minutes for matching existing observations to user-defined time steps in cases where the two are dissimilar.  Values for `differ` that are greater than one half the value of `timestep` are not allowed to prevent duplication of existing data.  Likewise, the default value for `differ` is one half the time step.  Rows that do not match any existing data within the limits of the `differ` argument are not discarded.  Output from the `setstep` function can be used with `subset` and `rem_empty = T` to create a time series at a set interval with empty rows removed.
+The `setstep` function formats a swmpr object to a continuous time series at a given time step.  This function is not necessary for most stations but can be useful for combining data or converting an existing time series to a set interval.  The first argument, `timestep` specifies the desired time step in minutes starting from the nearest hour of the first observation.  The second argument, `differ`, specifies the allowable tolerance in minutes for matching existing observations to user-defined time steps in cases where the two are dissimilar.  Values for `differ` that are greater than one half the value of `timestep` are not allowed to prevent duplication of existing data.  Likewise, the default value for `differ` is one half the time step.  Rows that do not match any existing data within the limits of the `differ` argument are not discarded.  Output from the `setstep` function can be used with `subset` and to create a time series at a set interval with empty data removed.
 
 
 ```r
@@ -209,10 +213,10 @@ The `setstep` function formats a swmpr object to a continuous time series at a g
 setstep(dat, timestep = 120, differ = 30)
 
 # convert a nutrient time series to a continuous time series
-# then remove empty rows
+# then remove empty rows and columns
 dat_nut <- import_local('zip_ex', 'apacpnut')
 dat_nut <- setstep(dat_nut, timestep = 60)
-subset(dat_nut, rem_empty = T)
+subset(dat_nut, rem_rows = T, rem_cols = T)
 ```
 
 The `comb` function is used to combine multiple swmpr objects into a single object with a continuous time series at a given step.  The `timestep` function is used internally such that `timestep` and `differ` are accepted arguments for `comb`.  The function requires one or more swmpr objects as input as separate, undefined arguments.  The remaining arguments must be called explicitly since an arbitrary number of objects can be used as input.  In general, the function combines data by creating a master time series that is used to iteratively merge all swmpr objects.  The time series for merging depends on the value passed to the `method` argument.  Passing `union` to `method` will create a time series that is continuous starting from the earliest date and the latest date for all input objects.  Passing `intersect` to `method` will create a time series that is continuous from the set of dates that are shared between all input objects.  Finally, a seven or eight character station name passed to `method` will merge all input objects based on a continuous time series for the given station.  The specified station must be present in the input data.  Currently, combining data types from different stations is not possible, excluding weather data which are typically at a single, dedicated station.  
@@ -233,6 +237,31 @@ comb(swmp1, swmp3, method = 'intersect')
 
 # combine nuts, wq, and met data by nuts time series, two hour time step
 comb(swmp1, swmp2, swmp3, timestep = 120, method = 'apacpnut')
+```
+
+The analysis functions range from general purpose tools for time series analysis to more specific functions for working with continuous monitoring data in estuaries.  The latter category includes a limited number of functions that were developed by myself or others.  The general purpose tools are swmpr methods that were developed for existing generic functions in the R base installation or relevant packages.  These functions include swmpr methods for `aggregate`, `filter`, and `approx` to deal with missing or noisy data and more general functions for exploratory data analaysis.  The analysis functions may or may not return a swmpr object depending on whether further processing with swmpr methods is possible from the output.    
+
+The `aggregate` function aggregates parameter data for a swmpr object by set periods of observation.  This function is most useful for aggregating noisy data to evaluate trends on longer time scales, or to simply reduce the size of a dataset.  Data can be aggregated by years, quarters, months, weeks, days, or hours for a user-defined function, which defaults to the mean.  A swmpr object is returned for the aggregated data, although the datetimestamp vector will be converted to a date object if the aggregation period is a day or longer.  Days are assigned to the date vector if the aggregation period is a week or longer based on the `round` method for IDate objects (<a href="http://cran.r-project.org/web/packages/data.table/index.html">data.table</a> package).  This approach was used to facilitate plotting using predefined methods for Date and POSIX objects.  Additionally, the method of treating NA values for the aggregation function should be noted since this may greatly affect the quantity of data that are returned (see the example below).  Finally, the default argument for `na.action` is set to `na.pass` for swmpr objects to preserve the time series of the input data.
+
+
+```r
+# combine, qaqc, remove empty columns
+dat <- comb(swmp1, swmp2, method = 'union')
+dat <- qaqc(dat)
+swmpr_in <- subset(dat, rem_cols = T)
+
+# get mean DO by quarters
+aggregate(swmpr_in, 'quarters', params = c('do_mgl'))
+
+# get mean DO by quarters, remove NA when calculating means
+fun_in <- function(x) mean(x, na.rm = T)
+aggregate(swmpr_in, FUN = fun_in, 'quarters', 
+  params = c('do_mgl'))
+
+# get variance of DO by years, remove NA when calculating variance
+# omit NA data in output
+fun_in <- function(x)  var(x, na.rm = T)
+aggregate(swmpr_in, FUN = fun_in, 'years', na.action = na.exclude)
 ```
 
 ##Functions
@@ -261,7 +290,7 @@ Three main categories of functions are available: retrieve, organize, and analyz
 
 <b>analyze</b> 
 
-Not yet available.
+`aggregate.swmpr` Aggregate swmpr objects for different time periods - years, quarters, months,  weeks, days, or hours.  Aggregation function is user-supplied but defaults to mean. 
 
 <b>miscellaneous</b>
 
@@ -285,7 +314,9 @@ Not yet available.
 
 `test_retrieval.r` Evaluation of retrieval functions.
 
-`test_organize.r` Evaluation of organize funcitons.
+`test_organize.r` Evaluation of organize functions.
+
+`test_analyze.r` Evaluation of analyze functions.
 
 `.Rprofile` File that is run after opening the project in R, contains all package dependencies.
 
@@ -297,6 +328,10 @@ Not yet available.
 
 Actual 'package' repository after all functions are complete.
 
-Analysis functions... EDA, metab, aggregate, trend analysis, tidal decomp, etc.
+Analysis functions... aggregate - test, how to deal with output datetimestamp
+
+Other analysis funcitons... EDA, metab, approx, trend analysis, tidal decomp, etc.
+
+Should analysis functions return swmpr object?
 
 DOI/release info when done (see <a href="http://computationalproteomic.blogspot.com/2014/08/making-your-code-citable.html">here</a>)
