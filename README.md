@@ -17,9 +17,17 @@ To cite this package:
 
 Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 0.2.0. https://github.com/fawda123/SWMPr
 
-##Accessing the repository
+##Installing the package
 
-This repository is currently under development and will later be uploaded as a package repository.  This will allow use of the `install.packages` function for direct install within R.  For now, Github users can fork and pull the materials to create a local clone of the current form.  Otherwise, the `funcs.r` file contains all currently developed (and partially tested) functions.  Package dependencies can be found in `.RProfile`.  Files ending in `retrieval.r` were used to test the functions.   
+This package is currently under development and has not been extensively tested.  The development version of this package can be installed from Github:
+
+
+```r
+install.packages('devtools')
+require(devtools)
+install_github('fawda123/SWMPr')
+require(SWMPr)
+```
 
 ##Data retrieval
 
@@ -287,7 +295,7 @@ plot(do_mgl ~ datetimestamp, data = dat$station_data, type = 'l')
 lines(test$datetimestamp, test$do_mgl, col = 'red', lwd = 2)
 ```
 
-![plot of chunk unnamed-chunk-14](./README_files/figure-html/unnamed-chunk-14.png) 
+![plot of chunk unnamed-chunk-15](./README_files/figure-html/unnamed-chunk-15.png) 
 
 ##Functions
 
