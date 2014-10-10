@@ -1,8 +1,8 @@
-# SWMPr repository for estuarine monitoring data
+# SWMPr package for estuarine monitoring data
 
 This repository contains materials to retrieve, organize, and analyze estuarine monitoring data from the System Wide Monitoring Program (<a href="http://nerrs.noaa.gov/RCDefault.aspx?ID=18">SWMP</a>) implemented by the National Estuarine Research Reserve System (<a href="http://nerrs.noaa.gov/">NERRS</a>).  SWMP was initiated in 1995 to provide continuous monitoring data at over 300 stations in 28 estuaries across the United States.  SWMP data are maintained online by the Centralized Data Management Office (CDMO). This R package will provide several functions to retrieve, organize, and analyze SWMP data from the CDMO.  Information on the CDMO web services are available <a href="http://cdmo.baruch.sc.edu/webservices.cfm">here</a>.  Your computer's IP address must be registered with the CDMO website to use most of the data retrieval functions, see contact info in the link.  All other functions can be used after obtaining data from the CDMO, as described below. 
 
-The package has many dependencies, the most important being the SSOAP package for retrieving data from the CDMO using a SOAP client interface. The SSOAP package is not required to use the package but is necessary for using most of the data retrieval functions, see below.  The SSOAP package is currently removed from CRAN but accessible at <a href="http://www.omegahat.org/SSOAP/">http://www.omegahat.org/SSOAP/</a>.  It can be installed as follows:
+The package has many dependencies, the most important being the SSOAP package for retrieving data from the CDMO using a SOAP client interface. The SSOAP package is not required to use SWMPr but is necessary for using most of the data retrieval functions.  The SSOAP package is currently removed from CRAN but accessible at <a href="http://www.omegahat.org/SSOAP/">http://www.omegahat.org/SSOAP/</a>.  Functions that require SSOAP will install the package automatically or it can be installed as follows:
 
 
 ```r
@@ -52,22 +52,25 @@ all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013')),
 single_param('tjrtlmet', 'wspd')
 ```
 
-For larger requests, it is easier to obtain data outside of R using the CDMO query system.  Data can be retrieved from the CDMO several ways.  Data from single stations can be requested from the <a href="http://cdmo.baruch.sc.edu/get/export.cfm">data export system</a>, whereas data from multiple stations can be requested from the <a href="http://cdmo.baruch.sc.edu/aqs/">advanced query system</a>.  The `import_local` function is used to import local data into R that were downloaded from the CDMO with the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> feature within the advanced query system.  The downloaded data will include multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.).  It is recommended that all stations at a site and the complete date ranges are requested to avoid repeated requests to CDMO.  The `import_local` function can be used once the downloaded files are extracted to a local path. 
+For larger requests, it's easier to obtain data outside of R using the CDMO query system.  Data can be retrieved from the CDMO several ways.  Data from single stations can be requested from the <a href="http://cdmo.baruch.sc.edu/get/export.cfm">data export system</a>, whereas data from multiple stations can be requested from the <a href="http://cdmo.baruch.sc.edu/aqs/">advanced query system</a>.  The `import_local` function is used to import local data into R that were downloaded from the CDMO with the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> feature within the advanced query system.  The downloaded data will include multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.).  It is recommended that all stations at a site and the complete date ranges are requested to avoid repeated requests to CDMO.  The `import_local` function can be used once the downloaded files are extracted to a local path. 
 
 
 ```r
 # import data for apaebmet from 'zip_ex' path
-import_local('zip_ex', 'apaebmet') 
+import_local('data/zip_ex', 'apaebmet') 
 ```
 
 In all cases, the imported data need to assigned to an object in the workspace for use with other functions:
 
 
+```
+## Loading SWMPr
+```
 
 
 ```r
 # import data and assign to dat
-dat <- import_local('zip_ex', 'apaebmet', trace = F) 
+dat <- import_local('data/zip_ex', 'apaebmet', trace = F) 
 
 # view first six rows
 head(dat$station_data)
@@ -162,7 +165,7 @@ methods(class = 'swmpr')
 
 ```
 ## [1] aggregate.swmpr comb.swmpr      qaqc.swmpr      setstep.swmpr  
-## [5] subset.swmpr
+## [5] smoother.swmpr  subset.swmpr
 ```
 
 ##swmpr methods
@@ -214,7 +217,7 @@ setstep(dat, timestep = 120, differ = 30)
 
 # convert a nutrient time series to a continuous time series
 # then remove empty rows and columns
-dat_nut <- import_local('zip_ex', 'apacpnut')
+dat_nut <- import_local('data/zip_ex', 'apacpnut')
 dat_nut <- setstep(dat_nut, timestep = 60)
 subset(dat_nut, rem_rows = T, rem_cols = T)
 ```
@@ -225,9 +228,9 @@ The `comb` function is used to combine multiple swmpr objects into a single obje
 ```r
 # get nuts, wq, and met data as separate objects for the same station
 # note that most sites usually have one weather station
-swmp1 <- import_local('zip_ex', 'apacpnut')
-swmp2 <- import_local('zip_ex', 'apacpwq')
-swmp3 <- import_local('zip_ex', 'apaebmet')
+swmp1 <- import_local('data/zip_ex', 'apacpnut')
+swmp2 <- import_local('data/zip_ex', 'apacpwq')
+swmp3 <- import_local('data/zip_ex', 'apaebmet')
 
 # combine nuts and wq data by union
 comb(swmp1, swmp2, method = 'union')
@@ -264,6 +267,28 @@ fun_in <- function(x)  var(x, na.rm = T)
 aggregate(swmpr_in, FUN = fun_in, 'years', na.action = na.exclude)
 ```
 
+Time series can be smoothed to better characterize a signal independent of noise.  Although there are many approaches to smoothing, a moving window average is intuitive and commonly used.  The `smoother` function can be used to smooth parameters in a swmpr object using a specified window size.  This method is a simple wrapper to `filter`.  The `window` argument specifies the number of observations included in the moving average.  The `sides` argument specifies how the average is calculated for each observation (see the documentation for `filter`).  A value of 1 will filter observations within the window that are previous to the current observation, whereas a value of 2 will filter all observations withing the window centered at zero lag from the current observation. As before, the `params` argument specifies which parameters to smooth.
+
+
+```r
+# import data
+swmp1 <- import_local('data/zip_ex', 'apadbwq')
+
+# qaqc and subset imported data
+dat <- qaqc(swmp1)
+dat <- subset(dat, subset = c('2012-07-09 00:00', '2012-07-24 00:00'))
+
+#filter
+test <- smoother(dat, window = 50, params = 'do_mgl')
+test <- test$station_data
+
+# plot to see the difference
+plot(do_mgl ~ datetimestamp, data = dat$station_data, type = 'l')
+lines(test$datetimestamp, test$do_mgl, col = 'red', lwd = 2)
+```
+
+![plot of chunk unnamed-chunk-14](./README_files/figure-html/unnamed-chunk-14.png) 
+
 ##Functions
 
 Three main categories of functions are available: retrieve, organize, and analyze.  Other miscellaneous functions are helpers/wrappers to these  functions or those used to obtain metadata.
@@ -292,6 +317,8 @@ Three main categories of functions are available: retrieve, organize, and analyz
 
 `aggregate.swmpr` Aggregate swmpr objects for different time periods - years, quarters, months,  weeks, days, or hours.  Aggregation function is user-supplied but defaults to mean. 
 
+`smoother.swmpr` Smooth swmpr objects with a moving window average.  Window size and sides can be specified, passed to `filter`.
+
 <b>miscellaneous</b>
 
 `swmpr` Creates object of swmpr class, used internally in retrieval functions.
@@ -306,32 +333,10 @@ Three main categories of functions are available: retrieve, organize, and analyz
 
 `param_names` Returns column names as a list for the parameter type(s) (nutrients, weather, or water quality).  Includes QAQC columns with 'F_' prefix. Used internally in other functions.
 
-##Files
-
-`funcs.r` Required functions, all categories.
-
-`dev.r` Temporary file used for development.
-
-`test_retrieval.r` Evaluation of retrieval functions.
-
-`test_organize.r` Evaluation of organize functions.
-
-`test_analyze.r` Evaluation of analyze functions.
-
-`.Rprofile` File that is run after opening the project in R, contains all package dependencies.
-
-`.gitignore` List of files that Git ignores during commits/build, not on repository.
-
-`SWMPr.Rproj` RStudio project file used to create the package.
-
 ##Forthcoming
 
-Actual 'package' repository after all functions are complete.
+Analysis functions... approx, EDA, metab, trend analysis, etc.
 
-Analysis functions... aggregate - test, how to deal with output datetimestamp
-
-Other analysis funcitons... EDA, metab, approx, trend analysis, tidal decomp, etc.
-
-Should analysis functions return swmpr object?
+Better documentation...
 
 DOI/release info when done (see <a href="http://computationalproteomic.blogspot.com/2014/08/making-your-code-citable.html">here</a>)

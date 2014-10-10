@@ -1,8 +1,4 @@
 
-filter.swmpr <- function(swmpr_in, filter, sides, ...){
-  
-  
-}
 
 
 # get nuts, wq, and met data as separate objects for the same station
@@ -13,6 +9,7 @@ swmp2 <- import_local('zip_ex', 'apadbwq')
 # combine nuts and wq data by union
 dat <- comb(swmp1, swmp2, method = 'intersect')
 dat <- qaqc(dat)
+swmpr_in <- dat
 
 filts <- rep(1, 5)
 sids <- 2
@@ -20,19 +17,27 @@ params <- NULL
 ##
 # start function here
 
-# attributes
-parameters <- attr(swmpr_in, 'parameters')
-station <- attr(swmpr_in, 'station')
+filter.swmpr <- function(swmpr_in, filter, sides, params,...){
+  
+  # attributes
+  parameters <- attr(swmpr_in, 'parameters')
+  station <- attr(swmpr_in, 'station')
+  
+  # prep for filter
+  if(!is.null(params)) parameters <- params
+  to_filt <- swmpr_in$station_data[, c('datetimestamp', parameters), drop = F]
+  datetimestamp <- to_filt$datetimestamp
+  to_filt$datetimestamp <- NULL
+  
+  # filter
+  out <- filter(to_filt, filter, sides, ...)
+  out <- data.frame(datetimestamp, out)
+  names(out) <- c('datetimestamp', parameters)
+  
+  # format output as swmpr object
+  out <- swmpr(out, station)
+  
+  # return output
+  return(out)
 
-if(!is.null(params)) parameters <- params
-
-to_filt <- dat$station_data[1:100, c('datetimestamp', parameters)]
-datetimestamp <- to_filt$datetimestamp
-to_filt$datetimestamp <- NULL
-
-out <- filter(to_filt, filter = rep(1, 5), sides = sids)
-out <- data.frame(datetimestamp, out)
-names(out) <- names('datetimetamp', parameters)
-
-out <- swmpr(out, station)
-
+}

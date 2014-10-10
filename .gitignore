@@ -1,4 +1,3 @@
 .Rproj.user
 .Rhistory
-*.RData
-README.html
+.Rprofile

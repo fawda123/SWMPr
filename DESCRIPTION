@@ -1,0 +1,24 @@
+Package: SWMPr
+Type: Package
+Title: SWMPr package for estuarine monitoring data
+Version: 0.2.0
+Date: 2014-10-07
+Author: Marcus Beck
+Maintainer: Marcus Beck <mbafs2012@gmail.com>
+Description: This packages provides functions for retrieving, organizing, and
+    analyzing monitoring data from the National Estuarine Research Reserve
+    System.  Data that can be used with this package are collected as part of
+    the System Wide Monitoring Program and maintained online at the Centralized
+    Data Management Office.
+BugReports: https://github.com/fawda123/SWMPr/issues
+License: CC0
+Imports:
+    XML,
+    plyr,
+    data.table
+Suggests:
+    SSOAP
+Depends:
+    R (>= 3.1.0)
+Authors@R: person("Marcus", "Beck", email = "mbafs2012@gmail.com",
+    role = c("aut", "cre"))

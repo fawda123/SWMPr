@@ -9,13 +9,14 @@ cat('SWMPr...\n')
 #   type =  "source")
 library(SSOAP)
 library(XML)
-library(RCurl)
 library(ggplot2)
 library(plyr)
 library(data.table)
+library(devtools)
 
-# functions to use
-source('funcs.r')
+# load SWMPr package
+load_all()
+library(SWMPr)
 
 # ggplot theme set
 theme_set(theme_bw())
