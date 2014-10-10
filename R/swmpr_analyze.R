@@ -7,6 +7,9 @@
 #' @param params names of parameters to aggregate, default all
 #' @param na.action function for treating missing data, default \code{na.pass}
 #' 
+#' @import data.table
+#' 
+#' @export
 #' @return Returns an aggregated swmpr object. QAQC columns are removed if included with input object.
 aggregate.swmpr <- function(swmpr_in, by, FUN = mean, params = NULL, 
   na.action = na.pass, ...){
@@ -84,6 +87,7 @@ aggregate.swmpr <- function(swmpr_in, by, FUN = mean, params = NULL,
 #' @param sides numeric vector defining method of averaging, passed to \code{filter}
 #' @param params is chr string of swmpr parameters to smooth, default all
 #' 
+#' @export
 #' @return Returns a filtered swmpr object. QAQC columns are removed if included with input object.
 smoother <- function(x, ...) UseMethod('smoother') 
 smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){

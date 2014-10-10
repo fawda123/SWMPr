@@ -4,6 +4,8 @@
 #' @param  stat_in \code{data.frame} of swmp data
 #' @param  meta_in chr string for station code (7 or 8 characters), can be multiple stations if data are combined
 #' 
+#' @export
+#' 
 #' @return Returns a swmpr object to be used with S3 methods
 swmpr <- function(stat_in, meta_in){
     
@@ -46,6 +48,10 @@ swmpr <- function(stat_in, meta_in){
 #' @param  soap_in soap object returned from CDMO server
 #' @param  parent_in chr string of parent nodes to parse
 #' 
+#' @import XML plyr
+#' 
+#' @export
+#' 
 #' @return Returns a \code{data.frame} of parsed XML nodes
 parser <- function(soap_in, parent_in = 'data'){
   
@@ -79,6 +85,7 @@ parser <- function(soap_in, parent_in = 'data'){
 #' @param  station_code is chr string for station (three or more characters)
 #' @param  tz_only logical that returns only the timezone, default \code{F}
 #' 
+#' @export
 #' @return  Returns a POSIX vector if \code{tz_only} is true, otherwise the timezone for a station is returned as a chr string
 time_vec <- function(chr_in = NULL, station_code, tz_only = F){
   
@@ -118,6 +125,7 @@ time_vec <- function(chr_in = NULL, station_code, tz_only = F){
 ######
 #' Obtain a \code{data.frame} of metadata for all SWMP stations, CDMO equivalent of \code{exportStationCodesXML}
 #' 
+#' @export
 #' @return A \code{data.frame} of SWMP metadata
 site_codes <- function(){
   
@@ -154,6 +162,7 @@ site_codes <- function(){
 #' 
 #' @param  nerr_site_id chr string of site, three letters
 #' 
+#' @export
 #' @return An abbreviated \code{data.frame} of the SWMP metadata for the requested site
 site_codes_ind <- function(nerr_site_id){
   
@@ -191,6 +200,7 @@ site_codes_ind <- function(nerr_site_id){
 #' 
 #' @param  param_type chr string specifying \code{'nut'}, \code{'wq'}, or \code{'met'}.  Input can be one to three types.
 #' 
+#' @export
 #' @return Returns a named list of parameters for the \code{param_type}.  The parameter names are lower-case strings of SWMP parameters and corresponding qaqc names (\code{'f_'} prefix)
 param_names <- function(param_type = c('nut', 'wq', 'met')){
   

@@ -5,6 +5,7 @@
 #' @param qaqc_keep numeric vector of qaqc flags to keep, default \code{0}
 #' @param trace logical for progress output on console, default \code{F}
 #' 
+#' @export
 #' @return Returns a swmpr object with \code{NA} values for records that did not match \code{qaqc_keep}.  QAQC columns are also removed.
 qaqc <- function(x, ...) UseMethod('qaqc')
 qaqc.swmpr <- function(swmpr_in, 
@@ -102,6 +103,7 @@ qaqc.swmpr <- function(swmpr_in,
 #' @param rem_rows logical indicating if rows with no data are removed, default \code{F}
 #' @param rem_cols is logical indicating if cols with no data are removed, default \code{F}
 #' 
+#' @export
 #' @return Returns a swmpr object as a subset of the input.  The original object will be returned if no arguments are specified.
 subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL, 
   operator = NULL, rem_rows = F, rem_cols = F){
@@ -218,6 +220,9 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
 #' @param timestep numeric value of time step to use in minutes
 #' @param differ numeric value defining buffer for merging time stamps to standardized time series
 #' 
+#' @import data.table plyr
+#' 
+#' @export
 #' @return Returns a swmpr object for the specified time step
 setstep <- function(x, ...) UseMethod('setstep')
 setstep.swmpr <- function(swmpr_in, timestep = 30, differ= timestep/2){ 
@@ -275,6 +280,9 @@ setstep.swmpr <- function(swmpr_in, timestep = 30, differ= timestep/2){
 #' @param differ numeric value defining buffer for merging time stamps to standardized time series, passed to \code{setstep}
 #' @param method chr string indicating method of combining (\code{'union'} for all dates as continuous time series, \code{'intersect'} for areas of overlap, or \code{'station'} for a given station)
 #' 
+#' @import data.table plyr
+#' 
+#' @export
 #' @return Returns a combined swmpr object
 comb <- function(...) UseMethod('comb')
 comb.swmpr <- function(..., timestep = 30, differ= 5, method = 'union'){
