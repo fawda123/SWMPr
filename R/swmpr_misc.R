@@ -86,6 +86,7 @@ parser <- function(soap_in, parent_in = 'data'){
 #' @param  tz_only logical that returns only the timezone, default \code{F}
 #' 
 #' @export
+#' 
 #' @return  Returns a POSIX vector if \code{tz_only} is true, otherwise the timezone for a station is returned as a chr string
 time_vec <- function(chr_in = NULL, station_code, tz_only = F){
   
@@ -126,6 +127,7 @@ time_vec <- function(chr_in = NULL, station_code, tz_only = F){
 #' Obtain a \code{data.frame} of metadata for all SWMP stations, CDMO equivalent of \code{exportStationCodesXML}
 #' 
 #' @export
+#' 
 #' @return A \code{data.frame} of SWMP metadata
 site_codes <- function(){
   
@@ -163,6 +165,7 @@ site_codes <- function(){
 #' @param  nerr_site_id chr string of site, three letters
 #' 
 #' @export
+#' 
 #' @return An abbreviated \code{data.frame} of the SWMP metadata for the requested site
 site_codes_ind <- function(nerr_site_id){
   
@@ -201,6 +204,7 @@ site_codes_ind <- function(nerr_site_id){
 #' @param  param_type chr string specifying \code{'nut'}, \code{'wq'}, or \code{'met'}.  Input can be one to three types.
 #' 
 #' @export
+#' 
 #' @return Returns a named list of parameters for the \code{param_type}.  The parameter names are lower-case strings of SWMP parameters and corresponding qaqc names (\code{'f_'} prefix)
 param_names <- function(param_type = c('nut', 'wq', 'met')){
   

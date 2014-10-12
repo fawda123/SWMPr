@@ -6,6 +6,7 @@
 #' @param trace logical for progress output on console, default \code{F}
 #' 
 #' @export
+#' 
 #' @return Returns a swmpr object with \code{NA} values for records that did not match \code{qaqc_keep}.  QAQC columns are also removed.
 qaqc <- function(x, ...) UseMethod('qaqc')
 qaqc.swmpr <- function(swmpr_in, 
@@ -104,6 +105,7 @@ qaqc.swmpr <- function(swmpr_in,
 #' @param rem_cols is logical indicating if cols with no data are removed, default \code{F}
 #' 
 #' @export
+#' 
 #' @return Returns a swmpr object as a subset of the input.  The original object will be returned if no arguments are specified.
 subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL, 
   operator = NULL, rem_rows = F, rem_cols = F){
@@ -128,7 +130,7 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
     
     # convert subset to date if input datetimestamp is date
     if('Date' %in% stamp_class)
-      subset <- as.Date(subset, tz = timezone)
+      subset <- base::as.Date(subset, tz = timezone)
     
     # exit function of subset input is incorrect format
     if(any(is.na(subset))) 
@@ -223,6 +225,7 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
 #' @import data.table plyr
 #' 
 #' @export
+#' 
 #' @return Returns a swmpr object for the specified time step
 setstep <- function(x, ...) UseMethod('setstep')
 setstep.swmpr <- function(swmpr_in, timestep = 30, differ= timestep/2){ 
@@ -283,6 +286,7 @@ setstep.swmpr <- function(swmpr_in, timestep = 30, differ= timestep/2){
 #' @import data.table plyr
 #' 
 #' @export
+#' 
 #' @return Returns a combined swmpr object
 comb <- function(...) UseMethod('comb')
 comb.swmpr <- function(..., timestep = 30, differ= 5, method = 'union'){

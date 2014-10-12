@@ -7,12 +7,14 @@ cat('SWMPr...\n')
 # packages to use
 # install.packages("SSOAP", repos="http://www.omegahat.org/R", dependencies = T, 
 #   type =  "source")
-library(SSOAP)
-library(XML)
-library(ggplot2)
-library(plyr)
-library(data.table)
-library(devtools)
+suppressPackageStartupMessages({
+  library(SSOAP, quietly = T)
+  library(XML, quietly = T)
+  library(ggplot2, quietly = T)
+  library(plyr, quietly = T)
+  library(data.table, quietly = T)
+  library(devtools, quietly = T)
+})
 
 # load SWMPr package
 load_all()

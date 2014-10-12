@@ -13,12 +13,13 @@ Description: This packages provides functions for retrieving, organizing, and
 BugReports: https://github.com/fawda123/SWMPr/issues
 License: CC0
 Imports:
-    XML,
+    data.table,
     plyr,
-    data.table
+    XML,
+    zoo
 Suggests:
     SSOAP
 Depends:
-    R (>= 3.1.0)
+    R (>= 3.1.1)
 Authors@R: person("Marcus", "Beck", email = "mbafs2012@gmail.com",
     role = c("aut", "cre"))

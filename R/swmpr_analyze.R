@@ -10,6 +10,7 @@
 #' @import data.table
 #' 
 #' @export
+#' 
 #' @return Returns an aggregated swmpr object. QAQC columns are removed if included with input object.
 aggregate.swmpr <- function(swmpr_in, by, FUN = mean, params = NULL, 
   na.action = na.pass, ...){
@@ -43,7 +44,7 @@ aggregate.swmpr <- function(swmpr_in, by, FUN = mean, params = NULL,
     
     if(by == 'days'){
       
-      to_agg$datetimestamp <- as.Date(to_agg$datetimestamp,
+      to_agg$datetimestamp <- base::as.Date(to_agg$datetimestamp,
         tz = timezone)
       
     } else {
@@ -53,23 +54,20 @@ aggregate.swmpr <- function(swmpr_in, by, FUN = mean, params = NULL,
         digits = by
       )
       
-      to_agg$datetimestamp <- as.Date(to_agg$datetimestamp, tz = timezone)
+      to_agg$datetimestamp <- base::as.Date(to_agg$datetimestamp, tz = timezone)
       
     }
    
   }
   
   # subset by parameters
-  if(!is.null(params)){ 
-    to_agg <- to_agg[, names(to_agg) %in% c('datetimestamp', params)]
-  } else {
-    to_agg <- to_agg[, names(to_agg) %in% c('datetimestamp', parameters)]
-  }
-
+  if(!is.null(params)) parameters <- parameters[parameters %in% params] 
+  to_agg <- to_agg[, c('datetimestamp', parameters)]
+  
   # aggregate
   form_in <- formula(. ~ datetimestamp)
   out <- aggregate(form_in, to_agg, FUN = FUN, na.action = na.action,
-    simplify = F)
+    simplify = T)
 
   # format output as swmpr object
   out <- swmpr(out, station)
@@ -88,6 +86,7 @@ aggregate.swmpr <- function(swmpr_in, by, FUN = mean, params = NULL,
 #' @param params is chr string of swmpr parameters to smooth, default all
 #' 
 #' @export
+#' 
 #' @return Returns a filtered swmpr object. QAQC columns are removed if included with input object.
 smoother <- function(x, ...) UseMethod('smoother') 
 smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
@@ -103,7 +102,7 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
     warning('QAQC columns present, removed in output')
 
   # prep for filter
-  if(!is.null(params)) parameters <- params
+  if(!is.null(params)) parameters <- parameters[parameters %in% params]
   to_filt <- swmpr_in$station_data[, c('datetimestamp', parameters), drop = F]
   datetimestamp <- to_filt$datetimestamp
   to_filt$datetimestamp <- NULL
@@ -120,4 +119,63 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
   # return output
   return(out)
 
+}
+
+######
+#' Linearly interpolate gaps in swmpr data
+#' 
+#' @param swmpr_in input swmpr object
+#' @param params is chr string of swmpr parameters to smooth, default all
+#' @param maxgap numeric vector indicating maximum gap size to interpolate where size is numer of records, must be explicit
+#' @param na.rm logical. If the result of the interpolation includes NAs, should these be removed?
+#' 
+#' @import plyr zoo
+#' 
+#' @export
+#' 
+#' @return Returns a swmpr object. QAQC columns are removed if included with input object.
+na.approx.swmpr <- function(swmpr_in, params = NULL, maxgap, 
+  na.rm = F, ...){
+  
+  # attributes
+  parameters <- attr(swmpr_in, 'parameters')
+  station <- attr(swmpr_in, 'station')
+
+  # sanity checks
+  if(!any(params %in% parameters) & !is.null(params))
+    stop('Params argument must name input columns')
+  if(attr(swmpr_in, 'qaqc_cols'))
+    warning('QAQC columns present, removed in output')
+  
+  # prep for interpolate
+  if(!is.null(params)) parameters <- parameters[parameters %in% params]
+  to_interp <- swmpr_in$station_data[, c('datetimestamp', parameters), 
+    drop = F]
+  datetimestamp <- to_interp$datetimestamp
+  to_interp$datetimestamp <- NULL
+  
+  # interpolate column-wise
+  out <- mlply(matrix(to_interp),
+    .fun = function(in_col){
+      
+      interp <- try(zoo::na.approx(in_col, maxgap = maxgap, 
+        na.rm = F), silent = T)
+      
+      if('try-error' %in% class(interp)) interp  <- in_col
+      
+      return(interp)
+      
+    })
+  
+  # format output as data frame
+  out <- do.call('cbind', out)
+  out <- data.frame(datetimestamp, out)
+  names(out) <- c('datetimestamp', parameters)
+  
+  # format output as swmpr object
+  out <- swmpr(out, station)
+  
+  # return output
+  return(out)
+  
 }

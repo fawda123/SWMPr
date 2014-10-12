@@ -5,6 +5,7 @@
 #' @param  Max numeric value for number of records to obtain from the current date, maximum of 100
 #' 
 #' @export
+#' 
 #' @return  Returns a swmpr object, all available parameters including QAQC columns
 all_params <- function(station_code, Max = 100){
   
@@ -76,6 +77,7 @@ all_params <- function(station_code, Max = 100){
 #' @param  param chr string for a single parameter to return, defaults to all parameters for a station type.
 #' 
 #' @export
+#' 
 #' @return Returns a swmpr object, all parameters for a station type (nutrients, water quality, or meteorological) or a single parameter if specified.  QAQC columns are not provided for single parameters.  Up to 1000 records can be obtained.
 all_params_dtrng <- function(station_code, dtrng, param = NULL){
   
@@ -153,6 +155,7 @@ all_params_dtrng <- function(station_code, dtrng, param = NULL){
 #' @import XML plyr
 #' 
 #' @export
+#' 
 #' @return Returns a swmpr object with one parameter.  QAQC columns are not provided.
 single_param <- function(station_code, Max = 100, param){
   
@@ -234,6 +237,7 @@ single_param <- function(station_code, Max = 100, param){
 #' @param  trace logical indicating if progress is sent to console, default \code{F}
 #' 
 #' @export
+#' 
 #' @return Returns a swmpr object with all parameters and QAQC columns for the station.  The full date range in the raw data are also imported.
 import_local <- function(path, station_code, trace = F){
   

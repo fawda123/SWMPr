@@ -19,7 +19,7 @@ Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve S
 
 ##Installing the package
 
-This package is currently under development and has not been extensively tested.  The development version of this package can be installed from Github:
+This package is currently under development and has not been extensively tested.  The development version can be installed from Github:
 
 
 ```r
@@ -28,6 +28,8 @@ require(devtools)
 install_github('fawda123/SWMPr')
 require(SWMPr)
 ```
+
+Note that the current version of devtools (v1.6.1) was built under R version 3.1.1.  The SWMPr package may not install correctly with older versions of R.
 
 ##Data retrieval
 
@@ -73,6 +75,12 @@ In all cases, the imported data need to assigned to an object in the workspace f
 
 ```
 ## Loading SWMPr
+## 
+## Attaching package: 'zoo'
+## 
+## The following objects are masked from 'package:base':
+## 
+##     as.Date, as.Date.numeric
 ```
 
 
@@ -172,8 +180,8 @@ methods(class = 'swmpr')
 ```
 
 ```
-## [1] aggregate.swmpr comb.swmpr      qaqc.swmpr      setstep.swmpr  
-## [5] smoother.swmpr  subset.swmpr
+## [1] aggregate.swmpr comb.swmpr      na.approx.swmpr qaqc.swmpr     
+## [5] setstep.swmpr   smoother.swmpr  subset.swmpr
 ```
 
 ##swmpr methods
@@ -297,6 +305,37 @@ lines(test$datetimestamp, test$do_mgl, col = 'red', lwd = 2)
 
 ![plot of chunk unnamed-chunk-15](./README_files/figure-html/unnamed-chunk-15.png) 
 
+A common issue with any statistical analysis is the treatment of missing values.  Missing data can be excluded from the analysis, included but treated as true zeroes, or interpolated based on similar values.  In either case, an analyst should have a strong rationale for the chosen method.  A common approach used to handle missing data in time series analysis is linear interpolation.  A simple curve fitting method is used to create a continuous set of records between observations separated by missing data.  A challenge with linear interpolation is an appropriate gap size for fitting missing observations.  The ability of the interpolated data to approximate actual trends is a function of the gap size.  Interpolation between larger gaps are less likely to resemble patterns of an actual parameter, whereas interpolation between smaller gaps are more likely to resemble actual patterns.  An appropriate gap size limit depends on the unique characteristics of specific datasets or parameters.  The `na.approx` function can be used to interpolate gaps in a swmpr object.  A required argument for the function is `maxgap` which defines the maximum gap size  for interpolation.
+
+
+```r
+# get data
+swmp1 <- import_local('data/zip_ex', 'apadbwq')
+
+# qaqc and subset imported data
+dat <- qaqc(swmp1)
+dat <- subset(dat, subset = c('2013-01-22 00:00', '2013-01-26 00:00'))
+
+# interpolate, maxgap of 8 records
+test <- na.approx(dat, params = 'do_mgl', maxgap = 8)
+test <- test$station_data
+
+# interpolate maxgap of 30 records
+test2 <- na.approx(dat, params = 'do_mgl', maxgap = 30)
+test2 <- test2$station_data
+
+# plot for comparison
+dat <- dat$station_data
+par(mfrow = c(3, 1))
+plot(do_mgl ~ datetimestamp, data = dat, type = 'l', main = 'Raw')
+plot(do_mgl ~ datetimestamp, data = test, type = 'l', col = 'red', main = 'Inteprolation - maximum gap of 8 records')
+lines(dat$datetimestamp, dat$do_mgl, type = 'l')
+plot(do_mgl ~ datetimestamp, data = test2, type = 'l', col = 'red', main = 'Inteprolation - maximum gap of 30 records')
+lines(dat$datetimestamp, dat$do_mgl, type = 'l')
+```
+
+![plot of chunk unnamed-chunk-16](./README_files/figure-html/unnamed-chunk-16.png) 
+
 ##Functions
 
 Three main categories of functions are available: retrieve, organize, and analyze.  Other miscellaneous functions are helpers/wrappers to these  functions or those used to obtain metadata.
@@ -327,6 +366,8 @@ Three main categories of functions are available: retrieve, organize, and analyz
 
 `smoother.swmpr` Smooth swmpr objects with a moving window average.  Window size and sides can be specified, passed to `filter`.
 
+`na.approx.swmpr` Linearly interpolate missing data (`NA` values) in a swmpr object. The maximum gap size that is interpolated is defined as a maximum number of records with missing data. 
+
 <b>miscellaneous</b>
 
 `swmpr` Creates object of swmpr class, used internally in retrieval functions.
@@ -346,5 +387,7 @@ Three main categories of functions are available: retrieve, organize, and analyz
 Analysis functions... approx, EDA, metab, trend analysis, etc.
 
 Better documentation...
+
+Sort out issue w/ test csv data... setup gh-pages and put there
 
 DOI/release info when done (see <a href="http://computationalproteomic.blogspot.com/2014/08/making-your-code-citable.html">here</a>)
