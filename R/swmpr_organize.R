@@ -1,14 +1,22 @@
 ######
-#' QAQC filtering for data obtained from retrieval functions, local and remote
+#' QAQC filtering for SWMP data
+#' 
+#' QAQC filtering for SWMP data obtained from retrieval functions, local and remote
 #'
 #' @param swmpr_in input swmpr object
+#' @param ... arguments passed to other methods
+#' 
+#' @export qaqc
+#' 
+#' @return Returns a swmpr object with \code{NA} values for records that did not match \code{qaqc_keep}.  QAQC columns are also removed.
+qaqc <- function(swmpr_in, ...) UseMethod('qaqc')
+
+#' @rdname qaqc
+#' 
 #' @param qaqc_keep numeric vector of qaqc flags to keep, default \code{0}
 #' @param trace logical for progress output on console, default \code{F}
 #' 
-#' @export
-#' 
-#' @return Returns a swmpr object with \code{NA} values for records that did not match \code{qaqc_keep}.  QAQC columns are also removed.
-qaqc <- function(x, ...) UseMethod('qaqc')
+#' @method qaqc swmpr
 qaqc.swmpr <- function(swmpr_in, 
   qaqc_keep = 0,
   trace = F){
@@ -96,15 +104,18 @@ qaqc.swmpr <- function(swmpr_in,
 }
 
 ######
-#' Subset a swmpr object by a date range, parameters, or non-empty values
+#' Subset a swmpr object
 #' 
-#' @param subset is chr string of form 'YYYY-mm-dd HH:MM'
+#' Subset a swmpr object by a date range, parameters, or non-empty values
+#'
+#' @param swmpr_in input swmpr object
+#' @param subset chr string of form 'YYYY-mm-dd HH:MM' to subset a date range.  Input can be one (requires \code{operator} or two values (a range).
 #' @param select chr string of parameters to keep
 #' @param operator chr string specifiying binary operator (e.g., \code{'>'}, \code{'<='}) if subset is one date value
 #' @param rem_rows logical indicating if rows with no data are removed, default \code{F}
 #' @param rem_cols is logical indicating if cols with no data are removed, default \code{F}
 #' 
-#' @export
+#' @method subset swmpr
 #' 
 #' @return Returns a swmpr object as a subset of the input.  The original object will be returned if no arguments are specified.
 subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL, 
@@ -163,7 +174,7 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
   else select <- names(dat)[names(dat) %in% c('datetimestamp', select, paste0('f_', select))]
   
   # subset data
-  out <- subset(dat, date_sel, select)
+  out <- base::subset(dat, date_sel, select)
   out <- data.frame(out, row.names = 1:nrow(out))
   
   ##
@@ -216,18 +227,26 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
 }
 
 ######
+#' Format a swmpr time vctor
+#'
 #' Create a continuous time vector at set time step for a swmpr object
 #' 
 #' @param swmpr_in input swmpr object
+#' @param ... arguments passed to other methods
+#'
+#' @export setstep
+#' 
+#' @return Returns a swmpr object for the specified time step
+setstep <- function(swmpr_in, ...) UseMethod('setstep')
+
+#' @rdname setstep
+#' 
 #' @param timestep numeric value of time step to use in minutes
 #' @param differ numeric value defining buffer for merging time stamps to standardized time series
 #' 
 #' @import data.table plyr
 #' 
-#' @export
-#' 
-#' @return Returns a swmpr object for the specified time step
-setstep <- function(x, ...) UseMethod('setstep')
+#' @method setstep swmpr
 setstep.swmpr <- function(swmpr_in, timestep = 30, differ= timestep/2){ 
   
   # swmpr data and attributes
@@ -277,7 +296,18 @@ setstep.swmpr <- function(swmpr_in, timestep = 30, differ= timestep/2){
 } 
 
 ######
+#' Combine swmpr data
+#' 
 #' Combine swmpr data types for a station by common time series
+#' 
+#' @param ... swmpr object input from one to many
+#' 
+#' @export comb
+#' 
+#' @return Returns a combined swmpr object
+comb <- function(...) UseMethod('comb')
+
+#' @rdname comb
 #' 
 #' @param timestep numeric value of time step to use in minutes, passed to \code{setstep}
 #' @param differ numeric value defining buffer for merging time stamps to standardized time series, passed to \code{setstep}
@@ -285,10 +315,7 @@ setstep.swmpr <- function(swmpr_in, timestep = 30, differ= timestep/2){
 #' 
 #' @import data.table plyr
 #' 
-#' @export
-#' 
-#' @return Returns a combined swmpr object
-comb <- function(...) UseMethod('comb')
+#' @method comb swmpr
 comb.swmpr <- function(..., timestep = 30, differ= 5, method = 'union'){
   
   # swmp objects list and attributes

@@ -1,5 +1,7 @@
 ######
-#' Import station records from the CDMO starting with the most current date, CDMO equivalent of \code{exportAllParamsXMLNew}
+#' Import current station records from the CDMO
+#' 
+#' Import current station records from the CDMO starting with the most current date, CDMO equivalent of \code{exportAllParamsXMLNew}
 #' 
 #' @param  station_code chr string of station, 7 or 8 characters
 #' @param  Max numeric value for number of records to obtain from the current date, maximum of 100

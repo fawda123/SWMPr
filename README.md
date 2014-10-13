@@ -180,8 +180,9 @@ methods(class = 'swmpr')
 ```
 
 ```
-## [1] aggregate.swmpr comb.swmpr      na.approx.swmpr qaqc.swmpr     
-## [5] setstep.swmpr   smoother.swmpr  subset.swmpr
+## [1] aggregate.swmpr comb.swmpr      lines.swmpr     na.approx.swmpr
+## [5] plot.swmpr      qaqc.swmpr      setstep.swmpr   smoother.swmpr 
+## [9] subset.swmpr
 ```
 
 ##swmpr methods
@@ -296,11 +297,10 @@ dat <- subset(dat, subset = c('2012-07-09 00:00', '2012-07-24 00:00'))
 
 #filter
 test <- smoother(dat, window = 50, params = 'do_mgl')
-test <- test$station_data
 
 # plot to see the difference
-plot(do_mgl ~ datetimestamp, data = dat$station_data, type = 'l')
-lines(test$datetimestamp, test$do_mgl, col = 'red', lwd = 2)
+plot(dat, select = 'do_mgl')
+lines(test, select = 'do_mgl', col = 'red', lwd = 2)
 ```
 
 ![plot of chunk unnamed-chunk-15](./README_files/figure-html/unnamed-chunk-15.png) 
@@ -316,22 +316,19 @@ swmp1 <- import_local('data/zip_ex', 'apadbwq')
 dat <- qaqc(swmp1)
 dat <- subset(dat, subset = c('2013-01-22 00:00', '2013-01-26 00:00'))
 
-# interpolate, maxgap of 8 records
-test <- na.approx(dat, params = 'do_mgl', maxgap = 8)
-test <- test$station_data
+# interpolate, maxgap of 10 records
+test <- na.approx(dat, params = 'do_mgl', maxgap = 10)
 
 # interpolate maxgap of 30 records
 test2 <- na.approx(dat, params = 'do_mgl', maxgap = 30)
-test2 <- test2$station_data
 
 # plot for comparison
-dat <- dat$station_data
 par(mfrow = c(3, 1))
-plot(do_mgl ~ datetimestamp, data = dat, type = 'l', main = 'Raw')
-plot(do_mgl ~ datetimestamp, data = test, type = 'l', col = 'red', main = 'Inteprolation - maximum gap of 8 records')
-lines(dat$datetimestamp, dat$do_mgl, type = 'l')
-plot(do_mgl ~ datetimestamp, data = test2, type = 'l', col = 'red', main = 'Inteprolation - maximum gap of 30 records')
-lines(dat$datetimestamp, dat$do_mgl, type = 'l')
+plot(dat, select = 'do_mgl', main = 'Raw')
+plot(test, select = 'do_mgl', col = 'red', main = 'Inteprolation - maximum gap of 10 records')
+lines(dat, select = 'do_mgl')
+plot(test2, select = 'do_mgl', col = 'red', main = 'Inteprolation - maximum gap of 30 records')
+lines(dat, select = 'do_mgl')
 ```
 
 ![plot of chunk unnamed-chunk-16](./README_files/figure-html/unnamed-chunk-16.png) 
@@ -368,6 +365,10 @@ Three main categories of functions are available: retrieve, organize, and analyz
 
 `na.approx.swmpr` Linearly interpolate missing data (`NA` values) in a swmpr object. The maximum gap size that is interpolated is defined as a maximum number of records with missing data. 
 
+`plot.swmpr` Plot a univariate  time series for a swmpr object.  The parameter name must be specified.
+
+`lines.swmpr` Add lines to an existing swmpr plot.
+
 <b>miscellaneous</b>
 
 `swmpr` Creates object of swmpr class, used internally in retrieval functions.
@@ -384,7 +385,7 @@ Three main categories of functions are available: retrieve, organize, and analyz
 
 ##Forthcoming
 
-Analysis functions... approx, EDA, metab, trend analysis, etc.
+Analysis functions... EDA, metab, trend analysis, etc.
 
 Better documentation...
 

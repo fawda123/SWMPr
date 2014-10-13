@@ -9,7 +9,7 @@
 #' 
 #' @import data.table
 #' 
-#' @export
+#' @method aggregate swmpr
 #' 
 #' @return Returns an aggregated swmpr object. QAQC columns are removed if included with input object.
 aggregate.swmpr <- function(swmpr_in, by, FUN = mean, params = NULL, 
@@ -78,17 +78,25 @@ aggregate.swmpr <- function(swmpr_in, by, FUN = mean, params = NULL,
 }
 
 ######
+#' Smooth swmpr data
+#' 
 #' Smooth swmpr data with a moving window average
 #' 
 #' @param swmpr_in input swmpr object
+#' @param ... arguments passed to other methods
+#' 
+#' @export smoother
+#' 
+#' @return Returns a filtered swmpr object. QAQC columns are removed if included with input object.
+smoother <- function(swmpr_in, ...) UseMethod('smoother') 
+
+#' @rdname smoother
+#' 
 #' @param window numeric vector of ones defining size of smoothing window, passed to \code{filter} 
 #' @param sides numeric vector defining method of averaging, passed to \code{filter}
 #' @param params is chr string of swmpr parameters to smooth, default all
 #' 
-#' @export
-#' 
-#' @return Returns a filtered swmpr object. QAQC columns are removed if included with input object.
-smoother <- function(x, ...) UseMethod('smoother') 
+#' @method smoother swmpr
 smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
   
   # attributes
@@ -131,7 +139,8 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
 #' 
 #' @import plyr zoo
 #' 
-#' @export
+#' @export na.approx
+#' @method na.approx swmpr
 #' 
 #' @return Returns a swmpr object. QAQC columns are removed if included with input object.
 na.approx.swmpr <- function(swmpr_in, params = NULL, maxgap, 
@@ -178,4 +187,48 @@ na.approx.swmpr <- function(swmpr_in, params = NULL, maxgap,
   # return output
   return(out)
   
+}
+
+######
+#' Plot swmpr data
+#' 
+#' Plot a time series of parameters in a swmpr object
+#' 
+#' @param swmpr_in input swmpr object
+#' @param subset chr string of form 'YYYY-mm-dd HH:MM' to subset a date range.  Input can be one (requires \code{operator} or two values (a range), passed to \code{\link{subset}}.
+#' @param select chr string of parameters to keep, passed to \code{\link{subset}}.
+#' @param operator chr string specifiying binary operator (e.g., \code{'>'}, \code{'<='}) if subset is one date value, passed to \code{\link{subset}}.
+#' @param type chr string for type of plot, default \code{'l'}.  See \code{\link[graphics]{plot}}.
+#' @param ... other arguments passed to \code{par}, \code{plot.default}, \code{lines}, \code{points}
+#' 
+#' @method plot swmpr
+plot.swmpr <- function(swmpr_in, type = 'l', subset = NULL, select, operator = NULL, ...) {
+  
+  if(length(select) > 1) stop('Only one parameter  can be plotted')
+  
+  to_plo <- subset(swmpr_in, subset, select, operator)
+  parameters <- attr(to_plo, 'parameters')
+
+  to_plo <- swmpr_in$station_data
+
+  form_in <- formula(substitute(i ~ datetimestamp, 
+    list(i = as.name(parameters))))
+  plot(form_in, data = to_plo, type = type, ...)
+   
+}
+
+######
+#' @rdname plot.swmpr
+#' 
+#' @method lines swmpr
+lines.swmpr <- function(swmpr_in, subset = NULL, select, operator = NULL, ...) {
+    
+  to_plo <- subset(swmpr_in, subset, select, operator)
+  parameters <- attr(to_plo, 'parameters')
+
+  to_plo <- swmpr_in$station_data
+  form_in <- formula(substitute(i ~ datetimestamp, 
+    list(i = as.name(parameters))))
+  lines(form_in, data = to_plo, ...)
+     
 }
