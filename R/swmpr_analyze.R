@@ -11,7 +11,8 @@
 #' 
 #' @import data.table
 #' 
-#' @export
+#' @export aggregate.swmpr
+#' 
 #' @method aggregate swmpr
 #' 
 #' @details The \code{aggregate} function summarizes or condenses parameter data for a swmpr object by set periods of observation and a user-supplied function. It is most useful for aggregating noisy data to evaluate trends on longer time scales, or to simply reduce the size of a dataset. Data can be aggregated by \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'weeks'}, \code{'days'}, or \code{'hours'} for the supplied function, which defaults to the \code{\link[base]{mean}}. A swmpr object is returned for the aggregated data, although the datetimestamp vector will be converted to a date object if the aggregation period is a day or longer. Days are assigned to the date vector if the aggregation period is a week or longer based on the round method for \code{\link[data.table]{IDate}} objects. This approach was used to facilitate plotting using predefined methods for Date and POSIX objects.
@@ -120,6 +121,8 @@ smoother <- function(swmpr_in, ...) UseMethod('smoother')
 #' @param sides numeric vector defining method of averaging, passed to \code{filter}
 #' @param params is chr string of swmpr parameters to smooth, default all
 #' 
+#' @export smoother.swmpr
+#' 
 #' @method smoother swmpr
 smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
   
@@ -163,7 +166,8 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
 #' 
 #' @import plyr zoo
 #' 
-#' @export na.approx
+#' @export na.approx.swmpr
+#' 
 #' @method na.approx swmpr
 #' 
 #' @return Returns a swmpr object. QAQC columns are removed if included with input object.
@@ -225,6 +229,8 @@ na.approx.swmpr <- function(swmpr_in, params = NULL, maxgap,
 #' @param type chr string for type of plot, default \code{'l'}.  See \code{\link[graphics]{plot}}.
 #' @param ... other arguments passed to \code{par}, \code{plot.default}, \code{lines}, \code{points}
 #' 
+#' @export plot.swmpr
+#' 
 #' @method plot swmpr
 plot.swmpr <- function(swmpr_in, type = 'l', subset = NULL, select, operator = NULL, ...) {
   
@@ -243,6 +249,8 @@ plot.swmpr <- function(swmpr_in, type = 'l', subset = NULL, select, operator = N
 
 ######
 #' @rdname plot.swmpr
+#' 
+#' @export lines.swmpr
 #' 
 #' @method lines swmpr
 lines.swmpr <- function(swmpr_in, subset = NULL, select, operator = NULL, ...) {
@@ -267,6 +275,8 @@ lines.swmpr <- function(swmpr_in, subset = NULL, select, operator = NULL, ...) {
 #' @param select chr string of parameters to keep, passed to \code{\link{subset}}.
 #' @param operator chr string specifiying binary operator (e.g., \code{'>'}, \code{'<='}) if subset is one date value, passed to \code{\link{subset}}.
 #' @param ... other arguments passed to \code{\link[graphics]{histogram}}
+#' 
+#' @export hist.swmpr
 #' 
 #' @method hist swmpr
 hist.swmpr <- function(swmpr_in, subset = NULL, select, operator = NULL, ...) {
@@ -295,6 +305,8 @@ hist.swmpr <- function(swmpr_in, subset = NULL, select, operator = NULL, ...) {
 #' 
 #' @param swmpr_in input swmpr object
 #' @param ... other arguments passed to \code{summary}
+#' 
+#' @export summary.swmpr
 #' 
 #' @method summary swmpr
 summary.swmpr <- function(swmpr_in, qaqc_summ = F,...) {

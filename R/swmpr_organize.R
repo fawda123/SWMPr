@@ -16,6 +16,8 @@ qaqc <- function(swmpr_in, ...) UseMethod('qaqc')
 #' @param qaqc_keep numeric vector of qaqc flags to keep, default \code{0}
 #' @param trace logical for progress output on console, default \code{F}
 #' 
+#' @export qaqc.swmpr
+#' 
 #' @method qaqc swmpr
 qaqc.swmpr <- function(swmpr_in, 
   qaqc_keep = 0,
@@ -114,6 +116,8 @@ qaqc.swmpr <- function(swmpr_in,
 #' @param operator chr string specifiying binary operator (e.g., \code{'>'}, \code{'<='}) if subset is one date value
 #' @param rem_rows logical indicating if rows with no data are removed, default \code{F}
 #' @param rem_cols is logical indicating if cols with no data are removed, default \code{F}
+#' 
+#' @export subset.swmpr
 #' 
 #' @method subset swmpr
 #' 
@@ -246,6 +250,8 @@ setstep <- function(swmpr_in, ...) UseMethod('setstep')
 #' 
 #' @import data.table plyr
 #' 
+#' @export setstep.swmpr
+#' 
 #' @method setstep swmpr
 setstep.swmpr <- function(swmpr_in, timestep = 30, differ= timestep/2){ 
   
@@ -314,6 +320,8 @@ comb <- function(...) UseMethod('comb')
 #' @param method chr string indicating method of combining (\code{'union'} for all dates as continuous time series, \code{'intersect'} for areas of overlap, or \code{'station'} for a given station)
 #' 
 #' @import data.table plyr
+#' 
+#' @export comb.swmpr
 #' 
 #' @method comb swmpr
 comb.swmpr <- function(..., timestep = 30, differ= 5, method = 'union'){
