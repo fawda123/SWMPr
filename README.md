@@ -29,6 +29,7 @@ install_github('fawda123/SWMPr')
 require(SWMPr)
 ```
 
+
 Note that the current version of devtools (v1.6.1) was built under R version 3.1.1.  The SWMPr package may not install correctly with older versions of R.
 
 ##Data retrieval
@@ -66,27 +67,21 @@ For larger requests, it's easier to obtain data outside of R using the CDMO quer
 
 
 ```r
-# import data for apaebmet from 'zip_ex' path
-import_local('data/zip_ex', 'apaebmet') 
+# import data for apaebmet from local path
+
+# this is the path for csv example files
+path <- system.file('zip_ex', package = 'SWMPr')
+
+# import
+import_local(path, 'apaebmet') 
 ```
 
 In all cases, the imported data need to assigned to an object in the workspace for use with other functions:
 
 
-```
-## Loading SWMPr
-## 
-## Attaching package: 'zoo'
-## 
-## The following objects are masked from 'package:base':
-## 
-##     as.Date, as.Date.numeric
-```
-
-
 ```r
 # import data and assign to dat
-dat <- import_local('data/zip_ex', 'apaebmet', trace = F) 
+dat <- import_local(path, 'apaebmet', trace = F) 
 
 # view first six rows
 head(dat$station_data)
@@ -180,9 +175,9 @@ methods(class = 'swmpr')
 ```
 
 ```
-## [1] aggregate.swmpr comb.swmpr      lines.swmpr     na.approx.swmpr
-## [5] plot.swmpr      qaqc.swmpr      setstep.swmpr   smoother.swmpr 
-## [9] subset.swmpr
+##  [1] aggregate.swmpr comb.swmpr      hist.swmpr      lines.swmpr    
+##  [5] na.approx.swmpr plot.swmpr      qaqc.swmpr      setstep.swmpr  
+##  [9] smoother.swmpr  subset.swmpr    summary.swmpr
 ```
 
 ##swmpr methods
@@ -234,7 +229,7 @@ setstep(dat, timestep = 120, differ = 30)
 
 # convert a nutrient time series to a continuous time series
 # then remove empty rows and columns
-dat_nut <- import_local('data/zip_ex', 'apacpnut')
+dat_nut <- import_local(path, 'apacpnut')
 dat_nut <- setstep(dat_nut, timestep = 60)
 subset(dat_nut, rem_rows = T, rem_cols = T)
 ```
@@ -245,9 +240,9 @@ The `comb` function is used to combine multiple swmpr objects into a single obje
 ```r
 # get nuts, wq, and met data as separate objects for the same station
 # note that most sites usually have one weather station
-swmp1 <- import_local('data/zip_ex', 'apacpnut')
-swmp2 <- import_local('data/zip_ex', 'apacpwq')
-swmp3 <- import_local('data/zip_ex', 'apaebmet')
+swmp1 <- import_local(path, 'apacpnut')
+swmp2 <- import_local(path, 'apacpwq')
+swmp3 <- import_local(path, 'apaebmet')
 
 # combine nuts and wq data by union
 comb(swmp1, swmp2, method = 'union')
@@ -259,7 +254,7 @@ comb(swmp1, swmp3, method = 'intersect')
 comb(swmp1, swmp2, swmp3, timestep = 120, method = 'apacpnut')
 ```
 
-The analysis functions range from general purpose tools for time series analysis to more specific functions for working with continuous monitoring data in estuaries.  The latter category includes a limited number of functions that were developed by myself or others.  The general purpose tools are swmpr methods that were developed for existing generic functions in the R base installation or relevant packages.  These functions include swmpr methods for `aggregate`, `filter`, and `approx` to deal with missing or noisy data and more general functions for exploratory data analaysis.  The analysis functions may or may not return a swmpr object depending on whether further processing with swmpr methods is possible from the output.    
+The analysis functions range from general purpose tools for time series analysis to more specific functions for working with continuous monitoring data in estuaries.  The latter category includes a limited number of functions that were developed by myself or others.  The general purpose tools are swmpr methods that were developed for existing generic functions in the R base installation or relevant packages.  These functions include swmpr methods for `aggregate`, `filter`, and `approx` to deal with missing or noisy data and more general functions for exploratory data analaysis, such as `plot`, `summary`, and `hist` methods.  The analysis functions may or may not return a swmpr object depending on whether further processing with swmpr methods is possible from the output.    
 
 The `aggregate` function aggregates parameter data for a swmpr object by set periods of observation.  This function is most useful for aggregating noisy data to evaluate trends on longer time scales, or to simply reduce the size of a dataset.  Data can be aggregated by years, quarters, months, weeks, days, or hours for a user-defined function, which defaults to the mean.  A swmpr object is returned for the aggregated data, although the datetimestamp vector will be converted to a date object if the aggregation period is a day or longer.  Days are assigned to the date vector if the aggregation period is a week or longer based on the `round` method for IDate objects (<a href="http://cran.r-project.org/web/packages/data.table/index.html">data.table</a> package).  This approach was used to facilitate plotting using predefined methods for Date and POSIX objects.  Additionally, the method of treating NA values for the aggregation function should be noted since this may greatly affect the quantity of data that are returned (see the example below).  Finally, the default argument for `na.action` is set to `na.pass` for swmpr objects to preserve the time series of the input data.
 
@@ -289,7 +284,7 @@ Time series can be smoothed to better characterize a signal independent of noise
 
 ```r
 # import data
-swmp1 <- import_local('data/zip_ex', 'apadbwq')
+swmp1 <- import_local(path, 'apadbwq')
 
 # qaqc and subset imported data
 dat <- qaqc(swmp1)
@@ -310,7 +305,7 @@ A common issue with any statistical analysis is the treatment of missing values.
 
 ```r
 # get data
-swmp1 <- import_local('data/zip_ex', 'apadbwq')
+swmp1 <- import_local(path, 'apadbwq')
 
 # qaqc and subset imported data
 dat <- qaqc(swmp1)
@@ -369,6 +364,10 @@ Three main categories of functions are available: retrieve, organize, and analyz
 
 `lines.swmpr` Add lines to an existing swmpr plot.
 
+`hist.swmpr` Plot a histogram for a swmpr object.
+
+`summary.swmpr` Create result summaries for columns in a swmpr object.
+
 <b>miscellaneous</b>
 
 `swmpr` Creates object of swmpr class, used internally in retrieval functions.
@@ -381,14 +380,14 @@ Three main categories of functions are available: retrieve, organize, and analyz
 
 `site_codes_ind` Metadata for all stations at a single site, wrapper  to `NERRFilterStationCodesXMLNew` function on web services.
 
-`param_names` Returns column names as a list for the parameter type(s) (nutrients, weather, or water quality).  Includes QAQC columns with 'F_' prefix. Used internally in other functions.
+`param_names` Returns column names as a list for the parameter type(s) (nutrients, weather, or water quality).  Includes QAQC columns with 'f_' prefix. Used internally in other functions.
 
 ##Forthcoming
 
-Analysis functions... EDA, metab, trend analysis, etc.
+Analysis functions... metab, trend evaluation
 
 Better documentation...
 
-Sort out issue w/ test csv data... setup gh-pages and put there
+Sort out issue w/ test csv data... inst
 
 DOI/release info when done (see <a href="http://computationalproteomic.blogspot.com/2014/08/making-your-code-citable.html">here</a>)

@@ -1,4 +1,6 @@
 ######
+#' Aggregate swmpr data
+#' 
 #' Aggregate swmpr data by specified time period and method
 #' 
 #' @param swmpr_in input swmpr object
@@ -9,12 +11,34 @@
 #' 
 #' @import data.table
 #' 
+#' @export
 #' @method aggregate swmpr
 #' 
+#' @details The \code{aggregate} function summarizes or condenses parameter data for a swmpr object by set periods of observation and a user-supplied function. It is most useful for aggregating noisy data to evaluate trends on longer time scales, or to simply reduce the size of a dataset. Data can be aggregated by \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'weeks'}, \code{'days'}, or \code{'hours'} for the supplied function, which defaults to the \code{\link[base]{mean}}. A swmpr object is returned for the aggregated data, although the datetimestamp vector will be converted to a date object if the aggregation period is a day or longer. Days are assigned to the date vector if the aggregation period is a week or longer based on the round method for \code{\link[data.table]{IDate}} objects. This approach was used to facilitate plotting using predefined methods for Date and POSIX objects.
+#' 
+#' The method of treating NA values for the user-supplied function should be noted since this may greatly affect the quantity of data that are returned (see the examples). Finally, the default argument for \code{na.action} is set to \code{na.pass} for swmpr objects to preserve the time series of the input data.
+#' 
 #' @return Returns an aggregated swmpr object. QAQC columns are removed if included with input object.
-aggregate.swmpr <- function(swmpr_in, by, FUN = mean, params = NULL, 
-  na.action = na.pass, ...){
-
+#' 
+#' @examples
+#' ## get data, prep
+#' path <- system.file('zip_ex', package = 'SWMPr')
+#' dat <- import_local(path, 'apacpwq')
+#' swmpr_in <- subset(qaqc(dat), rem_cols = T)
+#'
+#' ## get mean DO by quarters
+#' aggregate(swmpr_in, 'quarters', params = c('do_mgl'))
+#'  
+#' ## get mean DO by quarters, remove NA when calculating means
+#' fun_in <- function(x) mean(x, na.rm = T)
+#' aggregate(swmpr_in, FUN = fun_in, 'quarters', params = c('do_mgl'))
+#'
+#' ## get variance of DO by years, remove NA when calculating variance
+#' ## omit NA data in output
+#' fun_in <- function(x)  var(x, na.rm = T)
+#' aggregate(swmpr_in, FUN = fun_in, 'years', na.action = na.exclude) 
+aggregate.swmpr <- function(swmpr_in, by, FUN = mean, params = NULL, na.action = na.pass, ...){
+  
   # data
   to_agg <- swmpr_in$station_data
 
@@ -204,7 +228,7 @@ na.approx.swmpr <- function(swmpr_in, params = NULL, maxgap,
 #' @method plot swmpr
 plot.swmpr <- function(swmpr_in, type = 'l', subset = NULL, select, operator = NULL, ...) {
   
-  if(length(select) > 1) stop('Only one parameter  can be plotted')
+  if(length(select) > 1) stop('Only one parameter can be plotted')
   
   to_plo <- subset(swmpr_in, subset, select, operator)
   parameters <- attr(to_plo, 'parameters')
@@ -231,4 +255,58 @@ lines.swmpr <- function(swmpr_in, subset = NULL, select, operator = NULL, ...) {
     list(i = as.name(parameters))))
   lines(form_in, data = to_plo, ...)
      
+}
+
+######
+#' Plot swmpr using a histogram
+#' 
+#' Plot a histogram showing the distribution of a swmpr parameter
+#' 
+#' @param swmpr_in input swmpr object
+#' @param subset chr string of form 'YYYY-mm-dd HH:MM' to subset a date range.  Input can be one (requires \code{operator} or two values (a range), passed to \code{\link{subset}}.
+#' @param select chr string of parameters to keep, passed to \code{\link{subset}}.
+#' @param operator chr string specifiying binary operator (e.g., \code{'>'}, \code{'<='}) if subset is one date value, passed to \code{\link{subset}}.
+#' @param ... other arguments passed to \code{\link[graphics]{histogram}}
+#' 
+#' @method hist swmpr
+hist.swmpr <- function(swmpr_in, subset = NULL, select, operator = NULL, ...) {
+  
+  if(length(select) > 1) stop('Only one parameter can be plotted')
+  
+  to_plo <- subset(swmpr_in, subset, select, operator)
+  parameters <- attr(to_plo, 'parameters')
+
+  to_plo <- swmpr_in$station_data
+  
+  # for correct default of xlab, main
+  assign(select, to_plo[, select])
+
+  eval(substitute(
+    hist(i, ...), 
+    list(i = as.name(select))
+    ))
+  
+}
+
+######
+#' Basic summary of swmpr data
+#' 
+#' Basic summary of swmpr data for numeric, factor, and character strings, see the documentation for \code{\link[base]{summary}}
+#' 
+#' @param swmpr_in input swmpr object
+#' @param ... other arguments passed to \code{summary}
+#' 
+#' @method summary swmpr
+summary.swmpr <- function(swmpr_in, qaqc_summ = F,...) {
+  
+  # data to summarize
+  to_summ <- swmpr_in$station_data
+  
+  # remove qaqc cols
+  if(!qaqc_summ) 
+    to_summ <- to_summ[, !grepl('^f_', names(to_summ))]
+  
+  # summarize
+  summary(to_summ, ...)
+   
 }

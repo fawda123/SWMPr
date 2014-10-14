@@ -62,3 +62,18 @@ plot(test, select = 'do_mgl', col = 'red', main = 'Inteprolation - maximum gap o
 lines(dat, select = 'do_mgl')
 plot(test2, select = 'do_mgl', col = 'red', main = 'Inteprolation - maximum gap of 30 records')
 lines(dat, select = 'do_mgl')
+
+##
+# test summary.swmpr
+swmp1 <- import_local('data/zip_ex', 'apadbwq')
+
+summary(swmp1)
+summary(swmp1, T)
+
+##
+# test histogram.swmpr
+swmp1 <- import_local('data/zip_ex', 'apadbwq')
+hist(swmp1, select = 'do_mgl', 
+  xlab = expression('Dissolved oxygen mg L'^-1)
+)
+

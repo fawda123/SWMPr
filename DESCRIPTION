@@ -19,6 +19,7 @@ Imports:
     zoo
 Suggests:
     SSOAP
+LazyData: true
 Depends:
     R (>= 3.1.1)
 Authors@R: person("Marcus", "Beck", email = "mbafs2012@gmail.com",
