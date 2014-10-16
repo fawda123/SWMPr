@@ -30,7 +30,7 @@ qaqc.swmpr <- function(swmpr_in,
   
   ##
   # swmpr data and attributes
-  dat <- swmpr_in$station_data
+  dat <- swmpr_in
   qaqc_cols <- attr(swmpr_in, 'qaqc_cols')
   station <- attr(swmpr_in, 'station')
   
@@ -127,7 +127,7 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
   
   ##
   # swmpr data and attributes
-  dat <- swmpr_in$station_data
+  dat <- swmpr_in
   station <- attr(swmpr_in, 'station')
   timezone <- attr(swmpr_in, 'timezone')
   parameters <- attr(swmpr_in, 'parameters')
@@ -256,7 +256,7 @@ setstep <- function(swmpr_in, ...) UseMethod('setstep')
 setstep.swmpr <- function(swmpr_in, timestep = 30, differ= timestep/2){ 
   
   # swmpr data and attributes
-  dat <- swmpr_in$station_data
+  dat <- swmpr_in
   attrs <- attributes(swmpr_in)
   
   # sanity check
@@ -384,7 +384,7 @@ comb.swmpr <- function(..., timestep = 30, differ= 5, method = 'union'){
   
   for(dat in all_dat){
     
-    dat <- data.table(dat$station_data, key = 'datetimestamp')
+    dat <- data.table(dat, key = 'datetimestamp')
     
     # merge
     out <- dat[out, roll = 'nearest']

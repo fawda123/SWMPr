@@ -30,8 +30,8 @@ swmpr <- function(stat_in, meta_in){
 
   # create class, with multiple attributes
   structure(
-    list(station_data = stat_in), 
-    class = 'swmpr', 
+    .Data = stat_in, 
+    class = c('swmpr', 'data.frame'), 
     station = station,
     parameters = parameters, 
     qaqc_cols = qaqc_cols,

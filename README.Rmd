@@ -86,7 +86,7 @@ In all cases, the imported data need to assigned to an object in the workspace f
 dat <- import_local(path, 'apaebmet', trace = F) 
 
 # view first six rows
-head(dat$station_data)
+head(dat)
 ```
 
 ##swmpr object class
@@ -104,7 +104,7 @@ attributes(dat)
 attr(dat, 'station')
 ```
 
-The swmpr object class was created for use with specific methods and it is suggested that these methods be used for data organization and analysis.  The actual data for a swmpr object (e.g., `dat$station_data` as a data frame) can be assigned to an object in the workspace if preferred, although this is not recommended.  Available methods for the swmpr class are described below and can also be viewed:
+The swmpr object class was created for use with specific methods and it is suggested that these methods be used for data organization and analysis.  A swmpr object also secondarily inherits methods from the data.frame class, such that common data.frame methods also apply to swmpr objects.  Available methods for the swmpr class are described below and can also be viewed:
 
 ```{r eval = T}
 # available methods for swmpr class

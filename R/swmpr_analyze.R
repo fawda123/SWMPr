@@ -41,7 +41,7 @@
 aggregate.swmpr <- function(swmpr_in, by, FUN = mean, params = NULL, na.action = na.pass, ...){
   
   # data
-  to_agg <- swmpr_in$station_data
+  to_agg <- swmpr_in
 
   # attributes
   timezone <- attr(swmpr_in, 'timezone')
@@ -138,7 +138,7 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
 
   # prep for filter
   if(!is.null(params)) parameters <- parameters[parameters %in% params]
-  to_filt <- swmpr_in$station_data[, c('datetimestamp', parameters), drop = F]
+  to_filt <- swmpr_in[, c('datetimestamp', parameters), drop = F]
   datetimestamp <- to_filt$datetimestamp
   to_filt$datetimestamp <- NULL
   
@@ -186,7 +186,7 @@ na.approx.swmpr <- function(swmpr_in, params = NULL, maxgap,
   
   # prep for interpolate
   if(!is.null(params)) parameters <- parameters[parameters %in% params]
-  to_interp <- swmpr_in$station_data[, c('datetimestamp', parameters), 
+  to_interp <- swmpr_in[, c('datetimestamp', parameters), 
     drop = F]
   datetimestamp <- to_interp$datetimestamp
   to_interp$datetimestamp <- NULL
@@ -239,7 +239,7 @@ plot.swmpr <- function(swmpr_in, type = 'l', subset = NULL, select, operator = N
   to_plo <- subset(swmpr_in, subset, select, operator)
   parameters <- attr(to_plo, 'parameters')
 
-  to_plo <- swmpr_in$station_data
+  to_plo <- swmpr_in
 
   form_in <- formula(substitute(i ~ datetimestamp, 
     list(i = as.name(parameters))))
@@ -258,7 +258,7 @@ lines.swmpr <- function(swmpr_in, subset = NULL, select, operator = NULL, ...) {
   to_plo <- subset(swmpr_in, subset, select, operator)
   parameters <- attr(to_plo, 'parameters')
 
-  to_plo <- swmpr_in$station_data
+  to_plo <- swmpr_in
   form_in <- formula(substitute(i ~ datetimestamp, 
     list(i = as.name(parameters))))
   lines(form_in, data = to_plo, ...)
@@ -286,7 +286,7 @@ hist.swmpr <- function(swmpr_in, subset = NULL, select, operator = NULL, ...) {
   to_plo <- subset(swmpr_in, subset, select, operator)
   parameters <- attr(to_plo, 'parameters')
 
-  to_plo <- swmpr_in$station_data
+  to_plo <- swmpr_in
   
   # for correct default of xlab, main
   assign(select, to_plo[, select])
@@ -296,29 +296,4 @@ hist.swmpr <- function(swmpr_in, subset = NULL, select, operator = NULL, ...) {
     list(i = as.name(select))
     ))
   
-}
-
-######
-#' Basic summary of swmpr data
-#' 
-#' Basic summary of swmpr data for numeric, factor, and character strings, see the documentation for \code{\link[base]{summary}}
-#' 
-#' @param swmpr_in input swmpr object
-#' @param ... other arguments passed to \code{summary}
-#' 
-#' @export summary.swmpr
-#' 
-#' @method summary swmpr
-summary.swmpr <- function(swmpr_in, qaqc_summ = F,...) {
-  
-  # data to summarize
-  to_summ <- swmpr_in$station_data
-  
-  # remove qaqc cols
-  if(!qaqc_summ) 
-    to_summ <- to_summ[, !grepl('^f_', names(to_summ))]
-  
-  # summarize
-  summary(to_summ, ...)
-   
 }
