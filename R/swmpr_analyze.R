@@ -1,4 +1,3 @@
-######
 #' Aggregate swmpr data
 #' 
 #' Aggregate swmpr data by specified time period and method
@@ -102,7 +101,6 @@ aggregate.swmpr <- function(swmpr_in, by, FUN = mean, params = NULL, na.action =
   
 }
 
-######
 #' Smooth swmpr data
 #' 
 #' Smooth swmpr data with a moving window average
@@ -156,7 +154,6 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
 
 }
 
-######
 #' Linearly interpolate gaps in swmpr data
 #' 
 #' @param swmpr_in input swmpr object
@@ -166,7 +163,7 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
 #' 
 #' @import plyr zoo
 #' 
-#' @export na.approx.swmpr
+#' @export na.approx na.approx.swmpr
 #' 
 #' @method na.approx swmpr
 #' 
@@ -217,7 +214,50 @@ na.approx.swmpr <- function(swmpr_in, params = NULL, maxgap,
   
 }
 
-######
+#' Seasonal trend decomposition of swmpr data
+#' 
+#' Decompose swmpr data into seasonal, trend, and irregular components using \code{\link[stats]{stl}} and \code{\link[stats]{loess}}
+#' 
+#' @param swmpr_in input swmpr object
+#' @param ... arguments passed to \code{stl} and other methods
+#' 
+#' @export decomp
+#' 
+#' @details
+#' This function is a simple wrapper to the \code{\link[stats]{stl}} function written by Brian Ripley.  In general, \code{stl} decomposes a time series using \code{\link[stats]{loess}} smoothing into separate seasonal, trend, and remainder components. All arguments for the \code{stl} function are applicable, although each have default values excluding s.window.  All methods available for stl objects also apply to the output, including \code{plot.stl}.  
+#'  
+#' @references
+#' R. B. Cleveland, W. S. Cleveland, J.E. McRae, and I. Terpenning (1990) STL: A Seasonal-Trend Decomposition Procedure Based on Loess. Journal of Official Statistics, 6, 3–73.
+#' 
+#' @return Returns an stl object.
+decomp <- function(swmpr_in, ...) UseMethod('decomp') 
+
+#' @rdname decomp
+#' 
+#' @param param chr string of swmpr parameter to decompose
+#' @param s.window either the chrr string \code{"periodic"} or the span (in lags) of the loess window for seasonal extraction, which should be odd.
+#' 
+#' @export decomp.swmpr
+#' 
+#' @method decomp swmpr
+decomp.swmpr <- function(swmpr_in, param, s.window, ...){
+  
+  # attributes
+  parameters <- attr(swmpr_in, 'parameters')
+  
+  # sanity checks
+  if(!any(param %in% parameters) & !is.null(param))
+    stop('Params argument must name input columns')
+
+  # decomp
+  ts_smp <- as.ts(swmpr_in[, param])
+  out <- stl(ts_smp, s.window, ...)
+
+  # return stl object
+  return(out)
+
+}
+
 #' Plot swmpr data
 #' 
 #' Plot a time series of parameters in a swmpr object
@@ -247,7 +287,6 @@ plot.swmpr <- function(swmpr_in, type = 'l', subset = NULL, select, operator = N
    
 }
 
-######
 #' @rdname plot.swmpr
 #' 
 #' @export lines.swmpr
@@ -265,7 +304,6 @@ lines.swmpr <- function(swmpr_in, subset = NULL, select, operator = NULL, ...) {
      
 }
 
-######
 #' Plot swmpr using a histogram
 #' 
 #' Plot a histogram showing the distribution of a swmpr parameter

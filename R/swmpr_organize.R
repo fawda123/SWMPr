@@ -178,7 +178,7 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
   else select <- names(dat)[names(dat) %in% c('datetimestamp', select, paste0('f_', select))]
   
   # subset data
-  out <- base::subset(dat, date_sel, select)
+  out <- subset(data.frame(dat), date_sel, select)
   out <- data.frame(out, row.names = 1:nrow(out))
   
   ##
