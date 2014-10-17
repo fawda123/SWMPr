@@ -53,17 +53,16 @@ Due to rate limitations on the server, the retrieval functions in this package r
 
 ```{r eval = F}
 # all parameters for a station, most recent
-all_params('sfbfmwq')
+all_params('hudscwq')
 
 # get all parameters within a date range
 all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013'))
 
 # get single parameter within a date range
-all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013')),
-  param = 'do_mgl')
+all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013'), param = 'do_mgl')
 
 # single parameter for a station, most recent
-single_param('tjrtlmet', 'wspd')
+single_param('hudscwq', 'do_mgl')
 
 ```
 
@@ -98,7 +97,7 @@ All data retrieval functions return a swmpr object that includes relevant data a
 class(dat)
 
 # all attributes of dat
-attributes(dat)
+names(attributes(dat))
 
 # a single attribute of dat
 attr(dat, 'station')
@@ -146,7 +145,7 @@ subset(dat, subset = c('2012-07-01 6:00', '2012-08-01 18:15'),
   select = c('atemp', 'totsorad'))
 
 # remove rows/columns that do not contain data
-subset(dat, rem_empty = T)
+subset(dat, rem_rows = T, rem_cols = T)
 
 ```
 
@@ -199,13 +198,7 @@ aggregate(swmpr_in, 'quarters', params = c('do_mgl'))
 
 # get mean DO by quarters, remove NA when calculating means
 fun_in <- function(x) mean(x, na.rm = T)
-aggregate(swmpr_in, FUN = fun_in, 'quarters', 
-  params = c('do_mgl'))
-
-# get variance of DO by years, remove NA when calculating variance
-# omit NA data in output
-fun_in <- function(x)  var(x, na.rm = T)
-aggregate(swmpr_in, FUN = fun_in, 'years', na.action = na.exclude)
+aggregate(swmpr_in, FUN = fun_in, 'quarters', params = c('do_mgl'))
 
 ```
 
@@ -309,10 +302,8 @@ See help documentation (e.g., `?all_param`) for more details.
 
 ##Forthcoming
 
-Analysis functions... metab, trend evaluation
+Analysis functions... seasonal decomp, metab, trend evaluation
 
 Better documentation...
 
-Sort out issue w/ test csv data... inst
-
-DOI/release info when done (see <a href="http://computationalproteomic.blogspot.com/2014/08/making-your-code-citable.html">here</a>)
+DOI/release info (see <a href="http://computationalproteomic.blogspot.com/2014/08/making-your-code-citable.html">here</a>)

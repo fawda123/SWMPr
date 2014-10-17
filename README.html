@@ -81,17 +81,16 @@ site_codes()
 site_codes_ind('apa')</code></pre>
 <p>Due to rate limitations on the server, the retrieval functions in this package return a limited number of records. The functions are more useful for evaluating short time periods, although these functions could be used iteratively (i.e., with <code>for</code> or <code>while</code> loops) to obtain longer time series. Data retrieval functions to access the CDMO include <code>all_params</code>, <code>all_params_dtrng</code>, and <code>single_param</code>. These are functions that call the available methods on the CDMO SOAP interface. <code>all_params</code> returns the most recent 100 records of all parameters at a station, <code>all_params_dtrng</code> returns all records within a date range for all parameters or a single parameter, and <code>single_param</code> is identical to <code>all_params</code> except that a single parameter is requested.</p>
 <pre class="r"><code># all parameters for a station, most recent
-all_params('sfbfmwq')
+all_params('hudscwq')
 
 # get all parameters within a date range
 all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013'))
 
 # get single parameter within a date range
-all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013')),
-  param = 'do_mgl')
+all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013'), param = 'do_mgl')
 
 # single parameter for a station, most recent
-single_param('tjrtlmet', 'wspd')</code></pre>
+single_param('hudscwq', 'do_mgl')</code></pre>
 <p>For larger requests, it’s easier to obtain data outside of R using the CDMO query system. Data can be retrieved from the CDMO several ways. Data from single stations can be requested from the <a href="http://cdmo.baruch.sc.edu/get/export.cfm">data export system</a>, whereas data from multiple stations can be requested from the <a href="http://cdmo.baruch.sc.edu/aqs/">advanced query system</a>. The <code>import_local</code> function is used to import local data into R that were downloaded from the CDMO with the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> feature within the advanced query system. The downloaded data will include multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.). It is recommended that all stations at a site and the complete date ranges are requested to avoid repeated requests to CDMO. The <code>import_local</code> function can be used once the downloaded files are extracted to a local path.</p>
 <pre class="r"><code># import data for apaebmet from local path
 
@@ -105,7 +104,7 @@ import_local(path, 'apaebmet') </code></pre>
 dat &lt;- import_local(path, 'apaebmet', trace = F) 
 
 # view first six rows
-head(dat$station_data)</code></pre>
+head(dat)</code></pre>
 <pre><code>##         datetimestamp atemp f_atemp rh f_rh   bp f_bp wspd f_wspd maxwspd
 ## 1 2011-01-01 00:00:00  15.4    &lt;0&gt;  94 &lt;0&gt;  1019 &lt;0&gt;   2.6   &lt;0&gt;      3.4
 ## 2 2011-01-01 00:15:00  15.2    &lt;0&gt;  95 &lt;0&gt;  1019 &lt;0&gt;   2.7   &lt;0&gt;      4.0
@@ -130,45 +129,23 @@ head(dat$station_data)</code></pre>
 </div>
 <div id="swmpr-object-class" class="section level2">
 <h2>swmpr object class</h2>
-<p>All data retrieval functions return a swmpr object that includes relevant data and several attributes describing the dataset. The data include a datetimestamp column in the appropriate timezone for a station. Note that the datetimestamp is standard time for each timezone and does not include daylight savings. Additional columns include parameters for a given data type (weather, nutrients, or wtaer quality) and correspondingg QAQC columns if returned from the initial data request. The attributes for a swmpr object include <code>names</code> of the dataset, <code>class</code> (swmpr) <code>station name</code> (7 or 8 characters), <code>qaqc_cols</code> (logical), <code>date_rng</code> (POSIX vector), <code>timezone</code> (text string in country/city format), <code>stamp_class</code> (class of datetimestamp vector, POSIX or Date), and <code>parameters</code> (character vector). Attributes of a swmpr object can be viewed as follows:</p>
+<p>All data retrieval functions return a swmpr object that includes relevant data and several attributes describing the dataset. The data include a datetimestamp column in the appropriate timezone for a station. Note that the datetimestamp is standard time for each timezone and does not include daylight savings. Additional columns include parameters for a given data type (weather, nutrients, or water quality) and correspondingg QAQC columns if returned from the initial data request. The attributes for a swmpr object include <code>names</code> of the dataset, <code>class</code> (swmpr) <code>station name</code> (7 or 8 characters), <code>qaqc_cols</code> (logical), <code>date_rng</code> (POSIX vector), <code>timezone</code> (text string in country/city format), <code>stamp_class</code> (class of datetimestamp vector, POSIX or Date), and <code>parameters</code> (character vector). Attributes of a swmpr object can be viewed as follows:</p>
 <pre class="r"><code># verify that dat is swmpr class
 class(dat)</code></pre>
-<pre><code>## [1] &quot;swmpr&quot;</code></pre>
+<pre><code>## [1] &quot;swmpr&quot;      &quot;data.frame&quot;</code></pre>
 <pre class="r"><code># all attributes of dat
-attributes(dat)</code></pre>
-<pre><code>## $names
-## [1] &quot;station_data&quot;
-## 
-## $class
-## [1] &quot;swmpr&quot;
-## 
-## $station
-## [1] &quot;apaebmet&quot;
-## 
-## $parameters
-##  [1] &quot;atemp&quot;    &quot;rh&quot;       &quot;bp&quot;       &quot;wspd&quot;     &quot;maxwspd&quot;  &quot;wdir&quot;    
-##  [7] &quot;sdwdir&quot;   &quot;totpar&quot;   &quot;totprcp&quot;  &quot;cumprcp&quot;  &quot;totsorad&quot;
-## 
-## $qaqc_cols
-## [1] TRUE
-## 
-## $date_rng
-## [1] &quot;2011-01-01 00:00:00 EST&quot; &quot;2013-12-31 23:45:00 EST&quot;
-## 
-## $timezone
-## [1] &quot;America/Jamaica&quot;
-## 
-## $stamp_class
-## [1] &quot;POSIXct&quot; &quot;POSIXt&quot;</code></pre>
+names(attributes(dat))</code></pre>
+<pre><code>## [1] &quot;names&quot;       &quot;row.names&quot;   &quot;class&quot;       &quot;station&quot;     &quot;parameters&quot; 
+## [6] &quot;qaqc_cols&quot;   &quot;date_rng&quot;    &quot;timezone&quot;    &quot;stamp_class&quot;</code></pre>
 <pre class="r"><code># a single attribute of dat
 attr(dat, 'station')</code></pre>
 <pre><code>## [1] &quot;apaebmet&quot;</code></pre>
-<p>The swmpr object class was created for use with specific methods and it is suggested that these methods be used for data organization and analysis. The actual data for a swmpr object (e.g., <code>dat$station_data</code> as a data frame) can be assigned to an object in the workspace if preferred, although this is not recommended. Available methods for the swmpr class are described below and can also be viewed:</p>
+<p>The swmpr object class was created for use with specific methods and it is suggested that these methods be used for data organization and analysis. A swmpr object also secondarily inherits methods from the data.frame class, such that common data.frame methods also apply to swmpr objects. Available methods for the swmpr class are described below and can also be viewed:</p>
 <pre class="r"><code># available methods for swmpr class
 methods(class = 'swmpr')</code></pre>
 <pre><code>##  [1] aggregate.swmpr comb.swmpr      hist.swmpr      lines.swmpr    
 ##  [5] na.approx.swmpr plot.swmpr      qaqc.swmpr      setstep.swmpr  
-##  [9] smoother.swmpr  subset.swmpr    summary.swmpr</code></pre>
+##  [9] smoother.swmpr  subset.swmpr</code></pre>
 </div>
 <div id="swmpr-methods" class="section level2">
 <h2>swmpr methods</h2>
@@ -197,7 +174,7 @@ subset(dat, subset = c('2012-07-01 6:00', '2012-08-01 18:15'),
   select = c('atemp', 'totsorad'))
 
 # remove rows/columns that do not contain data
-subset(dat, rem_empty = T)</code></pre>
+subset(dat, rem_rows = T, rem_cols = T)</code></pre>
 <p>The <code>setstep</code> function formats a swmpr object to a continuous time series at a given time step. This function is not necessary for most stations but can be useful for combining data or converting an existing time series to a set interval. The first argument, <code>timestep</code> specifies the desired time step in minutes starting from the nearest hour of the first observation. The second argument, <code>differ</code>, specifies the allowable tolerance in minutes for matching existing observations to user-defined time steps in cases where the two are dissimilar. Values for <code>differ</code> that are greater than one half the value of <code>timestep</code> are not allowed to prevent duplication of existing data. Likewise, the default value for <code>differ</code> is one half the time step. Rows that do not match any existing data within the limits of the <code>differ</code> argument are not discarded. Output from the <code>setstep</code> function can be used with <code>subset</code> and to create a time series at a set interval with empty data removed.</p>
 <pre class="r"><code># convert time series to two hour invervals
 # tolerance of +/- 30 minutes for matching existing data
@@ -235,13 +212,7 @@ aggregate(swmpr_in, 'quarters', params = c('do_mgl'))
 
 # get mean DO by quarters, remove NA when calculating means
 fun_in &lt;- function(x) mean(x, na.rm = T)
-aggregate(swmpr_in, FUN = fun_in, 'quarters', 
-  params = c('do_mgl'))
-
-# get variance of DO by years, remove NA when calculating variance
-# omit NA data in output
-fun_in &lt;- function(x)  var(x, na.rm = T)
-aggregate(swmpr_in, FUN = fun_in, 'years', na.action = na.exclude)</code></pre>
+aggregate(swmpr_in, FUN = fun_in, 'quarters', params = c('do_mgl'))</code></pre>
 <p>Time series can be smoothed to better characterize a signal independent of noise. Although there are many approaches to smoothing, a moving window average is intuitive and commonly used. The <code>smoother</code> function can be used to smooth parameters in a swmpr object using a specified window size. This method is a simple wrapper to <code>filter</code>. The <code>window</code> argument specifies the number of observations included in the moving average. The <code>sides</code> argument specifies how the average is calculated for each observation (see the documentation for <code>filter</code>). A value of 1 will filter observations within the window that are previous to the current observation, whereas a value of 2 will filter all observations withing the window centered at zero lag from the current observation. As before, the <code>params</code> argument specifies which parameters to smooth.</p>
 <pre class="r"><code># import data
 swmp1 &lt;- import_local(path, 'apadbwq')
@@ -282,7 +253,7 @@ lines(dat, select = 'do_mgl')</code></pre>
 </div>
 <div id="functions" class="section level2">
 <h2>Functions</h2>
-<p>Three main categories of functions are available: retrieve, organize, and analyze. Other miscellaneous functions are helpers/wrappers to these functions or those used to obtain metadata.</p>
+<p>See help documentation (e.g., <code>?all_param</code>) for more details.</p>
 <p><b>retrieve</b></p>
 <p><code>all_params</code> Retrieve up to 100 records starting with the most recent at a given station, all parameters. Wrapper to <code>exportAllParamsXMLNew</code> function on web services.</p>
 <p><code>all_params_dtrng</code> Retrieve records of all parameters within a given date range for a station. Optional argument for a single parameter. Maximum of 1000 records. Wrapper to <code>exportAllParamsDateRangeXMLNew</code>.</p>
@@ -311,10 +282,9 @@ lines(dat, select = 'do_mgl')</code></pre>
 </div>
 <div id="forthcoming" class="section level2">
 <h2>Forthcoming</h2>
-<p>Analysis functions… metab, trend evaluation</p>
+<p>Analysis functions… seasonal decomp, metab, trend evaluation</p>
 <p>Better documentation…</p>
-<p>Sort out issue w/ test csv data… inst</p>
-<p>DOI/release info when done (see <a href="http://computationalproteomic.blogspot.com/2014/08/making-your-code-citable.html">here</a>)</p>
+<p>DOI/release info (see <a href="http://computationalproteomic.blogspot.com/2014/08/making-your-code-citable.html">here</a>)</p>
 </div>
 
 

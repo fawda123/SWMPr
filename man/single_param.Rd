@@ -3,14 +3,14 @@
 \alias{single_param}
 \title{Get stations records from the CDMO for a single parameter starting with the most current date, CDMO equivalent of \code{exportSingleParamXML} max 100 records}
 \usage{
-single_param(station_code, Max = 100, param)
+single_param(station_code, param, Max = 100)
 }
 \arguments{
 \item{station_code}{chr string of station, 7 or 8 characters}
 
-\item{Max}{numeric value for number of records to obtain from the current date, maximum of 100}
-
 \item{param}{chr string for a single parameter to return.}
+
+\item{Max}{numeric value for number of records to obtain from the current date, maximum of 100}
 }
 \value{
 Returns a swmpr object with one parameter.  QAQC columns are not provided.

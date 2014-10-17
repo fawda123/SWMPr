@@ -50,17 +50,16 @@ Due to rate limitations on the server, the retrieval functions in this package r
 
 ```r
 # all parameters for a station, most recent
-all_params('sfbfmwq')
+all_params('hudscwq')
 
 # get all parameters within a date range
 all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013'))
 
 # get single parameter within a date range
-all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013')),
-  param = 'do_mgl')
+all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013'), param = 'do_mgl')
 
 # single parameter for a station, most recent
-single_param('tjrtlmet', 'wspd')
+single_param('hudscwq', 'do_mgl')
 ```
 
 For larger requests, it's easier to obtain data outside of R using the CDMO query system.  Data can be retrieved from the CDMO several ways.  Data from single stations can be requested from the <a href="http://cdmo.baruch.sc.edu/get/export.cfm">data export system</a>, whereas data from multiple stations can be requested from the <a href="http://cdmo.baruch.sc.edu/aqs/">advanced query system</a>.  The `import_local` function is used to import local data into R that were downloaded from the CDMO with the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> feature within the advanced query system.  The downloaded data will include multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.).  It is recommended that all stations at a site and the complete date ranges are requested to avoid repeated requests to CDMO.  The `import_local` function can be used once the downloaded files are extracted to a local path. 
@@ -84,7 +83,7 @@ In all cases, the imported data need to assigned to an object in the workspace f
 dat <- import_local(path, 'apaebmet', trace = F) 
 
 # view first six rows
-head(dat$station_data)
+head(dat)
 ```
 
 ```
@@ -113,7 +112,7 @@ head(dat$station_data)
 
 ##swmpr object class
 
-All data retrieval functions return a swmpr object that includes relevant data and several attributes describing the dataset.  The data include a datetimestamp column in the appropriate timezone for a station.  Note that the datetimestamp is standard time for each timezone and does not include daylight savings. Additional columns include parameters for a given data type (weather, nutrients, or wtaer quality) and correspondingg QAQC columns if returned from the initial data request.  The attributes for a swmpr object include `names` of the dataset, `class` (swmpr) `station name` (7 or 8 characters), `qaqc_cols` (logical), `date_rng` (POSIX vector), `timezone` (text string in country/city format), `stamp_class` (class of datetimestamp vector, POSIX or Date), and `parameters` (character vector).  Attributes of a swmpr object can be viewed as follows:
+All data retrieval functions return a swmpr object that includes relevant data and several attributes describing the dataset.  The data include a datetimestamp column in the appropriate timezone for a station.  Note that the datetimestamp is standard time for each timezone and does not include daylight savings. Additional columns include parameters for a given data type (weather, nutrients, or water quality) and correspondingg QAQC columns if returned from the initial data request.  The attributes for a swmpr object include `names` of the dataset, `class` (swmpr) `station name` (7 or 8 characters), `qaqc_cols` (logical), `date_rng` (POSIX vector), `timezone` (text string in country/city format), `stamp_class` (class of datetimestamp vector, POSIX or Date), and `parameters` (character vector).  Attributes of a swmpr object can be viewed as follows:
 
 
 ```r
@@ -122,39 +121,17 @@ class(dat)
 ```
 
 ```
-## [1] "swmpr"
+## [1] "swmpr"      "data.frame"
 ```
 
 ```r
 # all attributes of dat
-attributes(dat)
+names(attributes(dat))
 ```
 
 ```
-## $names
-## [1] "station_data"
-## 
-## $class
-## [1] "swmpr"
-## 
-## $station
-## [1] "apaebmet"
-## 
-## $parameters
-##  [1] "atemp"    "rh"       "bp"       "wspd"     "maxwspd"  "wdir"    
-##  [7] "sdwdir"   "totpar"   "totprcp"  "cumprcp"  "totsorad"
-## 
-## $qaqc_cols
-## [1] TRUE
-## 
-## $date_rng
-## [1] "2011-01-01 00:00:00 EST" "2013-12-31 23:45:00 EST"
-## 
-## $timezone
-## [1] "America/Jamaica"
-## 
-## $stamp_class
-## [1] "POSIXct" "POSIXt"
+## [1] "names"       "row.names"   "class"       "station"     "parameters" 
+## [6] "qaqc_cols"   "date_rng"    "timezone"    "stamp_class"
 ```
 
 ```r
@@ -166,7 +143,7 @@ attr(dat, 'station')
 ## [1] "apaebmet"
 ```
 
-The swmpr object class was created for use with specific methods and it is suggested that these methods be used for data organization and analysis.  The actual data for a swmpr object (e.g., `dat$station_data` as a data frame) can be assigned to an object in the workspace if preferred, although this is not recommended.  Available methods for the swmpr class are described below and can also be viewed:
+The swmpr object class was created for use with specific methods and it is suggested that these methods be used for data organization and analysis.  A swmpr object also secondarily inherits methods from the data.frame class, such that common data.frame methods also apply to swmpr objects.  Available methods for the swmpr class are described below and can also be viewed:
 
 
 ```r
@@ -177,7 +154,7 @@ methods(class = 'swmpr')
 ```
 ##  [1] aggregate.swmpr comb.swmpr      hist.swmpr      lines.swmpr    
 ##  [5] na.approx.swmpr plot.swmpr      qaqc.swmpr      setstep.swmpr  
-##  [9] smoother.swmpr  subset.swmpr    summary.swmpr
+##  [9] smoother.swmpr  subset.swmpr
 ```
 
 ##swmpr methods
@@ -216,7 +193,7 @@ subset(dat, subset = c('2012-07-01 6:00', '2012-08-01 18:15'),
   select = c('atemp', 'totsorad'))
 
 # remove rows/columns that do not contain data
-subset(dat, rem_empty = T)
+subset(dat, rem_rows = T, rem_cols = T)
 ```
 
 The `setstep` function formats a swmpr object to a continuous time series at a given time step.  This function is not necessary for most stations but can be useful for combining data or converting an existing time series to a set interval.  The first argument, `timestep` specifies the desired time step in minutes starting from the nearest hour of the first observation.  The second argument, `differ`, specifies the allowable tolerance in minutes for matching existing observations to user-defined time steps in cases where the two are dissimilar.  Values for `differ` that are greater than one half the value of `timestep` are not allowed to prevent duplication of existing data.  Likewise, the default value for `differ` is one half the time step.  Rows that do not match any existing data within the limits of the `differ` argument are not discarded.  Output from the `setstep` function can be used with `subset` and to create a time series at a set interval with empty data removed.
@@ -270,13 +247,7 @@ aggregate(swmpr_in, 'quarters', params = c('do_mgl'))
 
 # get mean DO by quarters, remove NA when calculating means
 fun_in <- function(x) mean(x, na.rm = T)
-aggregate(swmpr_in, FUN = fun_in, 'quarters', 
-  params = c('do_mgl'))
-
-# get variance of DO by years, remove NA when calculating variance
-# omit NA data in output
-fun_in <- function(x)  var(x, na.rm = T)
-aggregate(swmpr_in, FUN = fun_in, 'years', na.action = na.exclude)
+aggregate(swmpr_in, FUN = fun_in, 'quarters', params = c('do_mgl'))
 ```
 
 Time series can be smoothed to better characterize a signal independent of noise.  Although there are many approaches to smoothing, a moving window average is intuitive and commonly used.  The `smoother` function can be used to smooth parameters in a swmpr object using a specified window size.  This method is a simple wrapper to `filter`.  The `window` argument specifies the number of observations included in the moving average.  The `sides` argument specifies how the average is calculated for each observation (see the documentation for `filter`).  A value of 1 will filter observations within the window that are previous to the current observation, whereas a value of 2 will filter all observations withing the window centered at zero lag from the current observation. As before, the `params` argument specifies which parameters to smooth.
@@ -330,7 +301,7 @@ lines(dat, select = 'do_mgl')
 
 ##Functions
 
-Three main categories of functions are available: retrieve, organize, and analyze.  Other miscellaneous functions are helpers/wrappers to these  functions or those used to obtain metadata.
+See help documentation (e.g., `?all_param`) for more details.
 
 <b>retrieve</b>
 
@@ -384,10 +355,8 @@ Three main categories of functions are available: retrieve, organize, and analyz
 
 ##Forthcoming
 
-Analysis functions... metab, trend evaluation
+Analysis functions... seasonal decomp, metab, trend evaluation
 
 Better documentation...
 
-Sort out issue w/ test csv data... inst
-
-DOI/release info when done (see <a href="http://computationalproteomic.blogspot.com/2014/08/making-your-code-citable.html">here</a>)
+DOI/release info (see <a href="http://computationalproteomic.blogspot.com/2014/08/making-your-code-citable.html">here</a>)

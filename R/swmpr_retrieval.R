@@ -159,7 +159,7 @@ all_params_dtrng <- function(station_code, dtrng, param = NULL){
 #' @export
 #' 
 #' @return Returns a swmpr object with one parameter.  QAQC columns are not provided.
-single_param <- function(station_code, Max = 100, param){
+single_param <- function(station_code, param, Max = 100){
   
   # sanity check
   if(Max > 100) warning('Maximum of 100 records')

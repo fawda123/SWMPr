@@ -91,8 +91,8 @@ aggregate.swmpr <- function(swmpr_in, by, FUN = mean, params = NULL, na.action =
   
   # aggregate
   form_in <- formula(. ~ datetimestamp)
-  out <- aggregate(form_in, to_agg, FUN = FUN, na.action = na.action,
-    simplify = T)
+  out <- aggregate(form_in, data.frame(to_agg), FUN = FUN, 
+    na.action = na.action, simplify = T)
 
   # format output as swmpr object
   out <- swmpr(out, station)
@@ -165,7 +165,8 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
 #' @param na.rm logical. If the result of the interpolation includes NAs, should these be removed?
 #' 
 #' @import plyr zoo
-#' 
+#'
+#' @export na.approx
 #' @export na.approx.swmpr
 #' 
 #' @method na.approx swmpr

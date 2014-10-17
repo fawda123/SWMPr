@@ -178,7 +178,7 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
   else select <- names(dat)[names(dat) %in% c('datetimestamp', select, paste0('f_', select))]
   
   # subset data
-  out <- base::subset(dat, date_sel, select)
+  out <- base::subset(data.frame(dat), date_sel, select)
   out <- data.frame(out, row.names = 1:nrow(out))
   
   ##
@@ -359,7 +359,7 @@ comb.swmpr <- function(..., timestep = 30, differ= 5, method = 'union'){
   
   ##
   # dates
-  date_vecs <- llply(all_dat, function(x) x[[1]]$datetimestamp)
+  date_vecs <- llply(all_dat, function(x) x$datetimestamp)
   
   ## 
   # date vector for combining
