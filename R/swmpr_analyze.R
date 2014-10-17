@@ -217,44 +217,117 @@ na.approx.swmpr <- function(swmpr_in, params = NULL, maxgap,
 
 #' Seasonal trend decomposition of swmpr data
 #' 
-#' Decompose swmpr data into seasonal, trend, and irregular components using \code{\link[stats]{stl}} and \code{\link[stats]{loess}}
+#' Decompose swmpr data into trend, seasonal, and random components using \code{\link[stats]{decompose}} and \code{\link[stats]{ts}}
 #' 
 #' @param swmpr_in input swmpr object
-#' @param ... arguments passed to \code{stl} and other methods
+#' @param ... arguments passed to \code{decompose}, \code{ts}, and other methods
 #' 
 #' @export decomp
 #' 
 #' @details
-#' This function is a simple wrapper to the \code{\link[stats]{stl}} function written by Brian Ripley.  In general, \code{stl} decomposes a time series using \code{\link[stats]{loess}} smoothing into separate seasonal, trend, and remainder components. All arguments for the \code{stl} function are applicable, although each have default values excluding s.window.  All methods available for stl objects also apply to the output, including \code{plot.stl}.  
+#' This function is a simple wrapper to the \code{\link[stats]{decompose}} function.  The \code{decompose} function separates a time series into additive or multiplicative components describing a trend, cyclical variation (e.g., daily or seasonal), and the remainder.  The additive decomposition assumes that the cyclical component of the time series is stationary (i.e., the variance is constant), whereas a multiplicative decomposition accounts for non-stationarity.  By default, a moving average with a symmetric window is used to filter the seasonal component.  Alternatively, a vector of filter coefficients in reverse time order can be supplied (see \code{\link[stats]{decompose}}).  
+#' 
+#' The \code{decompose} function requires a ts object with a specified frequency.  The \code{decomp} function converts the input swmpr vector to a ts object prior to \code{decompose}.  This requires an explicit input defining the frequency in the time series required to complete a full period of the parameter.  For example, the frequency of a parameter with diurnal periodicity would be 96 if the time step is 15 minutes (4 * 24).  The frequency of a parameter with seasonal periodicity would be 35040 (4 * 24 * 365).  For simplicity, chr strings of \code{'daily'} or \code{'seasonal'} can be supplied in place of numeric values.  A starting value of the time series must be supplied in the latter case.  Use of the \code{\link{setstep}} function is required to standardize the time step prior to decomposition.  
+#' 
+#' Note that the \code{decompose} function is a relatively simple approach and alternative methods should be investigated if a more sophisticated decomposition is desired.
 #'  
 #' @references
-#' R. B. Cleveland, W. S. Cleveland, J.E. McRae, and I. Terpenning (1990) STL: A Seasonal-Trend Decomposition Procedure Based on Loess. Journal of Official Statistics, 6, 3–73.
+#' M. Kendall and A. Stuart (1983) The Advanced Theory of Statistics, Vol. 3, Griffin. pp. 410-414.
 #' 
-#' @return Returns an stl object.
+#' @seealso decompose ts stl
+#' 
+#' @return Returns a decomposed.ts object
+#' 
+#' @examples
+#' 
+#' path <- system.file('zip_ex', package = 'SWMPr')
+#'
+#' ## get data, qaqc
+#' swmp1 <- import_local(path, 'apadbwq')
+#'
+#' ## subset for daily decomposition
+#' dat <- subset(swmp1, subset = c('2013-07-01 00:00', '2013-07-31 00:00'))
+#'
+#' ## decomposition and plot
+#' test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
+#' plot(test)
+#' 
+#' ## dealing with missing values
+#' 
+#' dat <- subset(swmp1, subset = c('2013-06-01 00:00', '2013-07-31 00:00'))
+#' 
+#' ## this returns an error
+#' \dontrun{
+#' test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
+#' }
+#'
+#' ## how many missing values?
+#' sum(is.na(dat$do_mgl))
+#'
+#' ## use na.approx to interpolate missing data
+#' dat <- na.approx(dat, params = 'do_mgl', maxgap = 10)
+#'
+#' ## decomposition and plot
+#' test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
+#' plot(test)
 decomp <- function(swmpr_in, ...) UseMethod('decomp') 
 
 #' @rdname decomp
 #' 
 #' @param param chr string of swmpr parameter to decompose
-#' @param s.window either the chrr string \code{"periodic"} or the span (in lags) of the loess window for seasonal extraction, which should be odd.
+#' @param type chr string of \code{'additive'} or \code{'multiplicative'} indicating the type of decomposition, default \code{'additive'}.
+#' @param frequency chr string or numeric vector indicating the periodic component of the input parameter.  Only \code{'daily'} or \code{'seasonal'} are accepted as chr strings.  Otherwise a numeric vector specifies the number of observations required for a full cycle of the input parameter.  Defaults to \code{'daily'} for a diurnal parameter.
+#' @param start numeric vector indicating the starting value for the time series given the frequency.  Only required if \code{frequency} is numeric. See \code{\link[stats]{ts}}.
 #' 
 #' @export decomp.swmpr
 #' 
 #' @method decomp swmpr
-decomp.swmpr <- function(swmpr_in, param, s.window, ...){
+decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily', start = NULL, ...){
   
   # attributes
   parameters <- attr(swmpr_in, 'parameters')
+  timezone <- attr(swmpr_in, 'timezone')
   
+  ##
   # sanity checks
+  
+  # stop if param not in parameters
   if(!any(param %in% parameters) & !is.null(param))
     stop('Params argument must name input columns')
+  
+  # stop if frequency or start are incorrect
+  if(!is.numeric(frequency) & !any(frequency %in% c('daily', 'seasonal'))){
+    stop("Chr string input for frequency must be 'daily' or 'seasonal'")
+  } else {
+    if(!is.null(start))
+      stop('Start argument required if frequency is numeric')
+  }
+ 
+  # stop if time series is not standardized
+  chk_step <- unique(diff(swmpr_in$datetimestamp))
+  if(length(chk_step) > 1)
+    stop('The time step is not standardized, use setstep')
 
-  # decomp
-  ts_smp <- as.ts(swmpr_in[, param])
-  out <- stl(ts_smp, s.window, ...)
+  ##
+  # get frequency and starting value if input not numeric
+  start <- swmpr_in$datetimestamp[1]
+  day <- as.numeric(strftime(start, '%j', tz = timezone))
+  hour <- as.numeric(strftime(start, '%H', tz = timezone))
+  min <- as.numeric(strftime(start, '%M', tz = timezone))
+  if(frequency == 'daily'){
+    frequency  <- 24 * 60 / chk_step
+    start <- 1 + (hour + min / 60) * 60 / chk_step
+  }
+  if(frequency == 'seasonal'){
+    frequency <- 365 * 24 * 60 / chk_step 
+    start <- (day + hour / 24 + min / 60 / 24) * 24 * 60 / chk_step
+  }
+  
+  # make ts and decompose
+  ts_smp <- ts(swmpr_in[, param], start = c(1, start), frequency = frequency)
+  out <- decompose(ts_smp, type, ...)
 
-  # return stl object
+  # return decompose.ts
   return(out)
 
 }
@@ -264,23 +337,22 @@ decomp.swmpr <- function(swmpr_in, param, s.window, ...){
 #' Plot a time series of parameters in a swmpr object
 #' 
 #' @param swmpr_in input swmpr object
-#' @param subset chr string of form 'YYYY-mm-dd HH:MM' to subset a date range.  Input can be one (requires \code{operator} or two values (a range), passed to \code{\link{subset}}.
-#' @param select chr string of parameters to keep, passed to \code{\link{subset}}.
-#' @param operator chr string specifiying binary operator (e.g., \code{'>'}, \code{'<='}) if subset is one date value, passed to \code{\link{subset}}.
 #' @param type chr string for type of plot, default \code{'l'}.  See \code{\link[graphics]{plot}}.
 #' @param ... other arguments passed to \code{par}, \code{plot.default}, \code{lines}, \code{points}
 #' 
 #' @export plot.swmpr
 #' 
 #' @method plot swmpr
-plot.swmpr <- function(swmpr_in, type = 'l', subset = NULL, select, operator = NULL, ...) {
+plot.swmpr <- function(swmpr_in, type = 'l', ...) {
   
-  if(length(select) > 1) stop('Only one parameter can be plotted')
-  
-  to_plo <- subset(swmpr_in, subset, select, operator)
-  parameters <- attr(to_plo, 'parameters')
-
   to_plo <- swmpr_in
+  
+  if(attr(to_plo, 'qaqc'))
+    to_plo <- qaqc(to_plo, qaqc_keep = NULL)
+  
+  if(ncol(to_plo) > 2) stop('Only one parameter can be plotted')
+  
+  parameters <- attr(to_plo, 'parameters')
 
   form_in <- formula(substitute(i ~ datetimestamp, 
     list(i = as.name(parameters))))

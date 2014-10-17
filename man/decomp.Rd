@@ -6,27 +6,71 @@
 \usage{
 decomp(swmpr_in, ...)
 
-\method{decomp}{swmpr}(swmpr_in, param, s.window, ...)
+\method{decomp}{swmpr}(swmpr_in, param, type = "additive",
+  frequency = "daily", start = NULL, ...)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}
 
-\item{...}{arguments passed to \code{stl} and other methods}
+\item{...}{arguments passed to \code{decompose}, \code{ts}, and other methods}
 
 \item{param}{chr string of swmpr parameter to decompose}
 
-\item{s.window}{either the chrr string \code{"periodic"} or the span (in lags) of the loess window for seasonal extraction, which should be odd.}
+\item{type}{chr string of \code{'additive'} or \code{'multiplicative'} indicating the type of decomposition, default \code{'additive'}.}
+
+\item{frequency}{chr string or numeric vector indicating the periodic component of the input parameter.  Only \code{'daily'} or \code{'seasonal'} are accepted as chr strings.  Otherwise a numeric vector specifies the number of observations required for a full cycle of the input parameter.  Defaults to \code{'daily'} for a diurnal parameter.}
+
+\item{start}{numeric vector indicating the starting value for the time series given the frequency.  Only required if \code{frequency} is numeric. See \code{\link[stats]{ts}}.}
 }
 \value{
-Returns an stl object.
+Returns a decomposed.ts object
 }
 \description{
-Decompose swmpr data into seasonal, trend, and irregular components using \code{\link[stats]{stl}} and \code{\link[stats]{loess}}
+Decompose swmpr data into trend, seasonal, and random components using \code{\link[stats]{decompose}} and \code{\link[stats]{ts}}
 }
 \details{
-This function is a simple wrapper to the \code{\link[stats]{stl}} function written by Brian Ripley.  In general, \code{stl} decomposes a time series using \code{\link[stats]{loess}} smoothing into separate seasonal, trend, and remainder components. All arguments for the \code{stl} function are applicable, although each have default values excluding s.window.  All methods available for stl objects also apply to the output, including \code{plot.stl}.
+This function is a simple wrapper to the \code{\link[stats]{decompose}} function.  The \code{decompose} function separates a time series into additive or multiplicative components describing a trend, cyclical variation (e.g., daily or seasonal), and the remainder.  The additive decomposition assumes that the cyclical component of the time series is stationary (i.e., the variance is constant), whereas a multiplicative decomposition accounts for non-stationarity.  By default, a moving average with a symmetric window is used to filter the seasonal component.  Alternatively, a vector of filter coefficients in reverse time order can be supplied (see \code{\link[stats]{decompose}}).
+
+The \code{decompose} function requires a ts object with a specified frequency.  The \code{decomp} function converts the input swmpr vector to a ts object prior to \code{decompose}.  This requires an explicit input defining the frequency in the time series required to complete a full period of the parameter.  For example, the frequency of a parameter with diurnal periodicity would be 96 if the time step is 15 minutes (4 * 24).  The frequency of a parameter with seasonal periodicity would be 35040 (4 * 24 * 365).  For simplicity, chr strings of \code{'daily'} or \code{'seasonal'} can be supplied in place of numeric values.  A starting value of the time series must be supplied in the latter case.  Use of the \code{\link{setstep}} function is required to standardize the time step prior to decomposition.
+
+Note that the \code{decompose} function is a relatively simple approach and alternative methods should be investigated if a more sophisticated decomposition is desired.
+}
+\examples{
+path <- system.file('zip_ex', package = 'SWMPr')
+
+## get data, qaqc
+swmp1 <- import_local(path, 'apadbwq')
+
+## subset for daily decomposition
+dat <- subset(swmp1, subset = c('2013-07-01 00:00', '2013-07-31 00:00'))
+
+## decomposition and plot
+test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
+plot(test)
+
+## dealing with missing values
+
+dat <- subset(swmp1, subset = c('2013-06-01 00:00', '2013-07-31 00:00'))
+
+## this returns an error
+\dontrun{
+test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
+}
+
+## how many missing values?
+sum(is.na(dat$do_mgl))
+
+## use na.approx to interpolate missing data
+dat <- na.approx(dat, params = 'do_mgl', maxgap = 10)
+
+## decomposition and plot
+test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
+plot(test)
 }
 \references{
-R. B. Cleveland, W. S. Cleveland, J.E. McRae, and I. Terpenning (1990) STL: A Seasonal-Trend Decomposition Procedure Based on Loess. Journal of Official Statistics, 6, 3–73.
+M. Kendall and A. Stuart (1983) The Advanced Theory of Statistics, Vol. 3, Griffin. pp. 410-414.
+}
+\seealso{
+decompose ts stl
 }
 

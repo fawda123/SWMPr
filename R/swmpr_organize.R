@@ -25,14 +25,15 @@ qaqc.swmpr <- function(swmpr_in,
   
   ##
   # sanity checks
-  if(!class(qaqc_keep) %in% c('numeric', 'NULL'))
-    stop('qaqc_in argument must be numeric or NULL')
+  if(!class(qaqc_keep) %in% c('numeric', 'integer', 'NULL'))
+    stop('qaqc_keep argument must be numeric or NULL')
   
   ##
   # swmpr data and attributes
   dat <- swmpr_in
   qaqc_cols <- attr(swmpr_in, 'qaqc_cols')
   station <- attr(swmpr_in, 'station')
+  parameters <- attr(swmpr_in, 'parameters')
   
   # exit function if no qaqc columns
   if(!qaqc_cols){
@@ -50,11 +51,12 @@ qaqc.swmpr <- function(swmpr_in,
   
   qaqc_rm <- as.numeric(seq(-5,  5))
   qaqc_rm <- qaqc_rm[!qaqc_rm %in% qaqc_keep]
+  if(length(qaqc_rm) == 0) qaqc_keep <- NULL
   
   # keep all if qaqc_in is NULL, otherwise process qaqc
   if(is.null(qaqc_keep)){ 
     
-    rm_col <- c('datetimestamp', 'statparam', qaqc_sel)
+    rm_col <- c('datetimestamp', qaqc_sel)
     qaqc <- dat[, !names(dat) %in% rm_col]
 
   } else {
@@ -95,6 +97,7 @@ qaqc.swmpr <- function(swmpr_in,
     datetimestamp = out[,1],
     apply(out[, -1, drop = F], 2 , as.numeric)
     )
+  names(out) <- c('datetimestamp', parameters)
 
   # create swmpr class
   out <- swmpr(out, station)

@@ -152,9 +152,9 @@ methods(class = 'swmpr')
 ```
 
 ```
-##  [1] aggregate.swmpr comb.swmpr      hist.swmpr      lines.swmpr    
-##  [5] na.approx.swmpr plot.swmpr      qaqc.swmpr      setstep.swmpr  
-##  [9] smoother.swmpr  subset.swmpr
+##  [1] aggregate.swmpr comb.swmpr      decomp.swmpr    hist.swmpr     
+##  [5] lines.swmpr     na.approx.swmpr plot.swmpr      qaqc.swmpr     
+##  [9] setstep.swmpr   smoother.swmpr  subset.swmpr
 ```
 
 ##swmpr methods
@@ -231,7 +231,7 @@ comb(swmp1, swmp3, method = 'intersect')
 comb(swmp1, swmp2, swmp3, timestep = 120, method = 'apacpnut')
 ```
 
-The analysis functions range from general purpose tools for time series analysis to more specific functions for working with continuous monitoring data in estuaries.  The latter category includes a limited number of functions that were developed by myself or others.  The general purpose tools are swmpr methods that were developed for existing generic functions in the R base installation or relevant packages.  These functions include swmpr methods for `aggregate`, `filter`, and `approx` to deal with missing or noisy data and more general functions for exploratory data analaysis, such as `plot`, `summary`, and `hist` methods.  The analysis functions may or may not return a swmpr object depending on whether further processing with swmpr methods is possible from the output.    
+The analysis functions range from general purpose tools for time series analysis to more specific functions for working with continuous monitoring data in estuaries.  The latter category includes a limited number of functions that were developed by myself or others.  The general purpose tools are swmpr methods that were developed for existing generic functions in the R base installation or relevant packages.  These functions include swmpr methods for `aggregate`, `filter`, and `approx` to deal with missing or noisy data and more general functions for exploratory data analaysis, such as `plot`, `summary`, and `hist` methods.  A `decomp` function is provided for a relatively simple approach for time series decomposition. The analysis functions may or may not return a swmpr object depending on whether further processing with swmpr methods is possible from the output.    
 
 The `aggregate` function aggregates parameter data for a swmpr object by set periods of observation.  This function is most useful for aggregating noisy data to evaluate trends on longer time scales, or to simply reduce the size of a dataset.  Data can be aggregated by years, quarters, months, weeks, days, or hours for a user-defined function, which defaults to the mean.  A swmpr object is returned for the aggregated data, although the datetimestamp vector will be converted to a date object if the aggregation period is a day or longer.  Days are assigned to the date vector if the aggregation period is a week or longer based on the `round` method for IDate objects (<a href="http://cran.r-project.org/web/packages/data.table/index.html">data.table</a> package).  This approach was used to facilitate plotting using predefined methods for Date and POSIX objects.  Additionally, the method of treating NA values for the aggregation function should be noted since this may greatly affect the quantity of data that are returned (see the example below).  Finally, the default argument for `na.action` is set to `na.pass` for swmpr objects to preserve the time series of the input data.
 
@@ -261,11 +261,11 @@ swmp1 <- import_local(path, 'apadbwq')
 dat <- qaqc(swmp1)
 dat <- subset(dat, subset = c('2012-07-09 00:00', '2012-07-24 00:00'))
 
-#filter
+# filter
 test <- smoother(dat, window = 50, params = 'do_mgl')
 
 # plot to see the difference
-plot(dat, select = 'do_mgl')
+plot(do_mgl ~ datetimestamp, data = dat, type = 'l')
 lines(test, select = 'do_mgl', col = 'red', lwd = 2)
 ```
 
@@ -290,18 +290,68 @@ test2 <- na.approx(dat, params = 'do_mgl', maxgap = 30)
 
 # plot for comparison
 par(mfrow = c(3, 1))
-plot(dat, select = 'do_mgl', main = 'Raw')
-plot(test, select = 'do_mgl', col = 'red', main = 'Inteprolation - maximum gap of 10 records')
+plot(do_mgl ~ datetimestamp, dat, main = 'Raw', type = 'l')
+plot(do_mgl ~ datetimestamp, test, col = 'red', main = 'Inteprolation - maximum gap of 10 records', type = 'l')
 lines(dat, select = 'do_mgl')
-plot(test2, select = 'do_mgl', col = 'red', main = 'Inteprolation - maximum gap of 30 records')
+plot(do_mgl ~ datetimestamp, test2, col = 'red', main = 'Inteprolation - maximum gap of 30 records', type = 'l')
 lines(dat, select = 'do_mgl')
 ```
 
 ![plot of chunk unnamed-chunk-16](./README_files/figure-html/unnamed-chunk-16.png) 
 
+The \code{decomp} function is a simple wrapper to \code{decompose} that separates a time series into additive or multiplicative components describing a trend, cyclical variation (e.g., daily or seasonal), and the remainder.  The additive decomposition assumes that the cyclical component of the time series is stationary (i.e., the variance is constant), whereas a multiplicative decomposition accounts for non-stationarity.  By default, a moving average with a symmetric window is used to filter the seasonal component.  Alternatively, a vector of filter coefficients in reverse time order can be supplied (see \code{\link[stats]{decompose}}).  
+
+The \code{decompose} function requires a ts object with a specified frequency as input.  The \code{decomp} function converts the input swmpr vector to a ts object prior to \code{decompose}.  This requires an explicit input defining the frequency of the parameter in the time series.  For example, the frequency of a parameter with diurnal periodicity would be 96 if the time step is 15 minutes (4 * 24).  The frequency of a parameter with seasonal periodicity would be 35040 (4 * 24 * 365).  For simplicity, character strings of \code{'daily'} or \code{'seasonal'} can be supplied in place of numeric values.  A starting value of the time series must be supplied in the latter case.  Use of the \code{setstep} function is also required to standardize the time step prior to decomposition.  
+
+Note that the \code{decompose} function is a relatively simple approach and alternative methods should be investigated if a more sophisticated decomposition is desired.
+
+
+```r
+# get data, qaqc
+swmp1 <- import_local(path, 'apadbwq')
+
+# subset for daily decomposition
+dat <- subset(swmp1, subset = c('2013-07-01 00:00', '2013-07-31 00:00'))
+
+# decomposition and plot
+test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
+plot(test)
+```
+
+![plot of chunk unnamed-chunk-17](./README_files/figure-html/unnamed-chunk-17.png) 
+
+The next example illustrates how to handle missing values using the \code{decomp} function. The \code{decompose} function used internally within \code{decomp} currently cannot process time series with missing values.  A recommended approach is to use \code{na.approx} to interpolate the missing values prior to \code{decompose}.
+
+
+```r
+# get data
+dat <- subset(swmp1, subset = c('2013-06-01 00:00', '2013-07-31 00:00'))
+
+# this returns an error
+# test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
+
+# how many missing values?
+sum(is.na(dat$do_mgl))
+```
+
+```
+## [1] 3
+```
+
+```r
+# use na.approx to interpolate missing data
+dat <- na.approx(dat, params = 'do_mgl', maxgap = 10)
+
+# decomposition and plot
+test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
+plot(test)
+```
+
+![plot of chunk unnamed-chunk-18](./README_files/figure-html/unnamed-chunk-18.png) 
+
 ##Functions
 
-See help documentation (e.g., `?all_param`) for more details.
+See help documentation for more details on each function (e.g., `?all_param`).
 
 <b>retrieve</b>
 
@@ -337,7 +387,7 @@ See help documentation (e.g., `?all_param`) for more details.
 
 `hist.swmpr` Plot a histogram for a swmpr object.
 
-`summary.swmpr` Create result summaries for columns in a swmpr object.
+`decomp.swmpr` Decompose a swmpr time series into trend, seasonal, and residual components.  This is a simple wrapper to `decompose`.
 
 <b>miscellaneous</b>
 
@@ -355,7 +405,7 @@ See help documentation (e.g., `?all_param`) for more details.
 
 ##Forthcoming
 
-Analysis functions... seasonal decomp, metab, trend evaluation
+Analysis functions... metab
 
 Better documentation...
 
