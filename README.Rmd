@@ -246,6 +246,21 @@ plot(test2, select = 'do_mgl', col = 'red', main = 'Inteprolation - maximum gap 
 lines(dat, select = 'do_mgl')
 ```
 
+Seasonal decomposition...
+
+```{r eval = T, fig.height = 7}
+# get data, qaqc
+swmp1 <- import_local(path, 'apadbwq')
+
+# qaqc and subset imported data
+dat <- qaqc(swmp1)
+dat <- subset(dat, subset = c('2013-01-01 00:00', '2013-07-31 00:00'))
+
+# interpolate, maxgap of 10 records
+test <- decomp(dat, param = 'do_mgl', s.window = 'periodic', na.action = na.exclude)
+
+```
+
 ##Functions
 
 See help documentation (e.g., `?all_param`) for more details.
@@ -284,7 +299,7 @@ See help documentation (e.g., `?all_param`) for more details.
 
 `hist.swmpr` Plot a histogram for a swmpr object.
 
-`summary.swmpr` Create result summaries for columns in a swmpr object.
+`decomp.swmpr` Decompose a swmpr time series into seasonal, trend, and residual components.  This is a simple wrapper to `stl`.
 
 <b>miscellaneous</b>
 
