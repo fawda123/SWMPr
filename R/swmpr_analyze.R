@@ -234,7 +234,7 @@ na.approx.swmpr <- function(swmpr_in, params = NULL, maxgap,
 #' @references
 #' M. Kendall and A. Stuart (1983) The Advanced Theory of Statistics, Vol. 3, Griffin. pp. 410-414.
 #' 
-#' @seealso decompose ts stl
+#' @seealso \code{\link[stats]{decompose}}, \code{\link[stats]{ts}}, \code{\link[stats]{stl}}
 #' 
 #' @return Returns a decomposed.ts object
 #' 

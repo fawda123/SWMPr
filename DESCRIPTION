@@ -20,6 +20,6 @@ Imports:
 Suggests:
     SSOAP
 Depends:
-    R (>= 3.1.1)
+    R (>= 3.0.0)
 Authors@R: person("Marcus", "Beck", email = "mbafs2012@gmail.com",
     role = c("aut", "cre"))

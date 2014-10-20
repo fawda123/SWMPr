@@ -246,11 +246,11 @@ plot(do_mgl ~ datetimestamp, test2, col = 'red', main = 'Inteprolation - maximum
 lines(dat, select = 'do_mgl')
 ```
 
-The \code{decomp} function is a simple wrapper to \code{decompose} that separates a time series into additive or multiplicative components describing a trend, cyclical variation (e.g., daily or seasonal), and the remainder.  The additive decomposition assumes that the cyclical component of the time series is stationary (i.e., the variance is constant), whereas a multiplicative decomposition accounts for non-stationarity.  By default, a moving average with a symmetric window is used to filter the seasonal component.  Alternatively, a vector of filter coefficients in reverse time order can be supplied (see \code{\link[stats]{decompose}}).  
+The `decomp` function is a simple wrapper to `decompose` that separates a time series into additive or multiplicative components describing a trend, cyclical variation (e.g., daily or seasonal), and the remainder.  The additive decomposition assumes that the cyclical component of the time series is stationary (i.e., the variance is constant), whereas a multiplicative decomposition accounts for non-stationarity.  By default, a moving average with a symmetric window is used to filter the seasonal component.  Alternatively, a vector of filter coefficients in reverse time order can be supplied (see the help documentation for `decompose`).  
 
-The \code{decompose} function requires a ts object with a specified frequency as input.  The \code{decomp} function converts the input swmpr vector to a ts object prior to \code{decompose}.  This requires an explicit input defining the frequency of the parameter in the time series.  For example, the frequency of a parameter with diurnal periodicity would be 96 if the time step is 15 minutes (4 * 24).  The frequency of a parameter with seasonal periodicity would be 35040 (4 * 24 * 365).  For simplicity, character strings of \code{'daily'} or \code{'seasonal'} can be supplied in place of numeric values.  A starting value of the time series must be supplied in the latter case.  Use of the \code{setstep} function is also required to standardize the time step prior to decomposition.  
+The `decompose` function requires a ts object with a specified frequency as input.  The `decomp` function converts the input swmpr vector to a ts object prior to `decompose`.  This requires an explicit input defining the frequency of the parameter in the time series.  For example, the frequency of a parameter with diurnal periodicity would be 96 if the time step is 15 minutes (4 * 24).  The frequency of a parameter with seasonal periodicity would be 35040 (4 * 24 * 365).  For simplicity, character strings of `'daily'` or `'seasonal'` can be supplied in place of numeric values.  A starting value of the time series must be supplied in the latter case.  Use of the `setstep` function is also required to standardize the time step prior to decomposition.  
 
-Note that the \code{decompose} function is a relatively simple approach and alternative methods should be investigated if a more sophisticated decomposition is desired.
+Note that the `decompose` function is a relatively simple approach and alternative methods should be investigated if a more sophisticated decomposition is desired.
 
 ```{r eval = T, fig.height = 6}
 # get data, qaqc
@@ -265,7 +265,7 @@ plot(test)
 
 ```
 
-The next example illustrates how to handle missing values using the \code{decomp} function. The \code{decompose} function used internally within \code{decomp} currently cannot process time series with missing values.  A recommended approach is to use \code{na.approx} to interpolate the missing values prior to \code{decompose}.
+The next example illustrates how to handle missing values using the `decomp` function. The `decompose` function used internally within `decomp` currently cannot process time series with missing values.  A recommended approach is to use `na.approx` to interpolate the missing values prior to `decompose`.
 
 ```{r eval = T, fig.height = 6, warning = F}
 # get data
