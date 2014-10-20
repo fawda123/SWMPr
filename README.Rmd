@@ -202,7 +202,7 @@ aggregate(swmpr_in, FUN = fun_in, 'quarters', params = c('do_mgl'))
 
 ```
 
-Time series can be smoothed to better characterize a signal independent of noise.  Although there are many approaches to smoothing, a moving window average is intuitive and commonly used.  The `smoother` function can be used to smooth parameters in a swmpr object using a specified window size.  This method is a simple wrapper to `filter`.  The `window` argument specifies the number of observations included in the moving average.  The `sides` argument specifies how the average is calculated for each observation (see the documentation for `filter`).  A value of 1 will filter observations within the window that are previous to the current observation, whereas a value of 2 will filter all observations withing the window centered at zero lag from the current observation. As before, the `params` argument specifies which parameters to smooth.
+Time series can be smoothed to better characterize a signal independent of noise.  Although there are many approaches to smoothing, a moving window average is intuitive and commonly used.  The `smoother` function can be used to smooth parameters in a swmpr object using a specified window size.  This method is a simple wrapper to `filter`.  The `window` argument specifies the number of observations included in the moving average.  The `sides` argument specifies how the average is calculated for each observation (see the documentation for `filter`).  A value of 1 will filter observations within the window that are previous to the current observation, whereas a value of 2 will filter all observations within the window centered at zero lag from the current observation. As before, the `params` argument specifies which parameters to smooth.
 
 ```{r eval = T}
 # import data
@@ -242,7 +242,7 @@ par(mfrow = c(3, 1))
 plot(do_mgl ~ datetimestamp, dat, main = 'Raw', type = 'l')
 plot(do_mgl ~ datetimestamp, test, col = 'red', main = 'Inteprolation - maximum gap of 10 records', type = 'l')
 lines(dat, select = 'do_mgl')
-plot(do_mgl ~ datetimestamp, test2, col = 'red', main = 'Inteprolation - maximum gap of 30 records', type = 'l')
+plot(do_mgl ~ datetimestamp, test2, col = 'red', main = 'Interpolation - maximum gap of 30 records', type = 'l')
 lines(dat, select = 'do_mgl')
 ```
 
@@ -253,7 +253,7 @@ The `decompose` function requires a ts object with a specified frequency as inpu
 Note that the `decompose` function is a relatively simple approach and alternative methods should be investigated if a more sophisticated decomposition is desired.
 
 ```{r eval = T, fig.height = 6}
-# get data, qaqc
+# get data
 swmp1 <- import_local(path, 'apadbwq')
 
 # subset for daily decomposition

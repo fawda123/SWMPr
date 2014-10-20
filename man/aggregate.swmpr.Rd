@@ -46,4 +46,7 @@ aggregate(swmpr_in, FUN = fun_in, 'quarters', params = c('do_mgl'))
 fun_in <- function(x)  var(x, na.rm = T)
 aggregate(swmpr_in, FUN = fun_in, 'years', na.action = na.exclude)
 }
+\seealso{
+\code{\link[stats]{aggregate}}
+}
 

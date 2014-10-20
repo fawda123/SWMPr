@@ -25,4 +25,26 @@ Returns a filtered swmpr object. QAQC columns are removed if included with input
 \description{
 Smooth swmpr data with a moving window average
 }
+\details{
+The \code{smoother} function can be used to smooth parameters in a swmpr object using a specified window size. This method is a simple wrapper to \code{\link[stats]{filter}}. The window argument specifies the number of observations included in the moving average. The sides argument specifies how the average is calculated for each observation (see the documentation for \code{\link[stats]{filter}}). A value of 1 will filter observations within the window that are previous to the current observation, whereas a value of 2 will filter all observations within the window centered at zero lag from the current observation. The params argument specifies which parameters to smooth.
+}
+\examples{
+## import data
+path <- system.file('zip_ex', package = 'SWMPr')
+swmp1 <- import_local(path, 'apadbwq')
+
+## qaqc and subset imported data
+dat <- qaqc(swmp1)
+dat <- subset(dat, subset = c('2012-07-09 00:00', '2012-07-24 00:00'))
+
+## filter
+test <- smoother(dat, window = 50, params = 'do_mgl')
+
+## plot to see the difference
+plot(do_mgl ~ datetimestamp, data = dat, type = 'l')
+lines(test, select = 'do_mgl', col = 'red', lwd = 2)
+}
+\seealso{
+\code{\link[stats]{filter}}
+}
 

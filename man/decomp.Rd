@@ -66,6 +66,35 @@ dat <- na.approx(dat, params = 'do_mgl', maxgap = 10)
 ## decomposition and plot
 test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
 plot(test)
+## import data
+path <- system.file('zip_ex', package = 'SWMPr')
+swmp1 <- import_local(path, 'apadbwq')
+
+## subset for daily decomposition
+dat <- subset(swmp1, subset = c('2013-07-01 00:00', '2013-07-31 00:00'))
+
+## decomposition and plot
+test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
+plot(test)
+
+## dealing with missing values
+
+## get data
+dat <- subset(swmp1, subset = c('2013-06-01 00:00', '2013-07-31 00:00'))
+
+\dontrun{
+test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
+}
+
+## how many missing values?
+sum(is.na(dat$do_mgl))
+
+## use na.approx to interpolate missing data
+dat <- na.approx(dat, params = 'do_mgl', maxgap = 10)
+
+## decomposition and plot
+test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
+plot(test)
 }
 \references{
 M. Kendall and A. Stuart (1983) The Advanced Theory of Statistics, Vol. 3, Griffin. pp. 410-414.

@@ -20,6 +20,8 @@
 #' 
 #' @return Returns an aggregated swmpr object. QAQC columns are removed if included with input object.
 #' 
+#' @seealso \code{\link[stats]{aggregate}}
+#' 
 #' @examples
 #' ## get data, prep
 #' path <- system.file('zip_ex', package = 'SWMPr')
@@ -121,7 +123,27 @@ smoother <- function(swmpr_in, ...) UseMethod('smoother')
 #' 
 #' @export smoother.swmpr
 #' 
+#' @details The \code{smoother} function can be used to smooth parameters in a swmpr object using a specified window size. This method is a simple wrapper to \code{\link[stats]{filter}}. The window argument specifies the number of observations included in the moving average. The sides argument specifies how the average is calculated for each observation (see the documentation for \code{\link[stats]{filter}}). A value of 1 will filter observations within the window that are previous to the current observation, whereas a value of 2 will filter all observations within the window centered at zero lag from the current observation. The params argument specifies which parameters to smooth.
+#' 
+#' @seealso \code{\link[stats]{filter}}
+#' 
 #' @method smoother swmpr
+#' 
+#' @examples
+#' ## import data
+#' path <- system.file('zip_ex', package = 'SWMPr')
+#' swmp1 <- import_local(path, 'apadbwq')
+#' 
+#' ## qaqc and subset imported data
+#' dat <- qaqc(swmp1)
+#' dat <- subset(dat, subset = c('2012-07-09 00:00', '2012-07-24 00:00'))
+#' 
+#' ## filter
+#' test <- smoother(dat, window = 50, params = 'do_mgl')
+#' 
+#' ## plot to see the difference
+#' plot(do_mgl ~ datetimestamp, data = dat, type = 'l')
+#' lines(test, select = 'do_mgl', col = 'red', lwd = 2)
 smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
   
   # attributes
@@ -154,7 +176,9 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
 
 }
 
-#' Linearly interpolate gaps in swmpr data
+#' Linearly interpolate gaps
+#' 
+#' Linearly interpolate gaps in swmpr data within a maximum size 
 #' 
 #' @param swmpr_in input swmpr object
 #' @param params is chr string of swmpr parameters to smooth, default all
@@ -168,7 +192,38 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
 #' 
 #' @method na.approx swmpr
 #' 
+#' @details A common approach for handling missing data in time series analysis is linear interpolation.  A simple curve fitting method is used to create a continuous set of records between observations separated by missing data.  A required argument for the function is \code{maxgap} which defines the maximum gap size  for interpolation. The ability of the interpolated data to approximate actual, unobserved trends is a function of the gap size.  Interpolation between larger gaps are less likely to resemble patterns of an actual parameter, whereas interpolation between smaller gaps may be more likely to resemble actual patterns.  An appropriate gap size limit depends on the unique characteristics of specific datasets or parameters.  
+#' 
+#' @seealso \code{\link[zoo]{na.approx}}
+#' 
 #' @return Returns a swmpr object. QAQC columns are removed if included with input object.
+#' 
+#' @examples
+#' ## import data
+#' path <- system.file('zip_ex', package = 'SWMPr')
+#' swmp1 <- import_local(path, 'apadbwq')
+#' 
+#' ## qaqc and subset imported data
+#' dat <- qaqc(swmp1)
+#' dat <- subset(dat, subset = c('2013-01-22 00:00', '2013-01-26 00:00'))
+#' 
+#' ## interpolate, maxgap of 10 records
+#' test <- na.approx(dat, params = 'do_mgl', maxgap = 10)
+#' 
+#' ## interpolate maxgap of 30 records
+#' test2 <- na.approx(dat, params = 'do_mgl', maxgap = 30)
+#' 
+#' ## plot for comparison
+#' windows(width = 6, height = 9)
+#' par(mfrow = c(3,1))
+#' 
+#' plot(do_mgl ~ datetimestamp, dat, main = 'Raw', type = 'l')
+#' 
+#' plot(do_mgl ~ datetimestamp, test, col = 'red', main = 'Inteprolation - maximum gap of 10 records', type = 'l')
+#' lines(dat, select = 'do_mgl')
+#' 
+#' plot(do_mgl ~ datetimestamp, test2, col = 'red', main = 'Interpolation - maximum gap of 30 records', type = 'l')
+#' lines(dat, select = 'do_mgl')
 na.approx.swmpr <- function(swmpr_in, params = NULL, maxgap, 
   na.rm = F, ...){
   
@@ -282,6 +337,37 @@ decomp <- function(swmpr_in, ...) UseMethod('decomp')
 #' @export decomp.swmpr
 #' 
 #' @method decomp swmpr
+#' 
+#' @examples
+#' ## import data
+#' path <- system.file('zip_ex', package = 'SWMPr')
+#' swmp1 <- import_local(path, 'apadbwq')
+#' 
+#' ## subset for daily decomposition
+#' dat <- subset(swmp1, subset = c('2013-07-01 00:00', '2013-07-31 00:00'))
+#'
+#' ## decomposition and plot
+#' test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
+#' plot(test)
+#'
+#' ## dealing with missing values
+#' 
+#' ## get data
+#' dat <- subset(swmp1, subset = c('2013-06-01 00:00', '2013-07-31 00:00'))
+#' 
+#' \dontrun{ 
+#' test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
+#' }
+#'
+#' ## how many missing values?
+#' sum(is.na(dat$do_mgl))
+#'
+#' ## use na.approx to interpolate missing data
+#' dat <- na.approx(dat, params = 'do_mgl', maxgap = 10)
+#' 
+#' ## decomposition and plot
+#' test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
+#' plot(test)
 decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily', start = NULL, ...){
   
   # attributes
@@ -342,7 +428,29 @@ decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily'
 #' 
 #' @export plot.swmpr
 #' 
+#' @details The swmpr method for plotting is a convenience function for plotting a univariate time series.  Conventional plotting methods also work well since swmpr objects are also data frames.  See the examples for use with different methods.  
+#' 
 #' @method plot swmpr
+#' 
+#' @seealso \code{\link[graphics]{plot}}
+#' 
+#' @examples
+#' ## get data
+#' path <- system.file('zip_ex', package = 'SWMPr')
+#' swmp1 <- import_local(path, 'apadbwq')
+#' 
+#' ## subset
+#' dat <- subset(swmp1, select = 'do_mgl', subset = c('2013-07-01 00:00', '2013-07-31 00:00'))
+#'
+#' ## plot using swmpr method, note default line plot
+#' plot(dat)
+#' 
+#' ## plot using formula method
+#' plot(do_mgl ~ datetimestamp, dat)
+#' 
+#' ## plot using defualt, add lines
+#' plot(dat$datetimestamp, dat$do_mgl)
+#' lines(dat, select = 'do_mgl', col = 'red')
 plot.swmpr <- function(swmpr_in, type = 'l', ...) {
   
   to_plo <- swmpr_in
@@ -387,9 +495,24 @@ lines.swmpr <- function(swmpr_in, subset = NULL, select, operator = NULL, ...) {
 #' @param operator chr string specifiying binary operator (e.g., \code{'>'}, \code{'<='}) if subset is one date value, passed to \code{\link{subset}}.
 #' @param ... other arguments passed to \code{\link[graphics]{histogram}}
 #' 
+#' @details The swmpr method for histograms is a convenience function for the default histogram function.  Conventional histogram methods also work well since swmpr objects are also data frames.  See the examples for use with different methods.  
+#' 
 #' @export hist.swmpr
 #' 
 #' @method hist swmpr
+#' 
+#' @seealso \code{\link[graphics]{hist}}
+#' 
+#' @examples
+#' ## get data
+#' path <- system.file('zip_ex', package = 'SWMPr')
+#' dat <- import_local(path, 'apadbwq')
+#'
+#' ## plot using swmpr method, note default line plot
+#' hist(dat, select = 'do_mgl')
+#' 
+#' ## plot using defualt method
+#' hist(dat$do_mgl)
 hist.swmpr <- function(swmpr_in, subset = NULL, select, operator = NULL, ...) {
   
   if(length(select) > 1) stop('Only one parameter can be plotted')

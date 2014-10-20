@@ -19,4 +19,21 @@
 \description{
 Plot a histogram showing the distribution of a swmpr parameter
 }
+\details{
+The swmpr method for histograms is a convenience function for the default histogram function.  Conventional histogram methods also work well since swmpr objects are also data frames.  See the examples for use with different methods.
+}
+\examples{
+## get data
+path <- system.file('zip_ex', package = 'SWMPr')
+dat <- import_local(path, 'apadbwq')
+
+## plot using swmpr method, note default line plot
+hist(dat, select = 'do_mgl')
+
+## plot using defualt method
+hist(dat$do_mgl)
+}
+\seealso{
+\code{\link[graphics]{hist}}
+}
 

@@ -18,4 +18,28 @@
 \description{
 Plot a time series of parameters in a swmpr object
 }
+\details{
+The swmpr method for plotting is a convenience function for plotting a univariate time series.  Conventional plotting methods also work well since swmpr objects are also data frames.  See the examples for use with different methods.
+}
+\examples{
+## get data
+path <- system.file('zip_ex', package = 'SWMPr')
+swmp1 <- import_local(path, 'apadbwq')
+
+## subset
+dat <- subset(swmp1, select = 'do_mgl', subset = c('2013-07-01 00:00', '2013-07-31 00:00'))
+
+## plot using swmpr method, note default line plot
+plot(dat)
+
+## plot using formula method
+plot(do_mgl ~ datetimestamp, dat)
+
+## plot using defualt, add lines
+plot(dat$datetimestamp, dat$do_mgl)
+lines(dat, select = 'do_mgl', col = 'red')
+}
+\seealso{
+\code{\link[graphics]{plot}}
+}
 

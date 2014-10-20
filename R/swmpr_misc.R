@@ -4,7 +4,7 @@
 #' @param  stat_in \code{data.frame} of swmp data
 #' @param  meta_in chr string for station code (7 or 8 characters), can be multiple stations if data are combined
 #' 
-#' @export
+#' @export swmpr
 #' 
 #' @return Returns a swmpr object to be used with S3 methods
 swmpr <- function(stat_in, meta_in){
