@@ -264,8 +264,23 @@ import_local <- function(path, station_code, trace = F){
     
     if(trace) cat(file_in, '\t')
     
-    # import file
-    tmp <- read.csv(file.path(path, file_in), stringsAsFactors = F)
+    # import file, try using read.csv, else readlines
+    tmp <- try({
+      read.csv(file.path(path, file_in), stringsAsFactors = F)
+    }, silent = T)
+    
+    if('try-error' %in% class(tmp)){
+      raw <- readLines(file.path(path, file_in))
+      keep_lines <- grep(paste0('^', station_code), raw)
+      tmp <- raw[keep_lines]
+      tmp <- strsplit(tmp, ',')
+      tmp <- do.call('rbind', tmp)
+      tmp <- data.frame(tmp, stringsAsFactors = F)
+      names(tmp)  <- strsplit(
+        gsub('["\\"]', '', raw[keep_lines[1] - 1]),
+        ',')[[1]] 
+    }
+      
     names(tmp) <- tolower(names(tmp))
     
     # convert date time to posix
