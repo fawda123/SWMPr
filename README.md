@@ -15,7 +15,7 @@ National Estuarine Research Reserve System (NERRS). 2012. System-wide Monitoring
 
 To cite this package:
 
-Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 0.2.0. https://github.com/fawda123/SWMPr
+Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 0.3.2. https://github.com/fawda123/SWMPr
 
 ##Installing the package
 
@@ -34,7 +34,7 @@ Note that the current version of devtools (v1.6.1) was built under R version 3.1
 
 ##Data retrieval
 
-SWMP data can be obtained directly from the CDMO through an online query or by using the retrieval functions provided in this package.  In the latter case, the IP address for the computer making the request must be registered with CDMO.  This can be done by following instructions <a href="http://cdmo.baruch.sc.edu/webservices.cfm">here</a>.  The <a href="http://cdmo.baruch.sc.edu/data/metadata.cfm">metadata</a> should also be consulted for available data, including the parameters and date ranges for each monitoring station.  Metadata are included as a .csv file with data requested from the CDMO and can also be obtained using the `site_codes` (all sites) or `site_codes_ind` (individual site) functions.  
+SWMP data can be used in R after they are obtained directly from the CDMO through an online query or by using the retrieval functions provided in this package.  In the latter case, the IP address for the computer making the request must be registered with CDMO.  This can be done by following instructions <a href="http://cdmo.baruch.sc.edu/webservices.cfm">here</a>.  The <a href="http://cdmo.baruch.sc.edu/data/metadata.cfm">metadata</a> should also be consulted for available data, including the parameters and date ranges for each monitoring station.  Metadata are included as a .csv file with data requested from the CDMO and can also be obtained using the `site_codes` (all sites) or `site_codes_ind` (individual site) functions.  
 
 
 ```r
@@ -62,16 +62,29 @@ all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013'), param = 'do_mgl')
 single_param('hudscwq', 'do_mgl')
 ```
 
-For larger requests, it's easier to obtain data outside of R using the CDMO query system.  Data can be retrieved from the CDMO several ways.  Data from single stations can be requested from the <a href="http://cdmo.baruch.sc.edu/get/export.cfm">data export system</a>, whereas data from multiple stations can be requested from the <a href="http://cdmo.baruch.sc.edu/aqs/">advanced query system</a>.  The `import_local` function is used to import local data into R that were downloaded from the CDMO with the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> feature within the advanced query system.  The downloaded data will include multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.).  It is recommended that all stations at a site and the complete date ranges are requested to avoid repeated requests to CDMO.  The `import_local` function can be used once the downloaded files are extracted to a local path. 
+For larger requests, it's easier to obtain data outside of R using the CDMO query system and then importing within R using the `import_local` function.  Data can be retrieved from the CDMO several ways.  The `import_local` function is designed for data from the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> feature in the advanced query section of the CDMO. The function may also work using data from the <a href="http://cdmo.baruch.sc.edu/get/export.cfm">data export system</a>, but this feature has not been extensively tested (expect bugs).  The <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> feature is an easy way to obtain data from multiple stations in one request.  The downloaded data will be in a compressed folder that includes multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.).  It is recommended that all stations at a site and the complete date ranges are requested to avoid repeated requests to CDMO.  The `import_local` function can be used after the folder is decompressed.
 
 
 ```r
-# import data for apaebmet from local path
+# import data for apaebmet that you downloaded
+
+# this is an example path with the csv files, change as needed
+path <- 'C:/my_path/'
+
+# import, do not include file extension
+import_local(path, 'apaebmet') 
+```
+
+For the following example, the `import_local` function is used to load data included with the SWMPr distribution.  To use it, set the path variable using the `system.file` command shown below (you can see this full path by executing `path` at the command line).  Execute both lines to import the data.
+
+
+```r
+# import data for apaebmet that comes with SWMPr
 
 # this is the path for csv example files
 path <- system.file('zip_ex', package = 'SWMPr')
 
-# import
+# import, do not include file extension
 import_local(path, 'apaebmet') 
 ```
 
@@ -250,7 +263,7 @@ fun_in <- function(x) mean(x, na.rm = T)
 aggregate(swmpr_in, FUN = fun_in, 'quarters', params = c('do_mgl'))
 ```
 
-Time series can be smoothed to better characterize a signal independent of noise.  Although there are many approaches to smoothing, a moving window average is intuitive and commonly used.  The `smoother` function can be used to smooth parameters in a swmpr object using a specified window size.  This method is a simple wrapper to `filter`.  The `window` argument specifies the number of observations included in the moving average.  The `sides` argument specifies how the average is calculated for each observation (see the documentation for `filter`).  A value of 1 will filter observations within the window that are previous to the current observation, whereas a value of 2 will filter all observations withing the window centered at zero lag from the current observation. As before, the `params` argument specifies which parameters to smooth.
+Time series can be smoothed to better characterize a signal independent of noise.  Although there are many approaches to smoothing, a moving window average is intuitive and commonly used.  The `smoother` function can be used to smooth parameters in a swmpr object using a specified window size.  This method is a simple wrapper to `filter`.  The `window` argument specifies the number of observations included in the moving average.  The `sides` argument specifies how the average is calculated for each observation (see the documentation for `filter`).  A value of 1 will filter observations within the window that are previous to the current observation, whereas a value of 2 will filter all observations within the window centered at zero lag from the current observation. As before, the `params` argument specifies which parameters to smooth.
 
 
 ```r
@@ -269,7 +282,7 @@ plot(do_mgl ~ datetimestamp, data = dat, type = 'l')
 lines(test, select = 'do_mgl', col = 'red', lwd = 2)
 ```
 
-![plot of chunk unnamed-chunk-15](./README_files/figure-html/unnamed-chunk-15.png) 
+![plot of chunk unnamed-chunk-16](./README_files/figure-html/unnamed-chunk-16.png) 
 
 A common issue with any statistical analysis is the treatment of missing values.  Missing data can be excluded from the analysis, included but treated as true zeroes, or interpolated based on similar values.  In either case, an analyst should have a strong rationale for the chosen method.  A common approach used to handle missing data in time series analysis is linear interpolation.  A simple curve fitting method is used to create a continuous set of records between observations separated by missing data.  A challenge with linear interpolation is an appropriate gap size for fitting missing observations.  The ability of the interpolated data to approximate actual trends is a function of the gap size.  Interpolation between larger gaps are less likely to resemble patterns of an actual parameter, whereas interpolation between smaller gaps are more likely to resemble actual patterns.  An appropriate gap size limit depends on the unique characteristics of specific datasets or parameters.  The `na.approx` function can be used to interpolate gaps in a swmpr object.  A required argument for the function is `maxgap` which defines the maximum gap size  for interpolation.
 
@@ -293,11 +306,11 @@ par(mfrow = c(3, 1))
 plot(do_mgl ~ datetimestamp, dat, main = 'Raw', type = 'l')
 plot(do_mgl ~ datetimestamp, test, col = 'red', main = 'Inteprolation - maximum gap of 10 records', type = 'l')
 lines(dat, select = 'do_mgl')
-plot(do_mgl ~ datetimestamp, test2, col = 'red', main = 'Inteprolation - maximum gap of 30 records', type = 'l')
+plot(do_mgl ~ datetimestamp, test2, col = 'red', main = 'Interpolation - maximum gap of 30 records', type = 'l')
 lines(dat, select = 'do_mgl')
 ```
 
-![plot of chunk unnamed-chunk-16](./README_files/figure-html/unnamed-chunk-16.png) 
+![plot of chunk unnamed-chunk-17](./README_files/figure-html/unnamed-chunk-17.png) 
 
 The `decomp` function is a simple wrapper to `decompose` that separates a time series into additive or multiplicative components describing a trend, cyclical variation (e.g., daily or seasonal), and the remainder.  The additive decomposition assumes that the cyclical component of the time series is stationary (i.e., the variance is constant), whereas a multiplicative decomposition accounts for non-stationarity.  By default, a moving average with a symmetric window is used to filter the seasonal component.  Alternatively, a vector of filter coefficients in reverse time order can be supplied (see the help documentation for `decompose`).  
 
@@ -307,7 +320,7 @@ Note that the `decompose` function is a relatively simple approach and alternati
 
 
 ```r
-# get data, qaqc
+# get data
 swmp1 <- import_local(path, 'apadbwq')
 
 # subset for daily decomposition
@@ -318,7 +331,7 @@ test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
 plot(test)
 ```
 
-![plot of chunk unnamed-chunk-17](./README_files/figure-html/unnamed-chunk-17.png) 
+![plot of chunk unnamed-chunk-18](./README_files/figure-html/unnamed-chunk-18.png) 
 
 The next example illustrates how to handle missing values using the `decomp` function. The `decompose` function used internally within `decomp` currently cannot process time series with missing values.  A recommended approach is to use `na.approx` to interpolate the missing values prior to `decompose`.
 
@@ -347,7 +360,7 @@ test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
 plot(test)
 ```
 
-![plot of chunk unnamed-chunk-18](./README_files/figure-html/unnamed-chunk-18.png) 
+![plot of chunk unnamed-chunk-19](./README_files/figure-html/unnamed-chunk-19.png) 
 
 ##Functions
 

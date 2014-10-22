@@ -251,8 +251,10 @@ import_local <- function(path, station_code, trace = F){
   file_nms <- dir(path)
   expr <- paste0('^', station_code, '.*', '\\.csv$')
   files_in <- grep(expr, file_nms, value = T)
-  
+
   if(length(files_in) == 0) stop('File(s) not found.')
+
+  station_code <- tolower(station_code)
   
   # import all data files for a station
   dat <- vector('list', length(files_in))
@@ -303,8 +305,6 @@ import_local <- function(path, station_code, trace = F){
   
   ##
   # convert output from 'import_local' to data frame and appropriate columns
-  
-  if(trace) cat('\n\nCombining data...')
   
   out <- do.call('rbind', dat)
   out <- data.frame(

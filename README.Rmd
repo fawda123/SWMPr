@@ -19,7 +19,7 @@ National Estuarine Research Reserve System (NERRS). 2012. System-wide Monitoring
 
 To cite this package:
 
-Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 0.2.0. https://github.com/fawda123/SWMPr
+Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 0.3.2. https://github.com/fawda123/SWMPr
 
 ##Installing the package
 
@@ -39,7 +39,7 @@ Note that the current version of devtools (v1.6.1) was built under R version 3.1
 
 ##Data retrieval
 
-SWMP data can be obtained directly from the CDMO through an online query or by using the retrieval functions provided in this package.  In the latter case, the IP address for the computer making the request must be registered with CDMO.  This can be done by following instructions <a href="http://cdmo.baruch.sc.edu/webservices.cfm">here</a>.  The <a href="http://cdmo.baruch.sc.edu/data/metadata.cfm">metadata</a> should also be consulted for available data, including the parameters and date ranges for each monitoring station.  Metadata are included as a .csv file with data requested from the CDMO and can also be obtained using the `site_codes` (all sites) or `site_codes_ind` (individual site) functions.  
+SWMP data can be used in R after they are obtained directly from the CDMO through an online query or by using the retrieval functions provided in this package.  In the latter case, the IP address for the computer making the request must be registered with CDMO.  This can be done by following instructions <a href="http://cdmo.baruch.sc.edu/webservices.cfm">here</a>.  The <a href="http://cdmo.baruch.sc.edu/data/metadata.cfm">metadata</a> should also be consulted for available data, including the parameters and date ranges for each monitoring station.  Metadata are included as a .csv file with data requested from the CDMO and can also be obtained using the `site_codes` (all sites) or `site_codes_ind` (individual site) functions.  
 
 ```{r eval = F}
 # retrieve metadata for all sites
@@ -66,15 +66,27 @@ single_param('hudscwq', 'do_mgl')
 
 ```
 
-For larger requests, it's easier to obtain data outside of R using the CDMO query system.  Data can be retrieved from the CDMO several ways.  Data from single stations can be requested from the <a href="http://cdmo.baruch.sc.edu/get/export.cfm">data export system</a>, whereas data from multiple stations can be requested from the <a href="http://cdmo.baruch.sc.edu/aqs/">advanced query system</a>.  The `import_local` function is used to import local data into R that were downloaded from the CDMO with the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> feature within the advanced query system.  The downloaded data will include multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.).  It is recommended that all stations at a site and the complete date ranges are requested to avoid repeated requests to CDMO.  The `import_local` function can be used once the downloaded files are extracted to a local path. 
+For larger requests, it's easier to obtain data outside of R using the CDMO query system and then importing within R using the `import_local` function.  Data can be retrieved from the CDMO several ways.  The `import_local` function is designed for data from the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> feature in the advanced query section of the CDMO. The function may also work using data from the <a href="http://cdmo.baruch.sc.edu/get/export.cfm">data export system</a>, but this feature has not been extensively tested (expect bugs).  The <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> feature is an easy way to obtain data from multiple stations in one request.  The downloaded data will be in a compressed folder that includes multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.).  It is recommended that all stations at a site and the complete date ranges are requested to avoid repeated requests to CDMO.  The `import_local` function can be used after the folder is decompressed.
+
+```{r eval = F}
+# import data for apaebmet that you downloaded
+
+# this is an example path with the csv files, change as needed
+path <- 'C:/my_path/'
+
+# import, do not include file extension
+import_local(path, 'apaebmet') 
+```
+
+For the following example, the `import_local` function is used to load data included with the SWMPr distribution.  To use it, set the path variable using the `system.file` command shown below (you can see this full path by executing `path` at the command line).  Execute both lines to import the data.
 
 ```{r eval = T, results = 'hide'}
-# import data for apaebmet from local path
+# import data for apaebmet that comes with SWMPr
 
 # this is the path for csv example files
 path <- system.file('zip_ex', package = 'SWMPr')
 
-# import
+# import, do not include file extension
 import_local(path, 'apaebmet') 
 ```
 
