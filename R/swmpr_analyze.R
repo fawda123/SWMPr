@@ -423,7 +423,7 @@ plot.swmpr <- function(swmpr_in, type = 'l', ...) {
   
   to_plo <- swmpr_in
   
-  if(attr(to_plo, 'qaqc'))
+  if(attr(to_plo, 'qaqc_cols'))
     to_plo <- qaqc(to_plo, qaqc_keep = NULL)
   
   if(ncol(to_plo) > 2) stop('Only one parameter can be plotted')

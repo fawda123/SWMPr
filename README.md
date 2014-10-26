@@ -1,12 +1,16 @@
-# SWMPr package for estuarine monitoring data
+# SWMPr: An R package for the National Estuarine Research Reserve System
+Marcus W. Beck, beck.marcus@epa.gov  
 
-This repository contains materials to retrieve, organize, and analyze estuarine monitoring data from the System Wide Monitoring Program (<a href="http://nerrs.noaa.gov/RCDefault.aspx?ID=18">SWMP</a>) implemented by the National Estuarine Research Reserve System (<a href="http://nerrs.noaa.gov/">NERRS</a>).  SWMP was initiated in 1995 to provide continuous monitoring data at over 300 stations in 28 estuaries across the United States.  SWMP data are maintained online by the Centralized Data Management Office (CDMO). This R package will provide several functions to retrieve, organize, and analyze SWMP data from the CDMO.  Information on the CDMO web services are available <a href="http://cdmo.baruch.sc.edu/webservices.cfm">here</a>.  Your computer's IP address must be registered with the CDMO website to use most of the data retrieval functions, see contact info in the link.  All other functions can be used after obtaining data from the CDMO, as described below. 
+#Overview 
 
-The package has many dependencies, the most important being the SSOAP package for retrieving data from the CDMO using a SOAP client interface. The SSOAP package is not required to use SWMPr but is necessary for using most of the data retrieval functions.  The SSOAP package is currently removed from CRAN but accessible at <a href="http://www.omegahat.org/SSOAP/">http://www.omegahat.org/SSOAP/</a>.  Functions that require SSOAP will install the package automatically or it can be installed as follows:
+SWMPr is an R package that contains functions for retrieving, organizing, and analyzing estuary monitoring data from the System Wide Monitoring Program (<a href="http://nerrs.noaa.gov/RCDefault.aspx?ID=18">SWMP</a>).  SWMP was implemented by the National Estuarine Research Reserve System (<a href="http://nerrs.noaa.gov/">NERRS</a>) in 1995 to provide continuous monitoring data at over 300 stations in 28 estuaries across the United States.  SWMP data are maintained online by the Centralized Data Management Office (CDMO). This R package provides several functions to retrieve, organize, and analyze SWMP data from the CDMO.  Information on the CDMO web services are available <a href="http://cdmo.baruch.sc.edu/webservices.cfm">here</a>.  Your computer's IP address must be registered with the CDMO website to use most of the data retrieval functions, see contact info in the link.  All other functions can be used after obtaining data from the CDMO, as described below. 
+
+The package has many dependencies, the most important being the SSOAP package for retrieving data from the CDMO using a SOAP client interface. All dependencies are handled automatically when SWMPr is installed and loaded, excluding SSOAP.  The SSOAP package is not required to use SWMPr but is necessary for using most of the data retrieval functions.  The SSOAP package is currently removed from CRAN but accessible at <a href="http://www.omegahat.org/SSOAP/">http://www.omegahat.org/SSOAP/</a>.  Functions that require SSOAP should install the package automatically or it can be installed as follows:
 
 
 ```r
-install.packages("SSOAP", repos="http://www.omegahat.org/R", dependencies = T,  type =  "source")
+install.packages("SSOAP", repos="http://www.omegahat.org/R", dependencies = T,
+  type =  "source")
 ```
 
 All data obtained from the CDMO should be <a href="http://cdmo.baruch.sc.edu/data/citation.cfm">cited</a> using the format:
@@ -17,7 +21,7 @@ To cite this package:
 
 Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 0.3.2. https://github.com/fawda123/SWMPr
 
-##Installing the package
+#Installing the package
 
 This package is currently under development and has not been extensively tested.  The development version can be installed from Github:
 
@@ -32,7 +36,7 @@ require(SWMPr)
 
 Note that the current version of devtools (v1.6.1) was built under R version 3.1.1.  The SWMPr package may not install correctly with older versions of R.
 
-##Data retrieval
+#Data retrieval
 
 SWMP data can be used in R after they are obtained directly from the CDMO through an online query or by using the retrieval functions provided in this package.  In the latter case, the IP address for the computer making the request must be registered with CDMO.  This can be done by following instructions <a href="http://cdmo.baruch.sc.edu/webservices.cfm">here</a>.  The <a href="http://cdmo.baruch.sc.edu/data/metadata.cfm">metadata</a> should also be consulted for available data, including the parameters and date ranges for each monitoring station.  Metadata are included as a .csv file with data requested from the CDMO and can also be obtained using the `site_codes` (all sites) or `site_codes_ind` (individual site) functions.  
 
@@ -46,6 +50,7 @@ site_codes_ind('apa')
 ```
 
 Due to rate limitations on the server, the retrieval functions in this package return a limited number of records.  The functions are more useful for evaluating short time periods, although these functions could be used iteratively (i.e., with `for` or `while` loops) to obtain longer time series.  Data retrieval functions to access the CDMO include `all_params`, `all_params_dtrng`, and `single_param`.  These are functions that call the available methods on the CDMO SOAP interface.  `all_params` returns the most recent 100 records of all parameters at a station, `all_params_dtrng` returns all records within a date range for all parameters or a single parameter, and `single_param` is identical to `all_params` except that a single parameter is requested.    
+
 
 
 ```r
@@ -123,7 +128,7 @@ head(dat)
 ## 6       0      <0>        NA      <-1>
 ```
 
-##swmpr object class
+#The swmpr object class
 
 All data retrieval functions return a swmpr object that includes relevant data and several attributes describing the dataset.  The data include a datetimestamp column in the appropriate timezone for a station.  Note that the datetimestamp is standard time for each timezone and does not include daylight savings. Additional columns include parameters for a given data type (weather, nutrients, or water quality) and correspondingg QAQC columns if returned from the initial data request.  The attributes for a swmpr object include `names` of the dataset, `class` (swmpr) `station name` (7 or 8 characters), `qaqc_cols` (logical), `date_rng` (POSIX vector), `timezone` (text string in country/city format), `stamp_class` (class of datetimestamp vector, POSIX or Date), and `parameters` (character vector).  Attributes of a swmpr object can be viewed as follows:
 
@@ -167,10 +172,10 @@ methods(class = 'swmpr')
 ```
 ##  [1] aggregate.swmpr comb.swmpr      decomp.swmpr    hist.swmpr     
 ##  [5] lines.swmpr     na.approx.swmpr plot.swmpr      qaqc.swmpr     
-##  [9] setstep.swmpr   smoother.swmpr  subset.swmpr
+##  [9] qaqcchk.swmpr   setstep.swmpr   smoother.swmpr  subset.swmpr
 ```
 
-##swmpr methods
+#An overview of methods for swmpr objects
 
 Three categories of functions are available: retrieve, organize, and analyze.  The retrieval functions import the data into R as a swmpr object for use with the organize and analyze functions.  Methods defined for swmpr objects can be applied with the organize and analyze functions.  These methods are available for generic functions specific to this package, in addition to methods for existing generic functions available from other packages.  S3 methods are implemented in all cases.  
 
@@ -186,6 +191,14 @@ qaqc(dat, qaqc_keep = NULL)
 
 # retain only '0' and '-1' flags
 qaqc(dat, qaqc_keep = c(0, -1))
+```
+
+Viewing the number of observations for each parameter that are assigned to a QAQC flag may be useful for deciding how to process the data qith `qaqc`.  The `qaqcchk` function can be used to view this information.  Consult the <a href="http://cdmo.baruch.sc.edu/data/qaqc.cfm">online documentation</a> for a description of each QAQC flag. 
+
+
+```r
+# view the number observations in each QAQC flag
+qaqcchk(dat)
 ```
 
 A subset method added to the existing `subset` function is available for swmpr objects.  This function is used to subset the data by date and/or a selected parameter.  The date can be a single value or as two dates to select records within the range. The former case requires a binary operator input as a character string passed to the argument, such as `>` or `<`.  The subset argument for the date(s) must also be a character string of the format YYYY-mm-dd HH:MM for each element (i.e., %Y-%m%-%d %H:%M in POSIX standards).  Finally, the function can be used to remove rows and columns that do not contain data. 
@@ -282,7 +295,7 @@ plot(do_mgl ~ datetimestamp, data = dat, type = 'l')
 lines(test, select = 'do_mgl', col = 'red', lwd = 2)
 ```
 
-![plot of chunk unnamed-chunk-16](./README_files/figure-html/unnamed-chunk-16.png) 
+![plot of chunk unnamed-chunk-17](./README_files/figure-html/unnamed-chunk-17.png) 
 
 A common issue with any statistical analysis is the treatment of missing values.  Missing data can be excluded from the analysis, included but treated as true zeroes, or interpolated based on similar values.  In either case, an analyst should have a strong rationale for the chosen method.  A common approach used to handle missing data in time series analysis is linear interpolation.  A simple curve fitting method is used to create a continuous set of records between observations separated by missing data.  A challenge with linear interpolation is an appropriate gap size for fitting missing observations.  The ability of the interpolated data to approximate actual trends is a function of the gap size.  Interpolation between larger gaps are less likely to resemble patterns of an actual parameter, whereas interpolation between smaller gaps are more likely to resemble actual patterns.  An appropriate gap size limit depends on the unique characteristics of specific datasets or parameters.  The `na.approx` function can be used to interpolate gaps in a swmpr object.  A required argument for the function is `maxgap` which defines the maximum gap size  for interpolation.
 
@@ -304,13 +317,15 @@ test2 <- na.approx(dat, params = 'do_mgl', maxgap = 30)
 # plot for comparison
 par(mfrow = c(3, 1))
 plot(do_mgl ~ datetimestamp, dat, main = 'Raw', type = 'l')
-plot(do_mgl ~ datetimestamp, test, col = 'red', main = 'Inteprolation - maximum gap of 10 records', type = 'l')
+plot(do_mgl ~ datetimestamp, test, col = 'red', 
+  main = 'Interpolation - maximum gap of 10 records', type = 'l')
 lines(dat, select = 'do_mgl')
-plot(do_mgl ~ datetimestamp, test2, col = 'red', main = 'Interpolation - maximum gap of 30 records', type = 'l')
+plot(do_mgl ~ datetimestamp, test2, col = 'red', 
+  main = 'Interpolation - maximum gap of 30 records', type = 'l')
 lines(dat, select = 'do_mgl')
 ```
 
-![plot of chunk unnamed-chunk-17](./README_files/figure-html/unnamed-chunk-17.png) 
+![plot of chunk unnamed-chunk-18](./README_files/figure-html/unnamed-chunk-18.png) 
 
 The `decomp` function is a simple wrapper to `decompose` that separates a time series into additive or multiplicative components describing a trend, cyclical variation (e.g., daily or seasonal), and the remainder.  The additive decomposition assumes that the cyclical component of the time series is stationary (i.e., the variance is constant), whereas a multiplicative decomposition accounts for non-stationarity.  By default, a moving average with a symmetric window is used to filter the seasonal component.  Alternatively, a vector of filter coefficients in reverse time order can be supplied (see the help documentation for `decompose`).  
 
@@ -331,7 +346,7 @@ test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
 plot(test)
 ```
 
-![plot of chunk unnamed-chunk-18](./README_files/figure-html/unnamed-chunk-18.png) 
+![plot of chunk unnamed-chunk-19](./README_files/figure-html/unnamed-chunk-19.png) 
 
 The next example illustrates how to handle missing values using the `decomp` function. The `decompose` function used internally within `decomp` currently cannot process time series with missing values.  A recommended approach is to use `na.approx` to interpolate the missing values prior to `decompose`.
 
@@ -360,13 +375,13 @@ test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
 plot(test)
 ```
 
-![plot of chunk unnamed-chunk-19](./README_files/figure-html/unnamed-chunk-19.png) 
+![plot of chunk unnamed-chunk-20](./README_files/figure-html/unnamed-chunk-20.png) 
 
-##Functions
+#Functions
 
 See help documentation for more details on each function (e.g., `?all_param`).
 
-<b>retrieve</b>
+##Retrieve
 
 `all_params` Retrieve up to 100 records starting with the most recent at a given station, all parameters.  Wrapper to `exportAllParamsXMLNew` function on web services. 
 
@@ -376,9 +391,11 @@ See help documentation for more details on each function (e.g., `?all_param`).
 
 `import_local` Import files from a local path.  The files must be in a specific format, specifically those returned from the CDMO using the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> option for a reserve.
 
-<b>organize</b>
+##Organize
 
 `qaqc.swmpr` Remove QAQC columns and remove data based on QAQC flag values for a swmpr object.  Only applies if QAQC columns are present.  
+
+`qaqcchk.swmpr` View a summary of the number of observations in a swmpr object that are assigned to different QAQC flags used by CDMO.  The output is used to inform further processing but is not used explicitly. 
 
 `subset.swmpr` Subset by dates and/or columns for a swmpr object.  This is a method passed to the generic `subset' function provided in the base package.
 
@@ -386,7 +403,7 @@ See help documentation for more details on each function (e.g., `?all_param`).
 
 `comb.swmpr` Combines swmpr objects to a common time series using setstep, such as combining the weather, nutrients, and water quality data for a single station. Only different data types can be combined.
 
-<b>analyze</b> 
+##Analyze
 
 `aggregate.swmpr` Aggregate swmpr objects for different time periods - years, quarters, months,  weeks, days, or hours.  Aggregation function is user-supplied but defaults to mean. 
 
@@ -402,7 +419,7 @@ See help documentation for more details on each function (e.g., `?all_param`).
 
 `decomp.swmpr` Decompose a swmpr time series into trend, seasonal, and residual components.  This is a simple wrapper to `decompose`.
 
-<b>miscellaneous</b>
+##Miscellaneous
 
 `swmpr` Creates object of swmpr class, used internally in retrieval functions.
 
@@ -416,7 +433,7 @@ See help documentation for more details on each function (e.g., `?all_param`).
 
 `param_names` Returns column names as a list for the parameter type(s) (nutrients, weather, or water quality).  Includes QAQC columns with 'f_' prefix. Used internally in other functions.
 
-##Forthcoming
+#Forthcoming
 
 Analysis functions... metab
 

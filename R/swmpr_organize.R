@@ -109,6 +109,54 @@ qaqc.swmpr <- function(swmpr_in,
 }
 
 ######
+#' Summary of QAQC flags in SWMP data
+#' 
+#' Summary of the number of observations with a given QAQC flag for each parameter column of a swmpr object
+#'
+#' @param swmpr_in input swmpr object
+#' @param ... arguments passed to other methods
+#' 
+#' @export alply melt qaqcchk
+#' 
+#' @import plyr reshape2
+#' 
+#' @seealso qaqc
+#' 
+#' @return Returns a \code{\link[base]{data.frame}} with columns for swmpr parameters and row counts indicating the number of observations in each parameter assigned to a flag value.
+qaqcchk <- function(swmpr_in, ...) UseMethod('qaqcchk')
+
+#' @rdname qaqcchk
+#' 
+#' @export qaqcchk.swmpr
+#' 
+#' @method qaqcchk swmpr
+qaqcchk.swmpr <- function(swmpr_in){
+  
+  ##
+  # sanity checks
+  qaqc_cols <- attr(swmpr_in, 'qaqc_cols')
+
+  # exit function if no qaqc columns
+  if(!qaqc_cols) stop('No qaqc columns in input data')
+
+  # qaqc flag columns
+  qaqc_ind <- grep('^f_', names(swmpr_in))
+  qaqc <- swmpr_in[, qaqc_ind]
+  
+  # summarize number of qaqc flags by column
+  out <- plyr::alply(qaqc, 2, table)
+  names(out) <- attr(out, 'split_labels')$X1
+  
+  # format output as data.frame
+  out <- reshape2::melt(out)
+  out <- reshape2::dcast(out, piece ~ L1)
+  
+  # return output
+  return(out)
+
+}
+
+######
 #' Subset a swmpr object
 #' 
 #' Subset a swmpr object by a date range, parameters, or non-empty values

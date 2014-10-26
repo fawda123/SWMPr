@@ -34,6 +34,38 @@ dat <- single_param('tjrtlmet', 100, 'wspd')
 tmp <- qaqc(dat)
 
 ##
+# test qaqcchk
+
+# local data
+
+# import data from a folder with csv files from CDMO
+path <- system.file('zip_ex', package = 'SWMPr')
+station_code <- 'apadbwq'
+
+dat <- import_local(path, station_code, T)
+tmp <- qaqcchk(dat)
+
+# remote data
+
+# remote data, all_params
+dat <- all_params('sfbfmwq')
+tmp <- qaqcchk(dat)
+
+# remote data, all_params_dtrng
+# returns swmpr object
+dat <- all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013'))
+tmp <- qaqcchk(dat)
+
+# remote data, all_params_dtrng
+# returns swmpr object
+dat <- all_params_dtrng('elkvmwq', c('09/10/2012', '02/8/2013'), 'do_mgl')
+tmp <- qaqcchk(dat)
+
+# remote data, single_param
+dat <- single_param('tjrtlmet', 'totpar')
+tmp <- qaqcchk(dat)
+
+##
 # test subset.swmpr
 
 # remote data, single_param
