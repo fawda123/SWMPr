@@ -8,7 +8,7 @@ import_local(path, station_code, trace = F)
 \arguments{
 \item{path}{chr string of full path to .csv files with raw data}
 
-\item{station_code}{chr string of station to import, 7 or 8 characters}
+\item{station_code}{chr string of station to import, typically 7 or 8 characters but may include full name with year, excluding file extension}
 
 \item{trace}{logical indicating if progress is sent to console, default \code{F}}
 }

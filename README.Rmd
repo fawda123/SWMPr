@@ -24,7 +24,7 @@ National Estuarine Research Reserve System (NERRS). 2012. System-wide Monitoring
 
 To cite this package:
 
-Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 0.3.2. https://github.com/fawda123/SWMPr
+Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 0.3.3. https://github.com/fawda123/SWMPr
 
 #Installing the package
 
@@ -96,7 +96,7 @@ path <- system.file('zip_ex', package = 'SWMPr')
 import_local(path, 'apaebmet') 
 ```
 
-In all cases, the imported data need to assigned to an object in the workspace for use with other functions:
+A character string for the station code that also includes a date can be used as input if a specific year is desired, e.g., 'apaebmet2011'.  In all cases, the imported data need to assigned to an object in the workspace for use with other functions:
 
 ```{r eval = T}
 # import data and assign to dat

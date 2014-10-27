@@ -82,7 +82,7 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <p>All data obtained from the CDMO should be <a href="http://cdmo.baruch.sc.edu/data/citation.cfm">cited</a> using the format:</p>
 <p>National Estuarine Research Reserve System (NERRS). 2012. System-wide Monitoring Program. Data accessed from the NOAA NERRS Centralized Data Management Office website: <a href="http://cdmo.baruch.sc.edu/">http://cdmo.baruch.sc.edu/</a>; accessed 12 October 2012.</p>
 <p>To cite this package:</p>
-<p>Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System. Version 0.3.2. <a href="https://github.com/fawda123/SWMPr">https://github.com/fawda123/SWMPr</a></p>
+<p>Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System. Version 0.3.3. <a href="https://github.com/fawda123/SWMPr">https://github.com/fawda123/SWMPr</a></p>
 </div>
 <div id="installing-the-package" class="section level1">
 <h1>Installing the package</h1>
@@ -129,7 +129,7 @@ path &lt;- system.file('zip_ex', package = 'SWMPr')
 
 # import, do not include file extension
 import_local(path, 'apaebmet') </code></pre>
-<p>In all cases, the imported data need to assigned to an object in the workspace for use with other functions:</p>
+<p>A character string for the station code that also includes a date can be used as input if a specific year is desired, e.g., ‘apaebmet2011’. In all cases, the imported data need to assigned to an object in the workspace for use with other functions:</p>
 <pre class="r"><code># import data and assign to dat
 dat &lt;- import_local(path, 'apaebmet', trace = F) 
 

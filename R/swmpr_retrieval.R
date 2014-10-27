@@ -235,7 +235,7 @@ single_param <- function(station_code, param, Max = 100){
 #' Import local data that were obtained from the CDMO through a zip request
 #' 
 #' @param  path chr string of full path to .csv files with raw data
-#' @param  station_code chr string of station to import, 7 or 8 characters
+#' @param  station_code chr string of station to import, typically 7 or 8 characters but may include full name with year, excluding file extension
 #' @param  trace logical indicating if progress is sent to console, default \code{F}
 #' 
 #' @export
@@ -244,7 +244,9 @@ single_param <- function(station_code, param, Max = 100){
 import_local <- function(path, station_code, trace = F){
   
   # sanity check
-  if(!nchar(station_code) %in% c(7, 8)) stop('station_code invalid.')
+  chk_file <- paste0('^', station_code, '.*\\.csv$')
+  if(!any(grepl(chk_file, dir(path)))) 
+    stop('station_code not found in directory')
   
   ##
   # find station files in path
@@ -300,7 +302,8 @@ import_local <- function(path, station_code, trace = F){
   # kept as upper case here because improted data will match, changed to lower below
 
   # names to use
-  parm <- substring(station_code, 6)
+  parm <- gsub('[0-9.*]', '', station_code)
+  parm <- substring(parm, 6)
   nms <- param_names(parm)[[parm]]
   
   ##

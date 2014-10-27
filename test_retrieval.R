@@ -22,7 +22,9 @@ tmp <- all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013'),
 tmp <- single_param('tjrtlmet', 100, 'wspd')
 
 # import data from a folder with csv files from CDMO
-tmp <- import_local('C:/Users/mbeck/Desktop/zip_download2', 'apaebmet') 
+path <- system.file('zip_ex', package = 'SWMPr')
+tmp <- import_local(path, 'apacpnut2011')
+tmp <- import_local(path, 'apadbwq', trace = T)
 
 ######
 # comprehensive test of data retrieval functions
