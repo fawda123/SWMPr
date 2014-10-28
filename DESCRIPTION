@@ -1,7 +1,7 @@
 Package: SWMPr
 Type: Package
 Title: SWMPr package for estuarine monitoring data
-Version: 0.3.3
+Version: 0.3.4
 Date: 2014-10-07
 Author: Marcus Beck
 Maintainer: Marcus Beck <mbafs2012@gmail.com>

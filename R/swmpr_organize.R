@@ -184,14 +184,14 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
   parameters <- attr(swmpr_in, 'parameters')
   qaqc_cols <- attr(swmpr_in, 'qaqc_cols')
   stamp_class <- attr(swmpr_in, 'stamp_class')
-  
+    
   ##
   # subset
   
   # create posix object from subset input
   date_sel <- rep(T, nrow(dat)) # created based on subset arg
   if(!is.null(subset)){
-
+    
     subset <- as.POSIXct(subset, format = '%Y-%m-%d %H:%M', tz = timezone)
     
     # convert subset to date if input datetimestamp is date
@@ -226,7 +226,11 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
   # columns to select, includes qaqc cols if present
   # all if null
   if(is.null(select)) select <- names(dat)
-  else select <- names(dat)[names(dat) %in% c('datetimestamp', select, paste0('f_', select))]
+  else{
+    # stop if select not in parameters
+    if(!select %in% parameters) stop('select argument is invalid')
+    select <- names(dat)[names(dat) %in% c('datetimestamp', select, paste0('f_', select))]
+  }
   
   # subset data
   out <- base::subset(data.frame(dat), date_sel, select)
