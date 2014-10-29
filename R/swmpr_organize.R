@@ -308,7 +308,7 @@ setstep <- function(swmpr_in, ...) UseMethod('setstep')
 #' @export setstep.swmpr
 #' 
 #' @method setstep swmpr
-setstep.swmpr <- function(swmpr_in, timestep = 30, differ= timestep/2){ 
+setstep.swmpr <- function(swmpr_in, timestep = 15, differ= timestep/2){ 
   
   # swmpr data and attributes
   dat <- swmpr_in
@@ -379,7 +379,7 @@ comb <- function(...) UseMethod('comb')
 #' @export comb.swmpr
 #' 
 #' @method comb swmpr
-comb.swmpr <- function(..., timestep = 30, differ= 5, method = 'union'){
+comb.swmpr <- function(..., timestep = 15, differ= 5, method = 'union'){
   
   # swmp objects list and attributes
   all_dat <- list(...)
