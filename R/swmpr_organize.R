@@ -379,7 +379,7 @@ comb <- function(...) UseMethod('comb')
 #' @export comb.swmpr
 #' 
 #' @method comb swmpr
-comb.swmpr <- function(..., timestep = 15, differ= 5, method = 'union'){
+comb.swmpr <- function(..., timestep = 15, differ= timestep/2, method = 'union'){
   
   # swmp objects list and attributes
   all_dat <- list(...)
