@@ -439,12 +439,23 @@ comb.swmpr <- function(..., timestep = 15, differ= timestep/2, method = 'union')
   
   for(dat in all_dat){
     
-    dat <- data.table(dat, key = 'datetimestamp')
-    
+    # set dummy time variable and parameter id for differ check
+    dat$time_dum <- dat$datetimestamp
+    dat_parms <- attr(dat, 'parameters')
+
     # merge
+    dat <- data.table(dat, key = 'datetimestamp')
     out <- dat[out, roll = 'nearest']
  
-    }
+    # set values outside of differ to NA
+    time_diff <- abs(difftime(out$datetimestamp, out$time_dum, units='secs'))
+    time_diff <- time_diff >= 60 * differ
+    out <- data.frame(out)
+    out[time_diff, names(out) %in% dat_parms] <- NA
+    out$time_dum <- NULL
+    out <- data.table(out, key = 'datetimestamp')
+      
+  }
 
   # format as swmpr object, return
   out <- data.frame(out)
