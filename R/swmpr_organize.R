@@ -228,7 +228,7 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
   if(is.null(select)) select <- names(dat)
   else{
     # stop if select not in parameters
-    if(!select %in% parameters) stop('select argument is invalid')
+    if(any(!select %in% parameters)) stop('select argument is invalid')
     select <- names(dat)[names(dat) %in% c('datetimestamp', select, paste0('f_', select))]
   }
   
