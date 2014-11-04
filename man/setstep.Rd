@@ -6,7 +6,7 @@
 \usage{
 setstep(swmpr_in, ...)
 
-\method{setstep}{swmpr}(swmpr_in, timestep = 30, differ = timestep/2)
+\method{setstep}{swmpr}(swmpr_in, timestep = 15, differ = timestep/2)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}

@@ -6,7 +6,8 @@
 \usage{
 comb(...)
 
-\method{comb}{swmpr}(..., timestep = 30, differ = 5, method = "union")
+\method{comb}{swmpr}(..., timestep = 15, differ = timestep/2,
+  method = "union")
 }
 \arguments{
 \item{...}{swmpr object input from one to many}

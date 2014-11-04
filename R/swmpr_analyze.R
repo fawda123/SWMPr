@@ -183,7 +183,6 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
 #' @param swmpr_in input swmpr object
 #' @param params is chr string of swmpr parameters to smooth, default all
 #' @param maxgap numeric vector indicating maximum gap size to interpolate where size is numer of records, must be explicit
-#' @param na.rm logical. If the result of the interpolation includes NAs, should these be removed?
 #' 
 #' @import plyr zoo
 #'
@@ -224,8 +223,7 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
 #' 
 #' plot(do_mgl ~ datetimestamp, test2, col = 'red', main = 'Interpolation - maximum gap of 30 records', type = 'l')
 #' lines(dat, select = 'do_mgl')
-na.approx.swmpr <- function(swmpr_in, params = NULL, maxgap, 
-  na.rm = F, ...){
+na.approx.swmpr <- function(swmpr_in, params = NULL, maxgap){
   
   # attributes
   parameters <- attr(swmpr_in, 'parameters')

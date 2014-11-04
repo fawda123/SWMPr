@@ -3,7 +3,7 @@
 \alias{na.approx.swmpr}
 \title{Linearly interpolate gaps}
 \usage{
-\method{na.approx}{swmpr}(swmpr_in, params = NULL, maxgap, na.rm = F, ...)
+\method{na.approx}{swmpr}(swmpr_in, params = NULL, maxgap)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}
@@ -11,8 +11,6 @@
 \item{params}{is chr string of swmpr parameters to smooth, default all}
 
 \item{maxgap}{numeric vector indicating maximum gap size to interpolate where size is numer of records, must be explicit}
-
-\item{na.rm}{logical. If the result of the interpolation includes NAs, should these be removed?}
 }
 \value{
 Returns a swmpr object. QAQC columns are removed if included with input object.
