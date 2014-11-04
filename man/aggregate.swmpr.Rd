@@ -3,15 +3,15 @@
 \alias{aggregate.swmpr}
 \title{Aggregate swmpr data}
 \usage{
-\method{aggregate}{swmpr}(swmpr_in, by, FUN = mean, params = NULL,
-  na.action = na.pass, ...)
+\method{aggregate}{swmpr}(swmpr_in, by, FUN = function(x) mean(x, na.rm = T),
+  params = NULL, na.action = na.pass, ...)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}
 
 \item{by}{chr string of time period for aggregation one of \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'weeks'}, \code{'days'}, or \code{'hours'}}
 
-\item{FUN}{aggregation function, default \code{mean}}
+\item{FUN}{aggregation function, default \code{mean} with \code{na.rm = T}}
 
 \item{params}{names of parameters to aggregate, default all}
 
@@ -37,14 +37,10 @@ swmpr_in <- subset(qaqc(dat), rem_cols = T)
 ## get mean DO by quarters
 aggregate(swmpr_in, 'quarters', params = c('do_mgl'))
 
-## get mean DO by quarters, remove NA when calculating means
-fun_in <- function(x) mean(x, na.rm = T)
-aggregate(swmpr_in, FUN = fun_in, 'quarters', params = c('do_mgl'))
-
 ## get variance of DO by years, remove NA when calculating variance
 ## omit NA data in output
 fun_in <- function(x)  var(x, na.rm = T)
-aggregate(swmpr_in, FUN = fun_in, 'years', na.action = na.exclude)
+aggregate(swmpr_in, FUN = fun_in, 'years')
 }
 \seealso{
 \code{\link[stats]{aggregate}}

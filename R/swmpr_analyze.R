@@ -4,7 +4,7 @@
 #' 
 #' @param swmpr_in input swmpr object
 #' @param by chr string of time period for aggregation one of \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'weeks'}, \code{'days'}, or \code{'hours'}
-#' @param FUN aggregation function, default \code{mean}
+#' @param FUN aggregation function, default \code{mean} with \code{na.rm = T}
 #' @param params names of parameters to aggregate, default all
 #' @param na.action function for treating missing data, default \code{na.pass}
 #' 
@@ -30,16 +30,12 @@
 #'
 #' ## get mean DO by quarters
 #' aggregate(swmpr_in, 'quarters', params = c('do_mgl'))
-#'  
-#' ## get mean DO by quarters, remove NA when calculating means
-#' fun_in <- function(x) mean(x, na.rm = T)
-#' aggregate(swmpr_in, FUN = fun_in, 'quarters', params = c('do_mgl'))
 #'
 #' ## get variance of DO by years, remove NA when calculating variance
 #' ## omit NA data in output
 #' fun_in <- function(x)  var(x, na.rm = T)
-#' aggregate(swmpr_in, FUN = fun_in, 'years', na.action = na.exclude) 
-aggregate.swmpr <- function(swmpr_in, by, FUN = mean, params = NULL, na.action = na.pass, ...){
+#' aggregate(swmpr_in, FUN = fun_in, 'years') 
+aggregate.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = T), params = NULL, na.action = na.pass, ...){
   
   # data
   to_agg <- swmpr_in
