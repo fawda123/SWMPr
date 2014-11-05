@@ -4,7 +4,7 @@
 \title{Aggregate swmpr data}
 \usage{
 \method{aggregate}{swmpr}(swmpr_in, by, FUN = function(x) mean(x, na.rm = T),
-  params = NULL, na.action = na.pass, ...)
+  params = NULL, aggs_out = F, na.action = na.pass, ...)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}
@@ -14,6 +14,8 @@
 \item{FUN}{aggregation function, default \code{mean} with \code{na.rm = T}}
 
 \item{params}{names of parameters to aggregate, default all}
+
+\item{aggs_out}{logical indicating if \code{\link[base]{data.frame}} is returned of raw data with datetimestamp formatted as aggregation period, default \code{F}}
 
 \item{na.action}{function for treating missing data, default \code{na.pass}}
 }

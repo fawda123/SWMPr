@@ -6,6 +6,7 @@
 #' @param by chr string of time period for aggregation one of \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'weeks'}, \code{'days'}, or \code{'hours'}
 #' @param FUN aggregation function, default \code{mean} with \code{na.rm = T}
 #' @param params names of parameters to aggregate, default all
+#' @param aggs_out logical indicating if \code{\link[base]{data.frame}} is returned of raw data with datetimestamp formatted as aggregation period, default \code{F}
 #' @param na.action function for treating missing data, default \code{na.pass}
 #' 
 #' @import data.table
@@ -35,7 +36,7 @@
 #' ## omit NA data in output
 #' fun_in <- function(x)  var(x, na.rm = T)
 #' aggregate(swmpr_in, FUN = fun_in, 'years') 
-aggregate.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = T), params = NULL, na.action = na.pass, ...){
+aggregate.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = T), params = NULL, aggs_out = F, na.action = na.pass, ...){
   
   # data
   to_agg <- swmpr_in
@@ -85,6 +86,9 @@ aggregate.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = T), 
   # subset by parameters
   if(!is.null(params)) parameters <- parameters[parameters %in% params] 
   to_agg <- to_agg[, c('datetimestamp', parameters)]
+  
+  # return raw aggregations if true
+  if(aggs_out) return(to_agg)
   
   # aggregate
   form_in <- formula(. ~ datetimestamp)
