@@ -302,8 +302,8 @@ import_local <- function(path, station_code, trace = F){
   # kept as upper case here because improted data will match, changed to lower below
 
   # names to use
-  parm <- gsub('[0-9.*]', '', station_code)
-  parm <- substring(parm, 6)
+  parm <- substring(station_code, 6)
+  parm <- gsub('[0-9.*]', '', parm)
   nms <- param_names(parm)[[parm]]
   
   ##
