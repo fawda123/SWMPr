@@ -19,7 +19,7 @@ National Estuarine Research Reserve System (NERRS). 2012. System-wide Monitoring
 
 To cite this package:
 
-Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 0.3.7. https://github.com/fawda123/SWMPr
+Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 0.3.8. https://github.com/fawda123/SWMPr
 
 #Installing the package
 
@@ -377,6 +377,23 @@ plot(test)
 
 ![plot of chunk unnamed-chunk-20](./README_files/figure-html/unnamed-chunk-20.png) 
 
+Finally, a reserve map with all stations can be obtained using the `map_reserve` function.  This function is a simple wrapper to functions in the ggmap package. The current function is limited to Google maps, which allows four map types that can be set with the `map_type` argument: terrain (default), satellite, roadmap, or hybrid.  The `zoom` argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  See the help documentation for ggmap for more info on zoom.  Additionally, station locations are returned using the `site_codes_ind` function if the computer making the request has the IP address registered with CDMO. Otherwise, a local and possibly outdated file is used.  Use the contact at the CDMO <a href="http://cdmo.baruch.sc.edu/webservices.cfm">web services</a> to register your IP.
+
+
+```r
+# plot the stations at Jacques Cousteau reserve
+map_reserve('jac')
+```
+
+![plot of chunk unnamed-chunk-21](./README_files/figure-html/unnamed-chunk-211.png) 
+
+```r
+# plot the stations at Padilla Bay reserve, satellite
+map_reserve('pdb', map_type = 'satellite', zoom = 12)
+```
+
+![plot of chunk unnamed-chunk-21](./README_files/figure-html/unnamed-chunk-212.png) 
+
 #Functions
 
 See help documentation for more details on each function (e.g., `?all_param`).
@@ -433,6 +450,7 @@ See help documentation for more details on each function (e.g., `?all_param`).
 
 `param_names` Returns column names as a list for the parameter type(s) (nutrients, weather, or water quality).  Includes QAQC columns with 'f_' prefix. Used internally in other functions.
 
+`map_reserve` Create a map of all stations in a reserve using the ggmap package.
 #Forthcoming
 
 Analysis functions... metab

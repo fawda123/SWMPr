@@ -230,3 +230,89 @@ param_names <- function(param_type = c('nut', 'wq', 'met')){
   return(out)
   
 }
+
+#' Map a reserve
+#' 
+#' Create a map of all the stations in a reserve
+#' 
+#' @param nerr_site_id chr string of the reserve to map, first three characters used by NERRS
+#' @param zoom numeric value for map zoom, passed to \code{\link[ggmap]{get_map}}
+#' @param text_sz numeric value for text size of station names, passed to \code{\link[ggplot2]{geom_text}}
+#' @param text_col chr string for text color of station names, passed to \code{\link[ggplot2]{geom_text}}
+#' @param map_type chr string indicating the type of base map obtained from Google maps, values are \code{terrain} (default), \code{satellite}, \code{roadmap}, or \code{hybrid} 
+#' 
+#' @import ggmap ggplot2
+#' 
+#' @export
+#' 
+#' @details This function is a simple wrapper to functions in the ggmap package which returns a map of all of the stations at a NERRS reserve.  The \code{zoom} argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  Additionally, station locations are returned using the \code{site_codes_ind} function if the computer making the request has the IP address registered with CDMO.  Otherwise, a local and possibly outdated file is used.  See the package documentation.
+#' 
+#' @return A \code{\link[ggplot2]{ggplot}} object for plotting.
+#' 
+#' @seealso  \code{\link[ggmap]{get_map}}, \code{\link[ggmap]{ggmap}}, \code{\link[ggplot2]{ggplot}}, \code{site_codes_ind}
+#' 
+#' @examples
+#' ## defaults
+#' 
+#' map_reserve('jac')
+#' 
+#' ## satellite map
+#' 
+#' map_reserve('jac', map_type = 'satellite')
+#' 
+#' ## roadmap
+#' 
+#' map_reserve('jac', map_type = 'roadmap')
+#' 
+#' ## hybrid
+#' 
+#' map_reserve('jac', map_type = 'hybrid')
+map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black', map_type = 'terrain'){
+  
+  #removing trailing whit space in chr strings
+  trim_trailing<-function(x) sub('^\\s+|\\s+$', '', x)
+  
+  # get site stations and locations, online or local 
+  stats <- try(site_codes_ind(nerr_site_id), silent = T)
+  if('try-error' %in% class(stats)){
+  
+    warning('IP address not registered, using old station data')
+    
+    # find/load local file
+    get_meta <- system.file('sampling_stations.csv', package = 'SWMPr')
+    get_meta <- read.csv(get_meta, header = T, stringsAsFactors = F)
+    names(get_meta) <- gsub('\\.', '_', tolower(names(get_meta)))
+    
+    stats <- get_meta[trim_trailing(get_meta$nerr_site_id) %in% nerr_site_id, ]
+    
+  }
+  
+  stats <- stats[grep('Active*', stats$status), ]
+  stats$longitude <- -1 * as.numeric(stats$longitude)
+  stats$latitude <- as.numeric(stats$latitude)
+  stats$station_name <- trim_trailing(as.character(stats$station_name))
+  stats$station_code <- tolower(substr(trim_trailing(as.character(stats$station_code)),1,5))
+  stats <- unique(stats[, c('station_code', 'latitude', 'longitude')])
+  
+  # base map
+  mapImageData <- get_map(
+    location = c(lon = mean(stats$longitude),lat = mean(stats$latitude)),
+    source = 'google',
+    maptype = map_type,
+    zoom = zoom,
+    messaging = F
+    )
+  
+  # plot
+  p <- ggmap(mapImageData,
+    extent = "panel"
+      ) + 
+    geom_text(data = stats, aes(x = longitude, y = latitude, 
+      label= station_code), size = text_sz, colour = text_col
+      ) +
+    ylab('Latitude') +
+    xlab('Longitude')
+  
+  return(p)
+
+}
