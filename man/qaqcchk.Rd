@@ -4,14 +4,12 @@
 \alias{qaqcchk.swmpr}
 \title{Summary of QAQC flags in SWMP data}
 \usage{
-qaqcchk(swmpr_in, ...)
+qaqcchk(swmpr_in)
 
 \method{qaqcchk}{swmpr}(swmpr_in)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}
-
-\item{...}{arguments passed to other methods}
 }
 \value{
 Returns a \code{\link[base]{data.frame}} with columns for swmpr parameters and row counts indicating the number of observations in each parameter assigned to a flag value.
@@ -19,7 +17,18 @@ Returns a \code{\link[base]{data.frame}} with columns for swmpr parameters and r
 \description{
 Summary of the number of observations with a given QAQC flag for each parameter column of a swmpr object
 }
+\details{
+Viewing the number of observations for each parameter that are assigned to a QAQC flag may be useful for deciding how to process the data qith qaqc. The \code{qaqcchk} function can be used to view this information. Consult the online documentation for a description of each QAQC flag: \url{http://cdmo.baruch.sc.edu/data/qaqc.cfm}
+}
+\examples{
+## get data
+path <- system.file('zip_ex', package = 'SWMPr')
+dat <- import_local(path, 'apadbwq')
+
+## view the number observations in each QAQC flag
+qaqcchk(dat)
+}
 \seealso{
-qaqc
+\code{\link{qaqc}}
 }
 

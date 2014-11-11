@@ -3,21 +3,23 @@
 \alias{aggregate.swmpr}
 \title{Aggregate swmpr data}
 \usage{
-\method{aggregate}{swmpr}(swmpr_in, by, FUN = function(x) mean(x, na.rm = T),
-  params = NULL, aggs_out = F, na.action = na.pass, ...)
+\method{aggregate}{swmpr}(x, by, FUN = function(x) mean(x, na.rm = TRUE),
+  params = NULL, aggs_out = FALSE, na.action = na.pass, ...)
 }
 \arguments{
-\item{swmpr_in}{input swmpr object}
+\item{x}{input swmpr object}
 
 \item{by}{chr string of time period for aggregation one of \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'weeks'}, \code{'days'}, or \code{'hours'}}
 
-\item{FUN}{aggregation function, default \code{mean} with \code{na.rm = T}}
+\item{FUN}{aggregation function, default \code{mean} with \code{na.rm = TRUE}}
 
 \item{params}{names of parameters to aggregate, default all}
 
-\item{aggs_out}{logical indicating if \code{\link[base]{data.frame}} is returned of raw data with datetimestamp formatted as aggregation period, default \code{F}}
+\item{aggs_out}{logical indicating if \code{\link[base]{data.frame}} is returned of raw data with datetimestamp formatted as aggregation period, default \code{FALSE}}
 
 \item{na.action}{function for treating missing data, default \code{na.pass}}
+
+\item{...}{additional arguments passed to other methods}
 }
 \value{
 Returns an aggregated swmpr object. QAQC columns are removed if included with input object.
@@ -34,14 +36,14 @@ The method of treating NA values for the user-supplied function should be noted 
 ## get data, prep
 path <- system.file('zip_ex', package = 'SWMPr')
 dat <- import_local(path, 'apacpwq')
-swmpr_in <- subset(qaqc(dat), rem_cols = T)
+swmpr_in <- subset(qaqc(dat), rem_cols = TRUE)
 
 ## get mean DO by quarters
 aggregate(swmpr_in, 'quarters', params = c('do_mgl'))
 
 ## get variance of DO by years, remove NA when calculating variance
 ## omit NA data in output
-fun_in <- function(x)  var(x, na.rm = T)
+fun_in <- function(x)  var(x, na.rm = TRUE)
 aggregate(swmpr_in, FUN = fun_in, 'years')
 }
 \seealso{

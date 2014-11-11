@@ -14,6 +14,20 @@ all_params(station_code, Max = 100)
 Returns a swmpr object, all available parameters including QAQC columns
 }
 \description{
-Import current station records from the CDMO starting with the most current date, CDMO equivalent of \code{exportAllParamsXMLNew}
+Import current station records from the CDMO starting with the most current date
+}
+\details{
+This function uses the SSOAP package to retrieve data from the CDMO through a SOAP client interface.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{http://cdmo.baruch.sc.edu/webservices.cfm}.  Function is the CDMO equivalent of \code{exportAllParamsXMLNew}.
+}
+\examples{
+\dontrun{
+
+## all parameters for a station, most recent
+all_params('hudscwq')
+
+}
+}
+\seealso{
+\code{\link{all_params_dtrng}}, \code{\link{single_param}}
 }
 

@@ -1,14 +1,28 @@
 ######
 #' Import current station records from the CDMO
 #' 
-#' Import current station records from the CDMO starting with the most current date, CDMO equivalent of \code{exportAllParamsXMLNew}
+#' Import current station records from the CDMO starting with the most current date
 #' 
 #' @param  station_code chr string of station, 7 or 8 characters
 #' @param  Max numeric value for number of records to obtain from the current date, maximum of 100
 #' 
 #' @export
 #' 
+#' @seealso \code{\link{all_params_dtrng}}, \code{\link{single_param}}
+#' 
 #' @return  Returns a swmpr object, all available parameters including QAQC columns
+#' 
+#' @details 
+#' This function uses the SSOAP package to retrieve data from the CDMO through a SOAP client interface.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{http://cdmo.baruch.sc.edu/webservices.cfm}.  Function is the CDMO equivalent of \code{exportAllParamsXMLNew}.
+#' 
+#' @examples
+#' 
+#' \dontrun{
+#' 
+#' ## all parameters for a station, most recent
+#' all_params('hudscwq')
+#' 
+#' }
 all_params <- function(station_code, Max = 100){
   
   # sanity check
@@ -18,7 +32,7 @@ all_params <- function(station_code, Max = 100){
   check_soap <- require('SSOAP')
   if(!check_soap)
     install.packages("SSOAP", repos="http://www.omegahat.org/R", 
-      dependencies = T,  type =  "source")
+      dependencies = TRUE,  type =  "source")
   
   # access CDMO web services
   serv <- SOAPServer(
@@ -33,9 +47,9 @@ all_params <- function(station_code, Max = 100){
       station_code = station_code,
       tbl = Max,
       action="",
-      .convert = F
+      .convert = FALSE
       )
-    }, silent = T)
+    }, silent = TRUE)
   
   # stop if retrieval error
   if('try-error' %in% class(dat))
@@ -56,7 +70,7 @@ all_params <- function(station_code, Max = 100){
     out <- out[order(out$datetimestamp), ]
     out <- data.frame(
       datetimestamp = out$datetimestamp,
-      out[, tolower(names(out)) %in% nms, drop = F], 
+      out[, tolower(names(out)) %in% nms, drop = FALSE], 
       row.names = 1:nrow(out)
       )
     names(out) <- tolower(names(out))
@@ -72,7 +86,9 @@ all_params <- function(station_code, Max = 100){
 }
 
 ######
-#' Get station records from the CDMO for a date range, CDMO equivalent of \code{exportAllParamsDateRangeXMLNew}
+#' Get CDMO records within a date range
+#' 
+#' Get station records from the CDMO within a date range
 #' 
 #' @param  station_code chr string of station, 7 or 8 characters
 #' @param  dtrng two element chr string, each of format MM/DD/YYYY
@@ -81,13 +97,31 @@ all_params <- function(station_code, Max = 100){
 #' @export
 #' 
 #' @return Returns a swmpr object, all parameters for a station type (nutrients, water quality, or meteorological) or a single parameter if specified.  QAQC columns are not provided for single parameters.  Up to 1000 records can be obtained.
+#' 
+#' @details 
+#' This function uses the SSOAP package to retrieve data from the CDMO through a SOAP client interface.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{http://cdmo.baruch.sc.edu/webservices.cfm}.  This function is the CDMO equivalent of \code{exportAllParamsDateRangeXMLNew}.
+#' 
+#' @seealso \code{\link{all_params}}, \code{\link{single_param}}
+#' 
+#' @examples
+#' 
+#' \dontrun{
+#' 
+#' ## get all parameters within a date range
+#' all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013'))
+#' 
+#' ## get single parameter within a date range
+#' all_params_dtrng('hudscwq', c('09/10/2012', '02/8/2013'), 
+#'    param = 'do_mgl')
+#' 
+#' }
 all_params_dtrng <- function(station_code, dtrng, param = NULL){
   
   # install SSOAP if not available
   check_soap <- require('SSOAP')
   if(!check_soap)
     install.packages("SSOAP", repos="http://www.omegahat.org/R", 
-      dependencies = T,  type =  "source")
+      dependencies = TRUE,  type =  "source")
   
   # access CDMO web services
   serv <- SOAPServer(
@@ -111,8 +145,8 @@ all_params_dtrng <- function(station_code, dtrng, param = NULL){
       method = 'exportAllParamsDateRangeXMLNew',
       .soapArgs = soap_args, 
       action = '',
-      .convert = F
-      )}, silent = T)
+      .convert = FALSE
+      )}, silent = TRUE)
   
   # stop if retrieval error
   if('try-error' %in% class(dat))
@@ -134,7 +168,7 @@ all_params_dtrng <- function(station_code, dtrng, param = NULL){
   out <- out[order(out$datetimestamp), ]
   out <- data.frame(
     datetimestamp = out$datetimestamp,
-    out[, tolower(names(out)) %in% nms, drop = F],
+    out[, tolower(names(out)) %in% nms, drop = FALSE],
     row.names = 1:nrow(out)
     )
   names(out) <- tolower(names(out))
@@ -148,7 +182,9 @@ all_params_dtrng <- function(station_code, dtrng, param = NULL){
 }
 
 ######
-#' Get stations records from the CDMO for a single parameter starting with the most current date, CDMO equivalent of \code{exportSingleParamXML} max 100 records
+#' Get CDMO records for a single parameter
+#' 
+#' Get stations records from the CDMO for a single parameter starting with the most current date
 #' 
 #' @param  station_code chr string of station, 7 or 8 characters
 #' @param  Max numeric value for number of records to obtain from the current date, maximum of 100
@@ -159,6 +195,20 @@ all_params_dtrng <- function(station_code, dtrng, param = NULL){
 #' @export
 #' 
 #' @return Returns a swmpr object with one parameter.  QAQC columns are not provided.
+#' 
+#' @details 
+#' This function uses the SSOAP package to retrieve data from the CDMO through a SOAP client interface.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{http://cdmo.baruch.sc.edu/webservices.cfm}.  This function is the CDMO equivalent of \code{exportSingleParamXML}.
+#' 
+#' @seealso \code{\link{all_params}}, \code{\link{all_params_dtrng}}
+#' 
+#' @examples
+#' 
+#' \dontrun{
+#' 
+#' ## single parameter for a station, most recent
+#' single_param('hudscwq', 'do_mgl')
+#' 
+#' }
 single_param <- function(station_code, param, Max = 100){
   
   # sanity check
@@ -168,7 +218,7 @@ single_param <- function(station_code, param, Max = 100){
   check_soap <- require('SSOAP')
   if(!check_soap)
     install.packages("SSOAP", repos="http://www.omegahat.org/R", 
-      dependencies = T,  type =  "source")
+      dependencies = TRUE,  type =  "source")
   
   # access CDMO web services
   serv <- SOAPServer(
@@ -186,8 +236,8 @@ single_param <- function(station_code, param, Max = 100){
         param = param
         ),
       action = '',
-      .convert = F
-      )}, silent = T)
+      .convert = FALSE
+      )}, silent = TRUE)
     
   
   # stop if retrieval error
@@ -195,7 +245,7 @@ single_param <- function(station_code, param, Max = 100){
     stop('Error retrieving data, check metadata for station availability.')
   
   # convert to XMLDocumentContent for parsing
-  raw <- htmlTreeParse(dat$content, useInternalNodes = T)
+  raw <- htmlTreeParse(dat$content, useInternalNodes = TRUE)
 
   # get node attributes for c after parsing
   attrs <- xpathSApply(
@@ -205,9 +255,9 @@ single_param <- function(station_code, param, Max = 100){
   )
   
   # arrange as data frame
-  out <- matrix(attrs, ncol = 2, byrow = T)
+  out <- matrix(attrs, ncol = 2, byrow = TRUE)
   colnames(out) <- tolower(out[1, ])
-  out <- data.frame(out[-1,], stringsAsFactors = F)
+  out <- data.frame(out[-1,], stringsAsFactors = FALSE)
   out[, param] <- as.numeric(out[, param])
   
   # type of parameter requested - wq, nut, or met, NOT the param argument
@@ -218,7 +268,7 @@ single_param <- function(station_code, param, Max = 100){
   out <- out[order(out$datetimestamp), ]
   out <- data.frame(
     datetimestamp = out$datetimestamp,
-    out[, !tolower(names(out)) %in% 'datetimestamp', drop = F], 
+    out[, !tolower(names(out)) %in% 'datetimestamp', drop = FALSE], 
     row.names = 1:nrow(out)
     )
   names(out) <- tolower(names(out))
@@ -232,16 +282,34 @@ single_param <- function(station_code, param, Max = 100){
 }
 
 ######
-#' Import local data that were obtained from the CDMO through a zip request
+#' Import local CDMO data
+#' 
+#' Import local data that were obtained from the CDMO through the zip downloads feature
 #' 
 #' @param  path chr string of full path to .csv files with raw data
 #' @param  station_code chr string of station to import, typically 7 or 8 characters but may include full name with year, excluding file extension
-#' @param  trace logical indicating if progress is sent to console, default \code{F}
+#' @param  trace logical indicating if progress is sent to console, default \code{FALSE}
 #' 
 #' @export
 #' 
 #' @return Returns a swmpr object with all parameters and QAQC columns for the station.  The full date range in the raw data are also imported.
-import_local <- function(path, station_code, trace = F){
+#' 
+#' @details 
+#' The function is designed to import local data that were downloaded from the CDMO outside of R. This approach works best for larger data requests.  The function is designed for data from the zip downloads feature in the advanced query section of the CDMO. The function may also work using data from the data export system, but this feature has not been extensively tested (expect bugs). The downloaded data will be in a compressed folder that includes multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.). The import_local function can be used after the folder is decompressed.
+#' 
+#' Zip download request through CDMO: \url{http://cdmo.baruch.sc.edu/aqs/zips.cfm}
+#' 
+#' @seealso \code{\link{all_params}}, \code{\link{all_params_dtrng}}, \code{\link{single_param}}
+#' 
+#' @examples
+#' 
+#' ## this is the path for csv example files
+#' path <- system.file('zip_ex', package = 'SWMPr')
+#'
+#' ## import, do not include file extension
+#' import_local(path, 'apaebmet') 
+#' 
+import_local <- function(path, station_code, trace = FALSE){
   
   # sanity check
   chk_file <- paste0('^', station_code, '.*\\.csv$')
@@ -252,7 +320,7 @@ import_local <- function(path, station_code, trace = F){
   # find station files in path
   file_nms <- dir(path)
   expr <- paste0('^', station_code, '.*', '\\.csv$')
-  files_in <- grep(expr, file_nms, value = T)
+  files_in <- grep(expr, file_nms, value = TRUE)
 
   if(length(files_in) == 0) stop('File(s) not found.')
 
@@ -270,8 +338,8 @@ import_local <- function(path, station_code, trace = F){
     
     # import file, try using read.csv, else readlines
     tmp <- try({
-      read.csv(file.path(path, file_in), stringsAsFactors = F)
-    }, silent = T)
+      read.csv(file.path(path, file_in), stringsAsFactors = FALSE)
+    }, silent = TRUE)
     
     if('try-error' %in% class(tmp)){
       raw <- readLines(file.path(path, file_in))
@@ -279,7 +347,7 @@ import_local <- function(path, station_code, trace = F){
       tmp <- raw[keep_lines]
       tmp <- strsplit(tmp, ',')
       tmp <- do.call('rbind', tmp)
-      tmp <- data.frame(tmp, stringsAsFactors = F)
+      tmp <- data.frame(tmp, stringsAsFactors = FALSE)
       names(tmp)  <- strsplit(
         gsub('["\\"]', '', raw[keep_lines[1] - 1]),
         ',')[[1]] 
@@ -288,7 +356,7 @@ import_local <- function(path, station_code, trace = F){
     names(tmp) <- tolower(names(tmp))
     
     # convert date time to posix
-    names(tmp)[grep('datetimestamp', names(tmp), ignore.case = T)] <- 'datetimestamp'
+    names(tmp)[grep('datetimestamp', names(tmp), ignore.case = TRUE)] <- 'datetimestamp'
     tmp$datetimestamp <- time_vec(tmp$datetimestamp, station_code)
     
     # append to output list

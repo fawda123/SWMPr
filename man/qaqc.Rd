@@ -6,21 +6,41 @@
 \usage{
 qaqc(swmpr_in, ...)
 
-\method{qaqc}{swmpr}(swmpr_in, qaqc_keep = 0, trace = F)
+\method{qaqc}{swmpr}(swmpr_in, qaqc_keep = 0, trace = FALSE, ...)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}
 
-\item{...}{arguments passed to other methods}
+\item{...}{arguments passed to or from other methods}
 
 \item{qaqc_keep}{numeric vector of qaqc flags to keep, default \code{0}}
 
-\item{trace}{logical for progress output on console, default \code{F}}
+\item{trace}{logical for progress output on console, default \code{FALSE}}
 }
 \value{
 Returns a swmpr object with \code{NA} values for records that did not match \code{qaqc_keep}.  QAQC columns are also removed.
 }
 \description{
 QAQC filtering for SWMP data obtained from retrieval functions, local and remote
+}
+\details{
+The qaqc function is a simple screen to retain values from the data with specified QAQC flags, described online: \url{http://cdmo.baruch.sc.edu/data/qaqc.cfm}. Each parameter in the swmpr data typically has a corresponding QAQC column of the same name with the added prefix 'f_'. Values in the QAQC column specify a flag from -5 to 5. Generally, only data with the '0' QAQC flag should be used, which is the default option for the function. Data that do not satisfy QAQC criteria are converted to \code{NA} values. Processed data will have QAQC columns removed, in addition to removal of values in the actual parameter columns that do not meet the criteria.
+}
+\examples{
+## get data
+path <- system.file('zip_ex', package = 'SWMPr')
+dat <- import_local(path, 'apadbwq')
+
+## qaqc screen for a swmpr object, retain only '0'
+qaqc(dat)
+
+## retain all data regardless of flag
+qaqc(dat, qaqc_keep = NULL)
+
+## retain only '0' and '-1' flags
+qaqc(dat, qaqc_keep = c(0, -1))
+}
+\seealso{
+\code{\link{qaqcchk}}
 }
 

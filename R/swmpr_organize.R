@@ -4,24 +4,44 @@
 #' QAQC filtering for SWMP data obtained from retrieval functions, local and remote
 #'
 #' @param swmpr_in input swmpr object
-#' @param ... arguments passed to other methods
+#' @param ... arguments passed to or from other methods
 #' 
 #' @export qaqc
 #' 
 #' @return Returns a swmpr object with \code{NA} values for records that did not match \code{qaqc_keep}.  QAQC columns are also removed.
+#' 
+#' @seealso \code{\link{qaqcchk}}
+#' 
+#' @details
+#' The qaqc function is a simple screen to retain values from the data with specified QAQC flags, described online: \url{http://cdmo.baruch.sc.edu/data/qaqc.cfm}. Each parameter in the swmpr data typically has a corresponding QAQC column of the same name with the added prefix 'f_'. Values in the QAQC column specify a flag from -5 to 5. Generally, only data with the '0' QAQC flag should be used, which is the default option for the function. Data that do not satisfy QAQC criteria are converted to \code{NA} values. Processed data will have QAQC columns removed, in addition to removal of values in the actual parameter columns that do not meet the criteria.
+#' 
+#' @examples
+#' ## get data
+#' path <- system.file('zip_ex', package = 'SWMPr')
+#' dat <- import_local(path, 'apadbwq')
+#' 
+#' ## qaqc screen for a swmpr object, retain only '0'
+#' qaqc(dat)
+#'
+#' ## retain all data regardless of flag
+#' qaqc(dat, qaqc_keep = NULL)
+#' 
+#' ## retain only '0' and '-1' flags
+#' qaqc(dat, qaqc_keep = c(0, -1))
+#' 
 qaqc <- function(swmpr_in, ...) UseMethod('qaqc')
 
 #' @rdname qaqc
 #' 
 #' @param qaqc_keep numeric vector of qaqc flags to keep, default \code{0}
-#' @param trace logical for progress output on console, default \code{F}
+#' @param trace logical for progress output on console, default \code{FALSE}
 #' 
 #' @export qaqc.swmpr
 #' 
 #' @method qaqc swmpr
 qaqc.swmpr <- function(swmpr_in, 
   qaqc_keep = 0,
-  trace = F){
+  trace = FALSE, ...){
   
   ##
   # sanity checks
@@ -47,7 +67,7 @@ qaqc.swmpr <- function(swmpr_in,
   if(trace) cat('Processing QAQC columns...')
   
   #names of qaqc columns
-  qaqc_sel <- grep('f_', names(dat), value = T)
+  qaqc_sel <- grep('f_', names(dat), value = TRUE)
   
   qaqc_rm <- as.numeric(seq(-5,  5))
   qaqc_rm <- qaqc_rm[!qaqc_rm %in% qaqc_keep]
@@ -62,14 +82,14 @@ qaqc.swmpr <- function(swmpr_in,
   } else {
       
     #matrix of TF values for those that don't pass qaqc
-    qaqc_vec <- dat[, names(dat) %in% qaqc_sel, drop = F]
+    qaqc_vec <- dat[, names(dat) %in% qaqc_sel, drop = FALSE]
     qaqc_vec <- apply(qaqc_vec, 2, 
       function(x) grepl(paste(qaqc_rm, collapse = '|'), x)
       )
     #replace T values with NA
     #qaqc is corrected
     qaqc_sel <- gsub('f_', '', qaqc_sel)
-    qaqc <- dat[, names(dat) %in% qaqc_sel, drop = F]
+    qaqc <- dat[, names(dat) %in% qaqc_sel, drop = FALSE]
     qaqc <- data.frame(sapply(
       names(qaqc),
       function(x){
@@ -77,8 +97,8 @@ qaqc.swmpr <- function(swmpr_in,
         out[qaqc_vec[, paste0('f_',x)]] <- NA
         out
         },
-      USE.NAMES = T
-      ), stringsAsFactors = F)
+      USE.NAMES = TRUE
+      ), stringsAsFactors = FALSE)
     
     }
    
@@ -95,7 +115,7 @@ qaqc.swmpr <- function(swmpr_in,
 	#NA values from qaqc still included as NA
 	out <- data.frame(
     datetimestamp = out[,1],
-    apply(out[, -1, drop = F], 2 , as.numeric)
+    apply(out[, -1, drop = FALSE], 2 , as.numeric)
     )
   names(out) <- c('datetimestamp', parameters)
 
@@ -114,16 +134,27 @@ qaqc.swmpr <- function(swmpr_in,
 #' Summary of the number of observations with a given QAQC flag for each parameter column of a swmpr object
 #'
 #' @param swmpr_in input swmpr object
-#' @param ... arguments passed to other methods
 #' 
-#' @export alply melt qaqcchk
+#' @export
 #' 
 #' @import plyr reshape2
 #' 
-#' @seealso qaqc
+#' @seealso \code{\link{qaqc}}
 #' 
 #' @return Returns a \code{\link[base]{data.frame}} with columns for swmpr parameters and row counts indicating the number of observations in each parameter assigned to a flag value.
-qaqcchk <- function(swmpr_in, ...) UseMethod('qaqcchk')
+#' 
+#' @details
+#' Viewing the number of observations for each parameter that are assigned to a QAQC flag may be useful for deciding how to process the data qith qaqc. The \code{qaqcchk} function can be used to view this information. Consult the online documentation for a description of each QAQC flag: \url{http://cdmo.baruch.sc.edu/data/qaqc.cfm}
+#' 
+#' @examples
+#' ## get data
+#' path <- system.file('zip_ex', package = 'SWMPr')
+#' dat <- import_local(path, 'apadbwq')
+#' 
+#' ## view the number observations in each QAQC flag
+#' qaqcchk(dat)
+#' 
+qaqcchk <- function(swmpr_in) UseMethod('qaqcchk')
 
 #' @rdname qaqcchk
 #' 
@@ -161,23 +192,52 @@ qaqcchk.swmpr <- function(swmpr_in){
 #' 
 #' Subset a swmpr object by a date range, parameters, or non-empty values
 #'
-#' @param swmpr_in input swmpr object
+#' @param x input swmpr object
 #' @param subset chr string of form 'YYYY-mm-dd HH:MM' to subset a date range.  Input can be one (requires \code{operator} or two values (a range).
 #' @param select chr string of parameters to keep
 #' @param operator chr string specifiying binary operator (e.g., \code{'>'}, \code{'<='}) if subset is one date value
-#' @param rem_rows logical indicating if rows with no data are removed, default \code{F}
-#' @param rem_cols is logical indicating if cols with no data are removed, default \code{F}
+#' @param rem_rows logical indicating if rows with no data are removed, default \code{FALSE}
+#' @param rem_cols is logical indicating if cols with no data are removed, default \code{FALSE}
+#' @param ... arguments passed to other methods
 #' 
 #' @export subset.swmpr
 #' 
 #' @method subset swmpr
 #' 
 #' @return Returns a swmpr object as a subset of the input.  The original object will be returned if no arguments are specified.
-subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL, 
-  operator = NULL, rem_rows = F, rem_cols = F){
+#' 
+#' @seealso \code{\link[base]{subset}}
+#'
+#' @details
+#' This function is used to subset swmpr data by date and/or a selected parameter. The date can be a single value or as two dates to select records within the range. The former case requires a binary operator input as a character string passed to the argument, such as \code{>} or \code{<}. The subset argument for the date(s) must also be a character string of the format YYYY-mm-dd HH:MM for each element (i.e., `%Y-%m%-%d %H:%M' in POSIX standards). The function can also be used to remove rows and columns that do not contain data, which may be useful after processing with other functions.
+#' 
+#' @examples
+#' ## get data
+#' path <- system.file('zip_ex', package = 'SWMPr')
+#' dat <- import_local(path, 'apaebmet')
+#' 
+#' ## select two parameters from dat
+#' subset(dat, select = c('rh', 'bp'))
+#'
+#' ## subset records greater than or equal to a date
+#' subset(dat, subset = '2013-01-01 0:00', operator = '>=')
+#'
+#' ## subset records within a date range
+#' subset(dat, subset = c('2012-07-01 6:00', '2012-08-01 18:15'))
+#'
+#' ## subset records within a date range, select two parameters
+#' subset(dat, subset = c('2012-07-01 6:00', '2012-08-01 18:15'),
+#'    select = c('atemp', 'totsorad'))
+#'
+#' ## remove rows/columns that do not contain data
+#' subset(dat, rem_rows = TRUE, rem_cols = TRUE)
+#' 
+subset.swmpr <- function(x, subset = NULL, select = NULL, 
+  operator = NULL, rem_rows = FALSE, rem_cols = FALSE, ...){
   
   ##
   # swmpr data and attributes
+  swmpr_in <- x
   dat <- swmpr_in
   station <- attr(swmpr_in, 'station')
   timezone <- attr(swmpr_in, 'timezone')
@@ -189,7 +249,7 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
   # subset
   
   # create posix object from subset input
-  date_sel <- rep(T, nrow(dat)) # created based on subset arg
+  date_sel <- rep(TRUE, nrow(dat)) # created based on subset arg
   if(!is.null(subset)){
     
     subset <- as.POSIXct(subset, format = '%Y-%m-%d %H:%M', tz = timezone)
@@ -233,7 +293,7 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
   }
   
   # subset data
-  out <- base::subset(data.frame(dat), date_sel, select)
+  out <- base::subset(data.frame(dat), date_sel, select, ...)
   out <- data.frame(out, row.names = 1:nrow(out))
   
   ##
@@ -242,12 +302,12 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
     
     # get vector of rows that are empty
     col_sel <- grepl(paste(parameters, collapse = '|'), names(out))
-    check_empty <- t(apply(as.matrix(out[, col_sel, drop = F]), 1, is.na))
+    check_empty <- t(apply(as.matrix(out[, col_sel, drop = FALSE]), 1, is.na))
     if(nrow(check_empty) == 1) check_empty <- matrix(check_empty)
     check_empty <- rowSums(check_empty) == ncol(check_empty)
     
     # remove empty rows
-    out <- out[!check_empty, , drop = F]
+    out <- out[!check_empty, , drop = FALSE]
     
     if(nrow(out) == 0) stop('All data removed, select different parameters')
     
@@ -271,7 +331,7 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
       }
     
     # subset output
-    out <- out[, !check_empty, drop = F]
+    out <- out[, !check_empty, drop = FALSE]
     
     if(ncol(out) == 1) stop('All data removed, select different parameters')
     
@@ -291,11 +351,31 @@ subset.swmpr <- function(swmpr_in, subset = NULL, select = NULL,
 #' Create a continuous time vector at set time step for a swmpr object
 #' 
 #' @param swmpr_in input swmpr object
-#' @param ... arguments passed to other methods
-#'
+#' @param ... arguments passed to or from other methods
+#' 
 #' @export setstep
 #' 
 #' @return Returns a swmpr object for the specified time step
+#' 
+#' @seealso \code{\link{comb}}
+#' 
+#' @details
+#' The setstep function formats a swmpr object to a continuous time series at a given time step. This function is not necessary for most stations but can be useful for combining data or converting an existing time series to a set interval. The first argument, \code{timestep}, specifies the desired time step in minutes starting from the nearest hour of the first observation. The second argument, \code{differ}, specifies the allowable tolerance in minutes for matching existing observations to user-defined time steps in cases where the two are dissimilar. Values for \code{differ} that are greater than one half the value of timestep are not allowed to prevent duplication of existing data. Likewise, the default value for differ is one half the time step. Rows that do not match any existing data within the limits of the differ argument are not discarded. Output from the function can be used with \code{subset} and to create a time series at a set interval with empty data removed.
+#' 
+#' @examples
+#' ## import data
+#' path <- system.file('zip_ex', package = 'SWMPr')
+#' dat <- import_local(path, 'apaebmet')
+#' 
+#' ## convert time series to two hour invervals
+#' ## tolerance of +/- 30 minutes for matching existing data
+#' setstep(dat, timestep = 120, differ = 30)
+#' 
+#' ## convert a nutrient time series to a continuous time series
+#' ## then remove empty rows and columns
+#' dat_nut <- import_local(path, 'apacpnut')
+#' dat_nut <- setstep(dat_nut, timestep = 60)
+#' subset(dat_nut, rem_rows = TRUE, rem_cols = TRUE)
 setstep <- function(swmpr_in, ...) UseMethod('setstep')
 
 #' @rdname setstep
@@ -308,7 +388,7 @@ setstep <- function(swmpr_in, ...) UseMethod('setstep')
 #' @export setstep.swmpr
 #' 
 #' @method setstep swmpr
-setstep.swmpr <- function(swmpr_in, timestep = 15, differ= timestep/2){ 
+setstep.swmpr <- function(swmpr_in, timestep = 15, differ= timestep/2, ...){ 
   
   # swmpr data and attributes
   dat <- swmpr_in
@@ -366,6 +446,31 @@ setstep.swmpr <- function(swmpr_in, timestep = 15, differ= timestep/2){
 #' @export comb
 #' 
 #' @return Returns a combined swmpr object
+#' 
+#' @seealso \code{\link{setstep}}
+#' 
+#' @details
+#' The \code{comb} function is used to combine multiple swmpr objects into a single object with a continuous time series at a given step. The \code{timestep} function is used internally such that \code{timestep} and \code{differ} are accepted arguments for \code{comb}. 
+#' 
+#' The function requires one or more swmpr objects as input as separate, undefined arguments. The remaining arguments must be called explicitly since an arbitrary number of objects can be used as input. In general, the function combines data by creating a master time series that is used to iteratively merge all swmpr objects. The time series for merging depends on the value passed to the \code{method} argument. Passing \code{'union'} to \code{method} will create a time series that is continuous starting from the earliest date and the latest date for all input objects. Passing \code{'intersect'} to \code{method} will create a time series that is continuous from the set of dates that are shared between all input objects. Finally, a seven or eight character station name passed to \code{method} will merge all input objects based on a continuous time series for the given station. The specified station must be present in the input data. Currently, combining data types from different stations is not possible, excluding weather data which are typically at a single, dedicated station.
+#' 
+#' @examples
+#' 
+#' ## get nuts, wq, and met data as separate objects for the same station
+#' ## note that most sites usually have one weather station
+#' path <- system.file('zip_ex', package = 'SWMPr')
+#' swmp1 <- import_local(path, 'apacpnut')
+#' swmp2 <- import_local(path, 'apacpwq')
+#' swmp3 <- import_local(path, 'apaebmet')
+#' 
+#' ## combine nuts and wq data by union
+#' comb(swmp1, swmp2, method = 'union')
+#' 
+#' ## combine nuts and wq data by intersect
+#' comb(swmp1, swmp3, method = 'intersect')
+#' 
+#' ## combine nuts, wq, and met data by nuts time series, two hour time step
+#' comb(swmp1, swmp2, swmp3, timestep = 120, method = 'apacpnut')
 comb <- function(...) UseMethod('comb')
 
 #' @rdname comb

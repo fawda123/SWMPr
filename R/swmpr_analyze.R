@@ -2,12 +2,13 @@
 #' 
 #' Aggregate swmpr data by specified time period and method
 #' 
-#' @param swmpr_in input swmpr object
+#' @param x input swmpr object
 #' @param by chr string of time period for aggregation one of \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'weeks'}, \code{'days'}, or \code{'hours'}
-#' @param FUN aggregation function, default \code{mean} with \code{na.rm = T}
+#' @param FUN aggregation function, default \code{mean} with \code{na.rm = TRUE}
 #' @param params names of parameters to aggregate, default all
-#' @param aggs_out logical indicating if \code{\link[base]{data.frame}} is returned of raw data with datetimestamp formatted as aggregation period, default \code{F}
+#' @param aggs_out logical indicating if \code{\link[base]{data.frame}} is returned of raw data with datetimestamp formatted as aggregation period, default \code{FALSE}
 #' @param na.action function for treating missing data, default \code{na.pass}
+#' @param ... additional arguments passed to other methods
 #' 
 #' @import data.table
 #' 
@@ -27,18 +28,19 @@
 #' ## get data, prep
 #' path <- system.file('zip_ex', package = 'SWMPr')
 #' dat <- import_local(path, 'apacpwq')
-#' swmpr_in <- subset(qaqc(dat), rem_cols = T)
+#' swmpr_in <- subset(qaqc(dat), rem_cols = TRUE)
 #'
 #' ## get mean DO by quarters
 #' aggregate(swmpr_in, 'quarters', params = c('do_mgl'))
 #'
 #' ## get variance of DO by years, remove NA when calculating variance
 #' ## omit NA data in output
-#' fun_in <- function(x)  var(x, na.rm = T)
+#' fun_in <- function(x)  var(x, na.rm = TRUE)
 #' aggregate(swmpr_in, FUN = fun_in, 'years') 
-aggregate.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = T), params = NULL, aggs_out = F, na.action = na.pass, ...){
+aggregate.swmpr <- function(x, by, FUN = function(x) mean(x, na.rm = TRUE), params = NULL, aggs_out = FALSE, na.action = na.pass, ...){
   
   # data
+  swmpr_in <- x
   to_agg <- swmpr_in
 
   # attributes
@@ -93,7 +95,7 @@ aggregate.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = T), 
   # aggregate
   form_in <- formula(. ~ datetimestamp)
   out <- aggregate(form_in, data.frame(to_agg), FUN = FUN, 
-    na.action = na.action, simplify = T)
+    na.action = na.action, simplify = TRUE, ...)
 
   # format output as swmpr object
   out <- swmpr(out, station)
@@ -108,7 +110,7 @@ aggregate.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = T), 
 #' Smooth swmpr data with a moving window average
 #' 
 #' @param swmpr_in input swmpr object
-#' @param ... arguments passed to other methods
+#' @param ... arguments passed to or from other methods
 #' 
 #' @export smoother
 #' 
@@ -144,7 +146,7 @@ smoother <- function(swmpr_in, ...) UseMethod('smoother')
 #' ## plot to see the difference
 #' plot(do_mgl ~ datetimestamp, data = dat, type = 'l')
 #' lines(test, select = 'do_mgl', col = 'red', lwd = 2)
-smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
+smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL, ...){
   
   # attributes
   parameters <- attr(swmpr_in, 'parameters')
@@ -158,7 +160,7 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
 
   # prep for filter
   if(!is.null(params)) parameters <- parameters[parameters %in% params]
-  to_filt <- swmpr_in[, c('datetimestamp', parameters), drop = F]
+  to_filt <- swmpr_in[, c('datetimestamp', parameters), drop = FALSE]
   datetimestamp <- to_filt$datetimestamp
   to_filt$datetimestamp <- NULL
   
@@ -180,13 +182,13 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
 #' 
 #' Linearly interpolate gaps in swmpr data within a maximum size 
 #' 
-#' @param swmpr_in input swmpr object
+#' @param object input swmpr object
 #' @param params is chr string of swmpr parameters to smooth, default all
 #' @param maxgap numeric vector indicating maximum gap size to interpolate where size is numer of records, must be explicit
+#' @param ... additional arguments passed to other methods
 #' 
 #' @import plyr zoo
 #'
-#' @export na.approx
 #' @export na.approx.swmpr
 #' 
 #' @method na.approx swmpr
@@ -213,17 +215,22 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL){
 #' test2 <- na.approx(dat, params = 'do_mgl', maxgap = 30)
 #' 
 #' ## plot for comparison
-#' windows(width = 6, height = 9)
 #' par(mfrow = c(3,1))
 #' 
 #' plot(do_mgl ~ datetimestamp, dat, main = 'Raw', type = 'l')
 #' 
-#' plot(do_mgl ~ datetimestamp, test, col = 'red', main = 'Inteprolation - maximum gap of 10 records', type = 'l')
+#' plot(do_mgl ~ datetimestamp, test, col = 'red', 
+#'  main = 'Inteprolation - maximum gap of 10 records', 
+#'  type = 'l')
 #' lines(dat, select = 'do_mgl')
 #' 
-#' plot(do_mgl ~ datetimestamp, test2, col = 'red', main = 'Interpolation - maximum gap of 30 records', type = 'l')
+#' plot(do_mgl ~ datetimestamp, test2, col = 'red', 
+#'  main = 'Interpolation - maximum gap of 30 records', 
+#'  type = 'l')
 #' lines(dat, select = 'do_mgl')
-na.approx.swmpr <- function(swmpr_in, params = NULL, maxgap){
+na.approx.swmpr <- function(object, params = NULL, maxgap, ...){
+  
+  swmpr_in <- object
   
   # attributes
   parameters <- attr(swmpr_in, 'parameters')
@@ -238,7 +245,7 @@ na.approx.swmpr <- function(swmpr_in, params = NULL, maxgap){
   # prep for interpolate
   if(!is.null(params)) parameters <- parameters[parameters %in% params]
   to_interp <- swmpr_in[, c('datetimestamp', parameters), 
-    drop = F]
+    drop = FALSE]
   datetimestamp <- to_interp$datetimestamp
   to_interp$datetimestamp <- NULL
   
@@ -247,7 +254,7 @@ na.approx.swmpr <- function(swmpr_in, params = NULL, maxgap){
     .fun = function(in_col){
       
       interp <- try(zoo::na.approx(in_col, maxgap = maxgap, 
-        na.rm = F), silent = T)
+        na.rm = FALSE), silent = TRUE, ...)
       
       if('try-error' %in% class(interp)) interp  <- in_col
       
@@ -388,7 +395,7 @@ decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily'
 #' 
 #' Plot a time series of parameters in a swmpr object
 #' 
-#' @param swmpr_in input swmpr object
+#' @param x input swmpr object
 #' @param type chr string for type of plot, default \code{'l'}.  See \code{\link[graphics]{plot}}.
 #' @param ... other arguments passed to \code{par}, \code{plot.default}, \code{lines}, \code{points}
 #' 
@@ -417,9 +424,9 @@ decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily'
 #' ## plot using defualt, add lines
 #' plot(dat$datetimestamp, dat$do_mgl)
 #' lines(dat, select = 'do_mgl', col = 'red')
-plot.swmpr <- function(swmpr_in, type = 'l', ...) {
+plot.swmpr <- function(x, type = 'l', ...) {
   
-  to_plo <- swmpr_in
+  to_plo <- x
   
   if(attr(to_plo, 'qaqc_cols'))
     to_plo <- qaqc(to_plo, qaqc_keep = NULL)
@@ -438,9 +445,15 @@ plot.swmpr <- function(swmpr_in, type = 'l', ...) {
 #' 
 #' @export lines.swmpr
 #' 
+#' @param subset chr string of form 'YYYY-mm-dd HH:MM' to subset a date range.  Input can be one (requires \code{operator} or two values (a range).  Passed to \code{\link{subset.swmpr}}.
+#' @param select chr string of parameters to keep. Passed to \code{\link{subset.swmpr}}.
+#' @param operator chr string specifiying binary operator (e.g., \code{'>'}, \code{'<='}) if subset is one date value. Passed to \code{\link{subset.swmpr}}.
+#' 
 #' @method lines swmpr
-lines.swmpr <- function(swmpr_in, subset = NULL, select, operator = NULL, ...) {
+lines.swmpr <- function(x, subset = NULL, select, operator = NULL, ...) {
     
+  swmpr_in <- x
+  
   to_plo <- subset(swmpr_in, subset, select, operator)
   parameters <- attr(to_plo, 'parameters')
 
@@ -455,11 +468,11 @@ lines.swmpr <- function(swmpr_in, subset = NULL, select, operator = NULL, ...) {
 #' 
 #' Plot a histogram showing the distribution of a swmpr parameter
 #' 
-#' @param swmpr_in input swmpr object
+#' @param x input swmpr object
 #' @param subset chr string of form 'YYYY-mm-dd HH:MM' to subset a date range.  Input can be one (requires \code{operator} or two values (a range), passed to \code{\link{subset}}.
 #' @param select chr string of parameters to keep, passed to \code{\link{subset}}.
 #' @param operator chr string specifiying binary operator (e.g., \code{'>'}, \code{'<='}) if subset is one date value, passed to \code{\link{subset}}.
-#' @param ... other arguments passed to \code{\link[graphics]{histogram}}
+#' @param ... other arguments passed to \code{\link[graphics]{hist}}
 #' 
 #' @details The swmpr method for histograms is a convenience function for the default histogram function.  Conventional histogram methods also work well since swmpr objects are also data frames.  See the examples for use with different methods.  
 #' 
@@ -479,9 +492,11 @@ lines.swmpr <- function(swmpr_in, subset = NULL, select, operator = NULL, ...) {
 #' 
 #' ## plot using defualt method
 #' hist(dat$do_mgl)
-hist.swmpr <- function(swmpr_in, subset = NULL, select, operator = NULL, ...) {
+hist.swmpr <- function(x, subset = NULL, select, operator = NULL, ...) {
   
   if(length(select) > 1) stop('Only one parameter can be plotted')
+  
+  swmpr_in <- x
   
   to_plo <- subset(swmpr_in, subset, select, operator)
   parameters <- attr(to_plo, 'parameters')

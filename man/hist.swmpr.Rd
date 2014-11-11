@@ -3,10 +3,10 @@
 \alias{hist.swmpr}
 \title{Plot swmpr using a histogram}
 \usage{
-\method{hist}{swmpr}(swmpr_in, subset = NULL, select, operator = NULL, ...)
+\method{hist}{swmpr}(x, subset = NULL, select, operator = NULL, ...)
 }
 \arguments{
-\item{swmpr_in}{input swmpr object}
+\item{x}{input swmpr object}
 
 \item{subset}{chr string of form 'YYYY-mm-dd HH:MM' to subset a date range.  Input can be one (requires \code{operator} or two values (a range), passed to \code{\link{subset}}.}
 
@@ -14,7 +14,7 @@
 
 \item{operator}{chr string specifiying binary operator (e.g., \code{'>'}, \code{'<='}) if subset is one date value, passed to \code{\link{subset}}.}
 
-\item{...}{other arguments passed to \code{\link[graphics]{histogram}}}
+\item{...}{other arguments passed to \code{\link[graphics]{hist}}}
 }
 \description{
 Plot a histogram showing the distribution of a swmpr parameter

@@ -6,12 +6,12 @@
 \usage{
 setstep(swmpr_in, ...)
 
-\method{setstep}{swmpr}(swmpr_in, timestep = 15, differ = timestep/2)
+\method{setstep}{swmpr}(swmpr_in, timestep = 15, differ = timestep/2, ...)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}
 
-\item{...}{arguments passed to other methods}
+\item{...}{arguments passed to or from other methods}
 
 \item{timestep}{numeric value of time step to use in minutes}
 
@@ -22,5 +22,26 @@ Returns a swmpr object for the specified time step
 }
 \description{
 Create a continuous time vector at set time step for a swmpr object
+}
+\details{
+The setstep function formats a swmpr object to a continuous time series at a given time step. This function is not necessary for most stations but can be useful for combining data or converting an existing time series to a set interval. The first argument, \code{timestep}, specifies the desired time step in minutes starting from the nearest hour of the first observation. The second argument, \code{differ}, specifies the allowable tolerance in minutes for matching existing observations to user-defined time steps in cases where the two are dissimilar. Values for \code{differ} that are greater than one half the value of timestep are not allowed to prevent duplication of existing data. Likewise, the default value for differ is one half the time step. Rows that do not match any existing data within the limits of the differ argument are not discarded. Output from the function can be used with \code{subset} and to create a time series at a set interval with empty data removed.
+}
+\examples{
+## import data
+path <- system.file('zip_ex', package = 'SWMPr')
+dat <- import_local(path, 'apaebmet')
+
+## convert time series to two hour invervals
+## tolerance of +/- 30 minutes for matching existing data
+setstep(dat, timestep = 120, differ = 30)
+
+## convert a nutrient time series to a continuous time series
+## then remove empty rows and columns
+dat_nut <- import_local(path, 'apacpnut')
+dat_nut <- setstep(dat_nut, timestep = 60)
+subset(dat_nut, rem_rows = TRUE, rem_cols = TRUE)
+}
+\seealso{
+\code{\link{comb}}
 }
 

@@ -3,11 +3,11 @@
 \alias{subset.swmpr}
 \title{Subset a swmpr object}
 \usage{
-\method{subset}{swmpr}(swmpr_in, subset = NULL, select = NULL,
-  operator = NULL, rem_rows = F, rem_cols = F)
+\method{subset}{swmpr}(x, subset = NULL, select = NULL, operator = NULL,
+  rem_rows = FALSE, rem_cols = FALSE, ...)
 }
 \arguments{
-\item{swmpr_in}{input swmpr object}
+\item{x}{input swmpr object}
 
 \item{subset}{chr string of form 'YYYY-mm-dd HH:MM' to subset a date range.  Input can be one (requires \code{operator} or two values (a range).}
 
@@ -15,14 +15,43 @@
 
 \item{operator}{chr string specifiying binary operator (e.g., \code{'>'}, \code{'<='}) if subset is one date value}
 
-\item{rem_rows}{logical indicating if rows with no data are removed, default \code{F}}
+\item{rem_rows}{logical indicating if rows with no data are removed, default \code{FALSE}}
 
-\item{rem_cols}{is logical indicating if cols with no data are removed, default \code{F}}
+\item{rem_cols}{is logical indicating if cols with no data are removed, default \code{FALSE}}
+
+\item{...}{arguments passed to other methods}
 }
 \value{
 Returns a swmpr object as a subset of the input.  The original object will be returned if no arguments are specified.
 }
 \description{
 Subset a swmpr object by a date range, parameters, or non-empty values
+}
+\details{
+This function is used to subset swmpr data by date and/or a selected parameter. The date can be a single value or as two dates to select records within the range. The former case requires a binary operator input as a character string passed to the argument, such as \code{>} or \code{<}. The subset argument for the date(s) must also be a character string of the format YYYY-mm-dd HH:MM for each element (i.e., `%Y-%m%-%d %H:%M' in POSIX standards). The function can also be used to remove rows and columns that do not contain data, which may be useful after processing with other functions.
+}
+\examples{
+## get data
+path <- system.file('zip_ex', package = 'SWMPr')
+dat <- import_local(path, 'apaebmet')
+
+## select two parameters from dat
+subset(dat, select = c('rh', 'bp'))
+
+## subset records greater than or equal to a date
+subset(dat, subset = '2013-01-01 0:00', operator = '>=')
+
+## subset records within a date range
+subset(dat, subset = c('2012-07-01 6:00', '2012-08-01 18:15'))
+
+## subset records within a date range, select two parameters
+subset(dat, subset = c('2012-07-01 6:00', '2012-08-01 18:15'),
+   select = c('atemp', 'totsorad'))
+
+## remove rows/columns that do not contain data
+subset(dat, rem_rows = TRUE, rem_cols = TRUE)
+}
+\seealso{
+\code{\link[base]{subset}}
 }
 

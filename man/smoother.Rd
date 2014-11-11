@@ -6,12 +6,13 @@
 \usage{
 smoother(swmpr_in, ...)
 
-\method{smoother}{swmpr}(swmpr_in, window = 5, sides = 2, params = NULL)
+\method{smoother}{swmpr}(swmpr_in, window = 5, sides = 2, params = NULL,
+  ...)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}
 
-\item{...}{arguments passed to other methods}
+\item{...}{arguments passed to or from other methods}
 
 \item{window}{numeric vector of ones defining size of smoothing window, passed to \code{filter}}
 

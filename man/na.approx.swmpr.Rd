@@ -3,14 +3,16 @@
 \alias{na.approx.swmpr}
 \title{Linearly interpolate gaps}
 \usage{
-\method{na.approx}{swmpr}(swmpr_in, params = NULL, maxgap)
+\method{na.approx}{swmpr}(object, params = NULL, maxgap, ...)
 }
 \arguments{
-\item{swmpr_in}{input swmpr object}
+\item{object}{input swmpr object}
 
 \item{params}{is chr string of swmpr parameters to smooth, default all}
 
 \item{maxgap}{numeric vector indicating maximum gap size to interpolate where size is numer of records, must be explicit}
+
+\item{...}{additional arguments passed to other methods}
 }
 \value{
 Returns a swmpr object. QAQC columns are removed if included with input object.
@@ -37,15 +39,18 @@ test <- na.approx(dat, params = 'do_mgl', maxgap = 10)
 test2 <- na.approx(dat, params = 'do_mgl', maxgap = 30)
 
 ## plot for comparison
-windows(width = 6, height = 9)
 par(mfrow = c(3,1))
 
 plot(do_mgl ~ datetimestamp, dat, main = 'Raw', type = 'l')
 
-plot(do_mgl ~ datetimestamp, test, col = 'red', main = 'Inteprolation - maximum gap of 10 records', type = 'l')
+plot(do_mgl ~ datetimestamp, test, col = 'red',
+ main = 'Inteprolation - maximum gap of 10 records',
+ type = 'l')
 lines(dat, select = 'do_mgl')
 
-plot(do_mgl ~ datetimestamp, test2, col = 'red', main = 'Interpolation - maximum gap of 30 records', type = 'l')
+plot(do_mgl ~ datetimestamp, test2, col = 'red',
+ main = 'Interpolation - maximum gap of 30 records',
+ type = 'l')
 lines(dat, select = 'do_mgl')
 }
 \seealso{

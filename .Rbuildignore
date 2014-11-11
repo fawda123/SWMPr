@@ -6,3 +6,7 @@
 ^R/test_retrieval\.R$
 ^\.Rprofile$
 ^data/zip_ex/.*\.csv
+^README.*
+^README_files/.*
+^ggmapTemp.png
+^test_.*\.R$
