@@ -26,7 +26,7 @@ National Estuarine Research Reserve System (NERRS). 2012. System-wide Monitoring
 
 To cite this package:
 
-Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 0.4.0. https://github.com/fawda123/SWMPr
+Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 1.0.1. https://github.com/fawda123/SWMPr
 
 #Installing the package
 
@@ -156,7 +156,7 @@ qaqcchk(dat)
 
 ```
 
-A subset method added to the existing `subset` function is available for swmpr objects.  This function is used to subset the data by date and/or a selected parameter.  The date can be a single value or as two dates to select records within the range. The former case requires a binary operator input as a character string passed to the argument, such as `>` or `<`.  The subset argument for the date(s) must also be a character string of the format YYYY-mm-dd HH:MM for each element (i.e., %Y-%m%-%d %H:%M in POSIX standards).  Finally, the function can be used to remove rows and columns that do not contain data. 
+A subset method added to the existing `subset` function is available for swmpr objects.  This function is used to subset the data by date and/or a selected parameter.  The date can be a single value or as two dates to select records within the range. The former case requires a binary operator input as a character string passed to the argument, such as `>` or `<`.  The subset argument for the date(s) must also be a character string of the format YYYY-mm-dd HH:MM for each element (i.e., %Y-%m%-%d %H:%M in POSIX standards).  Be aware that an error may be returned using this function if the subset argument is in the correct format but the calendar date does not exist, e.g. `2012-11-31 12:00`.  Finally, the function can be used to remove rows and columns that do not contain data. 
 
 ```{r eval = F}
 # select two parameters from dat
@@ -177,7 +177,7 @@ subset(dat, rem_rows = T, rem_cols = T)
 
 ```
 
-The `setstep` function formats a swmpr object to a continuous time series at a given time step.  This function is not necessary for most stations but can be useful for combining data or converting an existing time series to a set interval.  The first argument, `timestep`, specifies the desired time step in minutes starting from the nearest hour of the first observation.  The second argument, `differ`, specifies the allowable tolerance in minutes for matching existing observations to user-defined time steps in cases where the two are dissimilar.  Values for `differ` that are greater than one half the value of `timestep` are not allowed to prevent duplication of existing data.  Likewise, the default value for `differ` is one half the time step.  Rows that do not match any existing data within the limits of the `differ` argument are not discarded.  Output from the `setstep` function can be used with `subset` and to create a time series at a set interval with empty data removed.
+The `setstep` function formats a swmpr object to a continuous time series at a given time step.  This function is not necessary for most stations but can be useful for combining data or converting an existing time series to a set interval.  It can also be used to remove duplicate time stamps that are present in some data (e.g., Kachemak Bay weather data).  The default behavior in this scenario is to retain the first observation of the duplicated data, whereas the remaining duplicates are discarded.  The first argument of the function, `timestep`, specifies the desired time step in minutes starting from the nearest hour of the first observation.  The second argument, `differ`, specifies the allowable tolerance in minutes for matching existing observations to user-defined time steps in cases where the two are dissimilar.  Values for `differ` that are greater than one half the value of `timestep` are not allowed to prevent duplication of existing data.  Likewise, the default value for `differ` is one half the time step.  Rows that do not match any existing data within the limits of the `differ` argument are not discarded.  Output from the `setstep` function can be used with `subset` and to create a time series at a set interval with empty data removed.
 
 ```{r eval = F}
 # convert time series to two hour invervals

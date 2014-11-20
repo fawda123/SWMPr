@@ -209,7 +209,7 @@ qaqcchk.swmpr <- function(swmpr_in){
 #' @seealso \code{\link[base]{subset}}
 #'
 #' @details
-#' This function is used to subset swmpr data by date and/or a selected parameter. The date can be a single value or as two dates to select records within the range. The former case requires a binary operator input as a character string passed to the argument, such as \code{>} or \code{<}. The subset argument for the date(s) must also be a character string of the format YYYY-mm-dd HH:MM for each element (i.e., `%Y-%m%-%d %H:%M' in POSIX standards). The function can also be used to remove rows and columns that do not contain data, which may be useful after processing with other functions.
+#' This function is used to subset swmpr data by date and/or a selected parameter. The date can be a single value or as two dates to select records within the range. The former case requires a binary operator input as a character string passed to the argument, such as \code{>} or \code{<}. The subset argument for the date(s) must also be a character string of the format YYYY-mm-dd HH:MM for each element (i.e., `%Y-%m%-%d %H:%M' in POSIX standards). Be aware that an error may be returned using this function if the subset argument is in the correct format but the calendar date does not exist, e.g. \code{'2012-11-31 12:00'}.  The function can also be used to remove rows and columns that do not contain data, which may be useful after processing with other functions.
 #' 
 #' @examples
 #' ## get data
@@ -360,7 +360,7 @@ subset.swmpr <- function(x, subset = NULL, select = NULL,
 #' @seealso \code{\link{comb}}
 #' 
 #' @details
-#' The setstep function formats a swmpr object to a continuous time series at a given time step. This function is not necessary for most stations but can be useful for combining data or converting an existing time series to a set interval. The first argument, \code{timestep}, specifies the desired time step in minutes starting from the nearest hour of the first observation. The second argument, \code{differ}, specifies the allowable tolerance in minutes for matching existing observations to user-defined time steps in cases where the two are dissimilar. Values for \code{differ} that are greater than one half the value of timestep are not allowed to prevent duplication of existing data. Likewise, the default value for differ is one half the time step. Rows that do not match any existing data within the limits of the differ argument are not discarded. Output from the function can be used with \code{subset} and to create a time series at a set interval with empty data removed.
+#' The setstep function formats a swmpr object to a continuous time series at a given time step. This function is not necessary for most stations but can be useful for combining data or converting an existing time series to a set interval. It can also be used to remove duplicate time stamps that are present in some data (e.g., Kachemak Bay weather data).  The default behavior in this scenario is to retain the first observation of the duplicated data, whereas the remaining duplicates are discarded. The first argument of the function, \code{timestep}, specifies the desired time step in minutes starting from the nearest hour of the first observation. The second argument, \code{differ}, specifies the allowable tolerance in minutes for matching existing observations to user-defined time steps in cases where the two are dissimilar. Values for \code{differ} that are greater than one half the value of timestep are not allowed to prevent duplication of existing data. Likewise, the default value for differ is one half the time step. Rows that do not match any existing data within the limits of the differ argument are not discarded. Output from the function can be used with \code{subset} and to create a time series at a set interval with empty data removed.
 #' 
 #' @examples
 #' ## import data
@@ -417,6 +417,10 @@ setstep.swmpr <- function(swmpr_in, timestep = 15, differ= timestep/2, ...){
   mrg_dat$time_dum <- mrg_dat$datetimestamp
   mrg_dat <- data.table(mrg_dat, key = 'datetimestamp')
   mrg_std <- data.table(dts_std, key = 'datetimestamp')
+  
+  # remove duplicate keys by average values
+  # default for unique data.table is to keep first duplicated row by keys
+  mrg_dat <- unique(mrg_dat)
   
   # merge all the data  using  mrg_std as master
   mrg <- mrg_dat[mrg_std, roll = 'nearest']
