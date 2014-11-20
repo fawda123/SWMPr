@@ -2,7 +2,7 @@
 \name{decomp}
 \alias{decomp}
 \alias{decomp.swmpr}
-\title{Seasonal trend decomposition of swmpr data}
+\title{Simple trend decomposition of swmpr data}
 \usage{
 decomp(swmpr_in, ...)
 
@@ -26,7 +26,7 @@ decomp(swmpr_in, ...)
 Returns a decomposed.ts object
 }
 \description{
-Decompose swmpr data into trend, seasonal, and random components using \code{\link[stats]{decompose}} and \code{\link[stats]{ts}}
+Decompose swmpr data into trend, cyclical (e.g., daily, seaonal), and random components using \code{\link[stats]{decompose}} and \code{\link[stats]{ts}}
 }
 \details{
 This function is a simple wrapper to the \code{\link[stats]{decompose}} function.  The \code{decompose} function separates a time series into additive or multiplicative components describing a trend, cyclical variation (e.g., daily or seasonal), and the remainder.  The additive decomposition assumes that the cyclical component of the time series is stationary (i.e., the variance is constant), whereas a multiplicative decomposition accounts for non-stationarity.  By default, a moving average with a symmetric window is used to filter the seasonal component.  Alternatively, a vector of filter coefficients in reverse time order can be supplied (see \code{\link[stats]{decompose}}).
@@ -38,7 +38,7 @@ Note that the \code{decompose} function is a relatively simple approach and alte
 \examples{
 path <- system.file('zip_ex', package = 'SWMPr')
 
-## get data, qaqc
+## get data
 swmp1 <- import_local(path, 'apadbwq')
 
 ## subset for daily decomposition

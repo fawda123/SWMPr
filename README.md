@@ -19,7 +19,7 @@ National Estuarine Research Reserve System (NERRS). 2012. System-wide Monitoring
 
 To cite this package:
 
-Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 1.0.1. https://github.com/fawda123/SWMPr
+Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 1.1.0. https://github.com/fawda123/SWMPr
 
 #Installing the package
 
@@ -170,9 +170,10 @@ methods(class = 'swmpr')
 ```
 
 ```
-##  [1] aggregate.swmpr comb.swmpr      decomp.swmpr    hist.swmpr     
-##  [5] lines.swmpr     na.approx.swmpr plot.swmpr      qaqc.swmpr     
-##  [9] qaqcchk.swmpr   setstep.swmpr   smoother.swmpr  subset.swmpr
+##  [1] aggregate.swmpr comb.swmpr      decomp.swmpr    decomp_cj.swmpr
+##  [5] hist.swmpr      lines.swmpr     na.approx.swmpr plot.swmpr     
+##  [9] qaqc.swmpr      qaqcchk.swmpr   rem_reps.swmpr  setstep.swmpr  
+## [13] smoother.swmpr  subset.swmpr
 ```
 
 #An overview of methods for swmpr objects
@@ -199,6 +200,23 @@ Viewing the number of observations for each parameter that are assigned to a QAQ
 ```r
 # view the number observations in each QAQC flag
 qaqcchk(dat)
+```
+
+Raw nutrient data obtained from the CDMO will usually include replicate samples that were taken within a few minutes of each other.  The `rem_reps.swmpr` function combines nutrient data that occur on the same day to preserve an approximate monthly time step.  The \code{datetimestamp} column will always be averaged for replicates, but the actual observations will be combined based on the user-supplied function which defauls to the mean.  Other suggested functions include the \code{\link[stats]{median}}, \code{\link[base]{min}}, or \code{\link[stats]{max}}.  The entire function call including treatment of \code{NA} values should be passed to the \code{FUN} argument (see the examples).  The function is meant to be used after \code{\link{qaqc}} processing, although it works with a warning if QAQC columns are present.
+
+
+```r
+ get nutrient data
+path <- system.file('zip_ex', package = 'SWMPr')
+swmp1 <- import_local(path, 'apacpnut')
+swmp1 <- qaqc(swmp1)
+
+# remove replicate nutrient data
+rem_reps(swmp1)
+
+# use different function to aggregate replicates
+func <- function(x) max(x, na.rm = T)
+rem_reps(swmp1, FUN = func)
 ```
 
 A subset method added to the existing `subset` function is available for swmpr objects.  This function is used to subset the data by date and/or a selected parameter.  The date can be a single value or as two dates to select records within the range. The former case requires a binary operator input as a character string passed to the argument, such as `>` or `<`.  The subset argument for the date(s) must also be a character string of the format YYYY-mm-dd HH:MM for each element (i.e., %Y-%m%-%d %H:%M in POSIX standards).  Be aware that an error may be returned using this function if the subset argument is in the correct format but the calendar date does not exist, e.g. `2012-11-31 12:00`.  Finally, the function can be used to remove rows and columns that do not contain data. 
@@ -257,7 +275,7 @@ comb(swmp1, swmp3, method = 'intersect')
 comb(swmp1, swmp2, swmp3, timestep = 120, method = 'apacpnut')
 ```
 
-The analysis functions range from general purpose tools for time series analysis to more specific functions for working with continuous monitoring data in estuaries.  The latter category includes a limited number of functions that were developed by myself or others.  The general purpose tools are swmpr methods that were developed for existing generic functions in the R base installation or relevant packages.  These functions include swmpr methods for `aggregate`, `filter`, and `approx` to deal with missing or noisy data and more general functions for exploratory data analaysis, such as `plot`, `summary`, and `hist` methods.  A `decomp` function is provided for a relatively simple approach for time series decomposition. The analysis functions may or may not return a swmpr object depending on whether further processing with swmpr methods is possible from the output.    
+The analysis functions range from general purpose tools for time series analysis to more specific functions for working with continuous monitoring data in estuaries.  The latter category includes a limited number of functions that were developed by myself or others.  The general purpose tools are swmpr methods that were developed for existing generic functions in the R base installation or relevant packages.  These functions include swmpr methods for `aggregate`, `filter`, and `approx` to deal with missing or noisy data and more general functions for exploratory data analaysis, such as `plot`, `summary`, and `hist` methods.  Decomposition functions (`decomp` and `decomp_cj`) are provided as relatively simple approaches for decomposing time series into additive or multiplicative components. The analysis functions may or may not return a swmpr object depending on whether further processing with swmpr methods is possible from the output.    
 
 The `aggregate` function aggregates parameter data for a swmpr object by set periods of observation.  This function is most useful for aggregating noisy data to evaluate trends on longer time scales, or to simply reduce the size of a dataset.  Data can be aggregated by years, quarters, months, weeks, days, or hours for a user-defined function, which defaults to the mean.  A swmpr object is returned for the aggregated data, although the datetimestamp vector will be converted to a date object if the aggregation period is a day or longer.  Days are assigned to the date vector if the aggregation period is a week or longer based on the `round` method for IDate objects ([data.table](http://cran.r-project.org/web/packages/data.table/index.html) package).  This approach was used to facilitate plotting using predefined methods for Date and POSIX objects.  Additionally, the method of treating NA values for the aggregation function should be noted since this may greatly affect the quantity of data that are returned (see the example below).  Finally, the default argument for `na.action` is set to `na.pass` for swmpr objects to preserve the time series of the input data.
 
@@ -295,7 +313,7 @@ plot(do_mgl ~ datetimestamp, data = dat, type = 'l')
 lines(test, select = 'do_mgl', col = 'red', lwd = 2)
 ```
 
-![plot of chunk unnamed-chunk-17](./README_files/figure-html/unnamed-chunk-17.png) 
+![plot of chunk unnamed-chunk-18](./README_files/figure-html/unnamed-chunk-18.png) 
 
 A common issue with any statistical analysis is the treatment of missing values.  Missing data can be excluded from the analysis, included but treated as true zeroes, or interpolated based on similar values.  In either case, an analyst should have a strong rationale for the chosen method.  A common approach used to handle missing data in time series analysis is linear interpolation.  A simple curve fitting method is used to create a continuous set of records between observations separated by missing data.  A challenge with linear interpolation is an appropriate gap size for fitting missing observations.  The ability of the interpolated data to approximate actual trends is a function of the gap size.  Interpolation between larger gaps are less likely to resemble patterns of an actual parameter, whereas interpolation between smaller gaps are more likely to resemble actual patterns.  An appropriate gap size limit depends on the unique characteristics of specific datasets or parameters.  The `na.approx` function can be used to interpolate gaps in a swmpr object.  A required argument for the function is `maxgap` which defines the maximum gap size  for interpolation.
 
@@ -325,7 +343,7 @@ plot(do_mgl ~ datetimestamp, test2, col = 'red',
 lines(dat, select = 'do_mgl')
 ```
 
-![plot of chunk unnamed-chunk-18](./README_files/figure-html/unnamed-chunk-18.png) 
+![plot of chunk unnamed-chunk-19](./README_files/figure-html/unnamed-chunk-19.png) 
 
 The `decomp` function is a simple wrapper to `decompose` that separates a time series into additive or multiplicative components describing a trend, cyclical variation (e.g., daily or seasonal), and the remainder.  The additive decomposition assumes that the cyclical component of the time series is stationary (i.e., the variance is constant), whereas a multiplicative decomposition accounts for non-stationarity.  By default, a moving average with a symmetric window is used to filter the seasonal component.  Alternatively, a vector of filter coefficients in reverse time order can be supplied (see the help documentation for `decompose`).  
 
@@ -346,7 +364,7 @@ test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
 plot(test)
 ```
 
-![plot of chunk unnamed-chunk-19](./README_files/figure-html/unnamed-chunk-19.png) 
+![plot of chunk unnamed-chunk-20](./README_files/figure-html/unnamed-chunk-20.png) 
 
 The next example illustrates how to handle missing values using the `decomp` function. The `decompose` function used internally within `decomp` currently cannot process time series with missing values.  A recommended approach is to use `na.approx` to interpolate the missing values prior to `decompose`.
 
@@ -375,7 +393,32 @@ test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
 plot(test)
 ```
 
-![plot of chunk unnamed-chunk-20](./README_files/figure-html/unnamed-chunk-20.png) 
+![plot of chunk unnamed-chunk-21](./README_files/figure-html/unnamed-chunk-21.png) 
+
+An alternative approach to time series decomposition is provided by the `decomp_cj` function, which is a simple wrapper to the `decompTs` function in the wq package.  Theory describing this method is described in Cloern and Jassby (2010).  The function is similar to `decomp.swmpr` with a few key differences.  The `decomp.swmpr` function decomposes the time series into a trend, seasonal, and random component, whereas the current function decomposes into the grandmean, annual, seasonal, and events components.  For both functions, the random or events components, respectively, can be considered anomalies that don't follow the trends in the remaining categories.  The `decomp_cj` function provides only a monthly decomposition, which is appropriate for characterizing relatively long-term trends.  This approach is meant for nutrient data that are obtained on a monthly cycle.  The function will also work with continuous water quality or weather data but note that the data are first aggregated on the monthly scale before decomposition.  Accordingly, short-term variation less than one-month will be removed. Additional arguments passed to `decompTs` can be used with `decomp_cj`, such as `startyr`, `endyr`, and `type`.  Values passed to `type` are `mult` (default) or `add`, referring to multiplicative or additive decomposition.  See the documentation for `decompTs` for additional explanation and examples.   
+
+
+```r
+# get data
+path <- system.file('zip_ex', package = 'SWMPr')
+dat <- import_local(path, 'apacpnut')
+dat <- qaqc(dat, qaqc_keep = NULL)
+
+# decomposition of chl, ggplot
+decomp_cj(dat, param = 'chla_n')
+```
+
+![plot of chunk unnamed-chunk-22](./README_files/figure-html/unnamed-chunk-221.png) 
+
+```r
+# monthly decomposition of continuous data
+dat2 <- import_local(path, 'apacpwq')
+dat2 <- qaqc(dat2)
+
+decomp_cj(dat2, param = 'do_mgl')
+```
+
+![plot of chunk unnamed-chunk-22](./README_files/figure-html/unnamed-chunk-222.png) 
 
 Finally, a reserve map with all stations can be obtained using the `map_reserve` function.  This function is a simple wrapper to functions in the ggmap package. The current function is limited to Google maps, which allows four map types that can be set with the `map_type` argument: terrain (default), satellite, roadmap, or hybrid.  The `zoom` argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  See the help documentation for ggmap for more info on zoom.  Additionally, station locations are returned using the `site_codes_ind` function if the computer making the request has the IP address registered with CDMO. Otherwise, a local and possibly outdated file is used.  Use the contact at the CDMO [web services](http://cdmo.baruch.sc.edu/webservices.cfm) to register your IP.
 
@@ -385,14 +428,14 @@ Finally, a reserve map with all stations can be obtained using the `map_reserve`
 map_reserve('jac')
 ```
 
-![plot of chunk unnamed-chunk-21](./README_files/figure-html/unnamed-chunk-211.png) 
+![plot of chunk unnamed-chunk-23](./README_files/figure-html/unnamed-chunk-231.png) 
 
 ```r
 # plot the stations at Padilla Bay reserve, satellite
 map_reserve('pdb', map_type = 'satellite', zoom = 12)
 ```
 
-![plot of chunk unnamed-chunk-21](./README_files/figure-html/unnamed-chunk-212.png) 
+![plot of chunk unnamed-chunk-23](./README_files/figure-html/unnamed-chunk-232.png) 
 
 #Functions
 
@@ -414,6 +457,8 @@ See help documentation for more details on each function (e.g., `?all_params`).
 
 `qaqcchk.swmpr` View a summary of the number of observations in a swmpr object that are assigned to different QAQC flags used by CDMO.  The output is used to inform further processing but is not used explicitly. 
 
+`rem_reps.swmpr` Remove replicate nutrient data that occur on the same day.  The default is to average replicates.
+
 `subset.swmpr` Subset by dates and/or columns for a swmpr object.  This is a method passed to the generic `subset' function provided in the base package.
 
 `setstep.swmpr` Format data from a swmpr object to a continuous time series at a given timestep.  The function is used in `comb.swmpr` and can also be used with individual stations.
@@ -434,7 +479,9 @@ See help documentation for more details on each function (e.g., `?all_params`).
 
 `hist.swmpr` Plot a histogram for a swmpr object.
 
-`decomp.swmpr` Decompose a swmpr time series into trend, seasonal, and residual components.  This is a simple wrapper to `decompose`.
+`decomp.swmpr` Decompose a swmpr time series into trend, seasonal, and residual components.  This is a simple wrapper to `decompose`.  Decomposition of monthly or daily trends is possible.
+
+`decomp_cj.swmpr` Decompose a swmpr time series into grandmean, annual, seasonal, and events components.  This is a simple wrapper to `decompTs` in the wq package.  Only monthly decomposition is possible.
 
 ##Miscellaneous
 
@@ -457,3 +504,8 @@ See help documentation for more details on each function (e.g., `?all_params`).
 Analysis functions... metab
 
 DOI/release info (see [here](http://computationalproteomic.blogspot.com/2014/08/making-your-code-citable.html))
+
+-99 values in some observations
+
+correct selection of duplicated datetimestamps
+

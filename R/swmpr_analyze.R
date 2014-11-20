@@ -275,9 +275,9 @@ na.approx.swmpr <- function(object, params = NULL, maxgap, ...){
   
 }
 
-#' Seasonal trend decomposition of swmpr data
+#' Simple trend decomposition of swmpr data
 #' 
-#' Decompose swmpr data into trend, seasonal, and random components using \code{\link[stats]{decompose}} and \code{\link[stats]{ts}}
+#' Decompose swmpr data into trend, cyclical (e.g., daily, seaonal), and random components using \code{\link[stats]{decompose}} and \code{\link[stats]{ts}}
 #' 
 #' @param swmpr_in input swmpr object
 #' @param ... arguments passed to \code{decompose}, \code{ts}, and other methods
@@ -302,7 +302,7 @@ na.approx.swmpr <- function(object, params = NULL, maxgap, ...){
 #' 
 #' path <- system.file('zip_ex', package = 'SWMPr')
 #'
-#' ## get data, qaqc
+#' ## get data
 #' swmp1 <- import_local(path, 'apadbwq')
 #'
 #' ## subset for daily decomposition
@@ -389,6 +389,105 @@ decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily'
   # return decompose.ts
   return(out)
 
+}
+
+#' Simple trend decomposition of monthly swmpr data
+#' 
+#' Decompose monthly SWMP time series into grandmean, annual, seasonal, and event series using \code{\link[wq]{decompTs}}, as described in Cloern and Jassby 2010.
+#' 
+#' @param swmpr_in input swmpr object
+#' @param param chr string of variable to decompose
+#' @param vals_out logical indicating of numeric output is returned, default is \code{FALSE} to return a plot.
+#' @param ... additional arguments passed to other methods, including \code{\link[wq]{decompTs}} 
+#' 
+#' @return  
+#' A \code{\link[ggplot2]{ggplot}} object if \code{vals_out = TRUE} (default), otherwise 
+#' a monthly time series matrix of class \code{\link[stats]{ts}}.
+#' 
+#' @details
+#' This function is a simple wrapper to the \code{\link[wq]{decompTs}} function in the wq package, also described in Cloern and Jassby (2010).  The function is similar to \code{\link{decomp.swmpr}} (which is a wrapper to \code{\link[stats]{decompose}}) with a few key differences.  The \code{\link{decomp.swmpr}} function decomposes the time series into a trend, seasonal, and random components, whereas the current function decomposes into the grandmean, annual, seasonal, and events components.  For both functions, the random or events components, respectively, can be considered anomalies that don't follow the trends in the remaining categories.  
+#' 
+#' The \code{decomp_cj} function provides only a monthly decomposition, which is appropriate for characterizing relatively long-term trends.  This approach is meant for nutrient data that are obtained on a monthly cycle.  The function will also work with continuous water quality or weather data but note that the data are first aggregated on the monthly scale before decomposition.  Accordingly, short-term variation less than one-month will be removed.  The \code{\link{decomp.swmpr}} function can be used to decompose daily variation.     
+#' 
+#' Additional arguments passed to \code{\link[wq]{decompTs}} can be used with \code{decomp_cj}, such as \code{startyr}, \code{endyr}, and \code{type}.  Values passed to \code{type} are \code{mult} (default) or \code{add}, referring to multiplicative or additive decomposition.  See the documentation for \code{\link[wq]{decompTs}} for additional explanation and examples.   
+#' 
+#' @export
+#' 
+#' @import ggplot2 reshape2 wq
+#' 
+#' @seealso \code{\link[wq]{decompTs}}, \code{\link[stats]{ts}}
+#' 
+#' @references
+#' Cloern, J.E., Jassby, A.D. 2010. Patterns and scales of phytoplankton variability in estuarine-coastal ecosystems. Estuaries and Coasts. 33:230–241.
+#' 
+#' @examples
+#' ## get data
+#' path <- system.file('zip_ex', package = 'SWMPr')
+#' dat <- import_local(path, 'apacpnut')
+#' dat <- qaqc(dat, qaqc_keep = NULL)
+#' 
+#' ## decomposition of chl, values as data.frame
+#' decomp_cj(dat, param = 'chla_n', vals_out = TRUE)
+#' 
+#' ## decomposition of chl, ggplot
+#' decomp_cj(dat, param = 'chla_n')
+#' 
+#' ## decomposition changing argumens passed to decompTs
+#' decomp_cj(dat, param = 'chla_n', startyr = 2008, type = 'add')
+#' 
+#' ## monthly decomposition of continuous data
+#' dat2 <- import_local(path, 'apacpwq')
+#' dat2 <- qaqc(dat2)
+#' 
+#' decomp_cj(dat2, param = 'do_mgl')
+decomp_cj <- function(swmpr_in, ...) UseMethod('decomp_cj') 
+
+#' @rdname decomp_cj
+#' 
+#' @export decomp_cj.swmpr
+#' 
+#' @method decomp_cj swmpr
+decomp_cj.swmpr <- function(swmpr_in, param, vals_out = FALSE, ...){
+  
+  dat <- swmpr_in
+  
+  ## sanity checks
+  parameters <- attr(dat, 'parameters')
+  if(!param %in% parameters) stop('Selected parameter not in data')
+  
+  # monthly ts
+  dat <- aggregate(dat, by = 'months', params = param)
+  dat_rng <- attr(dat, 'date_rng')
+  months <- data.frame(datetimestamp = seq.Date(dat_rng[1], dat_rng[2], by = 'months'))
+  dat <- merge(months, dat,  by = 'datetimestamp', all.x = T)
+  
+  year <- as.numeric(strftime(dat_rng[1], '%Y'))
+  month <- as.numeric(strftime(dat_rng[1], '%m'))
+  dat_mts <- ts(dat[, param], frequency = 12, start = c(year, month))
+  
+  # decomp
+  out <- wq::decompTs(dat_mts, ...)
+  
+  # convert results to data frame
+  Time <- unique(as.numeric(gsub('[A-z]| ', '', capture.output(out[, 0])[-1])))
+  Time <- expand.grid(seq(1, 12), Time)
+  Time <- paste(Time[, 2], Time[, 1], '01', sep = '-')
+  Time <- as.Date(Time, format = '%Y-%m-%d')
+  out <- data.frame(Time, out)
+  
+  # output, ts matrix if TRUE
+  if(vals_out) return(out)
+  
+  # otherwise, ggplot
+  to_plo <- out
+  to_plo <- reshape2::melt(to_plo, id.var = 'Time')
+  plo <- ggplot(to_plo, aes(x = Time, y = value, group = variable)) +
+    geom_line() +
+    facet_wrap(~variable, ncol = 1, scales = 'free_y') + 
+    theme_bw()
+  
+  return(plo)
+  
 }
 
 #' Plot swmpr data
