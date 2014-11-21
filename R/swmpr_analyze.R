@@ -418,7 +418,7 @@ decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily'
 #' @seealso \code{\link[wq]{decompTs}}, \code{\link[stats]{ts}}
 #' 
 #' @references
-#' Cloern, J.E., Jassby, A.D. 2010. Patterns and scales of phytoplankton variability in estuarine-coastal ecosystems. Estuaries and Coasts. 33:230–241.
+#' Cloern, J.E., Jassby, A.D. 2010. Patterns and scales of phytoplankton variability in estuarine-coastal ecosystems. Estuaries and Coasts. 33:230-241.
 #' 
 #' @examples
 #' ## get data

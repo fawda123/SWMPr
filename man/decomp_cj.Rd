@@ -53,7 +53,7 @@ dat2 <- qaqc(dat2)
 decomp_cj(dat2, param = 'do_mgl')
 }
 \references{
-Cloern, J.E., Jassby, A.D. 2010. Patterns and scales of phytoplankton variability in estuarine-coastal ecosystems. Estuaries and Coasts. 33:230–241.
+Cloern, J.E., Jassby, A.D. 2010. Patterns and scales of phytoplankton variability in estuarine-coastal ecosystems. Estuaries and Coasts. 33:230-241.
 }
 \seealso{
 \code{\link[wq]{decompTs}}, \code{\link[stats]{ts}}
