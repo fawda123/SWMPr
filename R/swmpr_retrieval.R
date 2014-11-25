@@ -378,6 +378,26 @@ import_local <- function(path, station_code, trace = FALSE){
   # convert output from 'import_local' to data frame and appropriate columns
   
   out <- do.call('rbind', dat)
+  
+  # if duplicated timestamps and met, keep those with minimum value in frequency
+  if('met' %in% parm & any(duplicated(out$datetimestamp)) & 'frequency' %in% names(out)){
+    
+    min_step <- as.character(min(as.numeric(unique(out$frequency))))
+    out <- out[out$frequency %in% min_step, ]
+    
+    # sometimes duplicates still remain at same frequency
+    out <- out[!duplicated(out$datetimestamp),]  
+    
+  }
+  
+  #remove duplicate time stamps from wq data
+  if('wq' %in% parm & any(duplicated(out$datetimestamp))){
+    
+    out <- out[!duplicated(out$datetimestamp),]  
+    
+  }
+  
+  # retain only relevant columns
   out <- data.frame(
     datetimestamp = out$datetimestamp,
     out[, names(out) %in% nms], 

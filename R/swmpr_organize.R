@@ -13,7 +13,7 @@
 #' @seealso \code{\link{qaqcchk}}
 #' 
 #' @details
-#' The qaqc function is a simple screen to retain values from the data with specified QAQC flags, described online: \url{http://cdmo.baruch.sc.edu/data/qaqc.cfm}. Each parameter in the swmpr data typically has a corresponding QAQC column of the same name with the added prefix 'f_'. Values in the QAQC column specify a flag from -5 to 5. Generally, only data with the '0' QAQC flag should be used, which is the default option for the function. Data that do not satisfy QAQC criteria are converted to \code{NA} values. Processed data will have QAQC columns removed, in addition to removal of values in the actual parameter columns that do not meet the criteria.
+#' The qaqc function is a simple screen to retain values from the data with specified QAQC flags, described online: \url{http://cdmo.baruch.sc.edu/data/qaqc.cfm}. Each parameter in the swmpr data typically has a corresponding QAQC column of the same name with the added prefix 'f_'. Values in the QAQC column specify a flag from -5 to 5. Generally, only data with the '0' QAQC flag should be used, which is the default option for the function. Data that do not satisfy QAQC criteria are converted to \code{NA} values. Additionally, simple filters are used to remove obviously bad values, e.g., wind speed values less than zero or pH values greater than 12.  Processed data will have QAQC columns removed, in addition to removal of values in the actual parameter columns that do not meet the criteria.
 #' 
 #' @examples
 #' ## get data
@@ -105,19 +105,43 @@ qaqc.swmpr <- function(swmpr_in,
   ##
   # addl misc processing
   
-  #combine with datetimestamp and append to output list
+  # combine with datetimestamp and append to output list
   out <- data.frame(datetimestamp = dat[,1], qaqc)
-  
-  #remove duplicate time stamps (some minutely), do not use aggregate
-  out<-out[!duplicated(out$datetimestamp),]  
     
-	#convert columns to numeric, missing converted to NA
-	#NA values from qaqc still included as NA
+	# convert columns to numeric, missing converted to NA
+	# NA values from qaqc still included as NA
 	out <- data.frame(
     datetimestamp = out[,1],
     apply(out[, -1, drop = FALSE], 2 , as.numeric)
     )
   names(out) <- c('datetimestamp', parameters)
+
+  # remove obviously bad values
+  out <- within(out, {
+    
+    try({SpCond[SpCond < 0] <- NA}, silent = T)
+    try({Sal[Sal < 0] <- NA}, silent = T)
+    try({DO_mgl[DO_mgl < 0] <- NA}, silent = T) 
+    try({pH[pH < 0 | pH > 12] <- NA}, silent = T) 
+    try({Turb[Turb < 0] <- NA}, silent = T) 
+    try({ChlFluor[ChlFluor < 0] <- NA}, silent = T) 
+    try({RH[RH < 0] <- NA}, silent = T) 
+    try({BP[BP < 0] <- NA}, silent = T) 
+    try({WSpd[WSpd < 0] <- NA}, silent = T) 
+    try({Wdir[Wdir < 0 | Wdir > 360] <- NA}, silent = T)
+    try({SDWDir[SDWDir < 0] <- NA}, silent = T) 
+    try({TotPAR[TotPAR < 0] <- NA}, silent = T) 
+    try({TotPrcp[TotPrcp < 0] <- NA}, silent = T) 
+    try({CumPrcp[CumPrcp < 0] <- NA}, silent = T) 
+    try({TotSoRad[TotSoRad < 0] <- NA}, silent = T) 
+    try({PO4H[PO4H < 0] <- NA}, silent = T) 
+    try({NH4F[NH4F < 0] <- NA}, silent = T) 
+    try({NO2F[NO2F < 0] <- NA}, silent = T) 
+    try({NO3F[NO3F < 0] <- NA}, silent = T) 
+    try({NO23F[NO23F < 0] <- NA}, silent = T) 
+    try({CHLA_N[CHLA_N < 0] <- NA}, silent = T)
+    
+    })
 
   # create swmpr class
   out <- swmpr(out, station)
@@ -441,7 +465,7 @@ subset.swmpr <- function(x, subset = NULL, select = NULL,
 #' @seealso \code{\link{comb}}
 #' 
 #' @details
-#' The setstep function formats a swmpr object to a continuous time series at a given time step. This function is not necessary for most stations but can be useful for combining data or converting an existing time series to a set interval. It can also be used to remove duplicate time stamps that are present in some data (e.g., Kachemak Bay weather data).  The default behavior in this scenario is to retain the first observation of the duplicated data, whereas the remaining duplicates are discarded. The first argument of the function, \code{timestep}, specifies the desired time step in minutes starting from the nearest hour of the first observation. The second argument, \code{differ}, specifies the allowable tolerance in minutes for matching existing observations to user-defined time steps in cases where the two are dissimilar. Values for \code{differ} that are greater than one half the value of timestep are not allowed to prevent duplication of existing data. Likewise, the default value for differ is one half the time step. Rows that do not match any existing data within the limits of the differ argument are not discarded. Output from the function can be used with \code{subset} and to create a time series at a set interval with empty data removed.
+#' The setstep function formats a swmpr object to a continuous time series at a given time step. This function is not necessary for most stations but can be useful for combining data or converting an existing time series to a set interval.  The first argument of the function, \code{timestep}, specifies the desired time step in minutes starting from the nearest hour of the first observation. The second argument, \code{differ}, specifies the allowable tolerance in minutes for matching existing observations to user-defined time steps in cases where the two are dissimilar. Values for \code{differ} that are greater than one half the value of timestep are not allowed to prevent duplication of existing data. Likewise, the default value for differ is one half the time step. Rows that do not match any existing data within the limits of the differ argument are not discarded. Output from the function can be used with \code{subset} and to create a time series at a set interval with empty data removed.
 #' 
 #' @examples
 #' ## import data
@@ -498,10 +522,6 @@ setstep.swmpr <- function(swmpr_in, timestep = 15, differ= timestep/2, ...){
   mrg_dat$time_dum <- mrg_dat$datetimestamp
   mrg_dat <- data.table(mrg_dat, key = 'datetimestamp')
   mrg_std <- data.table(dts_std, key = 'datetimestamp')
-  
-  # remove duplicate keys by average values
-  # default for unique data.table is to keep first duplicated row by keys
-  mrg_dat <- unique(mrg_dat)
   
   # merge all the data  using  mrg_std as master
   mrg <- mrg_dat[mrg_std, roll = 'nearest']
