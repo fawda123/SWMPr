@@ -295,11 +295,13 @@ single_param <- function(station_code, param, Max = 100){
 #' @return Returns a swmpr object with all parameters and QAQC columns for the station.  The full date range in the raw data are also imported.
 #' 
 #' @details 
-#' The function is designed to import local data that were downloaded from the CDMO outside of R. This approach works best for larger data requests.  The function is designed for data from the zip downloads feature in the advanced query section of the CDMO. The function may also work using data from the data export system, but this feature has not been extensively tested (expect bugs). The downloaded data will be in a compressed folder that includes multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.). The import_local function can be used after the folder is decompressed.
+#' The function is designed to import local data that were downloaded from the CDMO outside of R. This approach works best for larger data requests, specifically those from the zip downloads feature in the advanced query section of the CDMO. The function may also work using data from the data export system, but this feature has not been extensively tested (expect bugs). The downloaded data will be in a compressed folder that includes multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.). The import_local function can be used after the folder is decompressed.
+#' 
+#' Occasionally, duplicate time stamps are present in the raw data.  The function handles duplicate entries differently depending on the data type (water quality,  weather, or nutrients).  For water quality and nutrient data, duplicate time stamps are simply removed.  Note that nutrient data often contain replicate samples with similar but not duplicated time stamps within a few minutes of each other.  Replicates with unique time stamps are not removed but can be further processed using \code{\link{rem_reps}}.  Weather data prior to 2007 may contain duplicate time stamps at frequencies for 60 (hourly) and 144 (daily) averages, in addition to 15 minute frequencies.  Duplicate values that correspond to the smallest value in the frequency column (15 minutes) are retained.  
 #' 
 #' Zip download request through CDMO: \url{http://cdmo.baruch.sc.edu/aqs/zips.cfm}
 #' 
-#' @seealso \code{\link{all_params}}, \code{\link{all_params_dtrng}}, \code{\link{single_param}}
+#' @seealso \code{\link{all_params}}, \code{\link{all_params_dtrng}}, \code{\link{rem_reps}}, \code{\link{single_param}}
 #' 
 #' @examples
 #' 
@@ -355,6 +357,9 @@ import_local <- function(path, station_code, trace = FALSE){
       
     names(tmp) <- tolower(names(tmp))
     
+    # remove stationcode, isswmp columns
+    tmp <- tmp[, !names(tmp) %in% c('stationcode', 'isswmp')]
+    
     # convert date time to posix
     names(tmp)[grep('datetimestamp', names(tmp), ignore.case = TRUE)] <- 'datetimestamp'
     tmp$datetimestamp <- time_vec(tmp$datetimestamp, station_code)
@@ -375,7 +380,7 @@ import_local <- function(path, station_code, trace = FALSE){
   nms <- param_names(parm)[[parm]]
   
   ##
-  # convert output from 'import_local' to data frame and appropriate columns
+  # deal with duplicate time stamps depending on data type
   
   out <- do.call('rbind', dat)
   
@@ -390,13 +395,17 @@ import_local <- function(path, station_code, trace = FALSE){
     
   }
   
-  #remove duplicate time stamps from wq data
-  if('wq' %in% parm & any(duplicated(out$datetimestamp))){
+  # remove duplicate time stamps from wq and nut data
+  if(any(c('nut', 'wq') %in% parm) & any(duplicated(out$datetimestamp))){
     
     out <- out[!duplicated(out$datetimestamp),]  
     
   }
   
+  # remove rows with no datetimestamp
+  out <- out[!is.na(out$datetimestamp), ]
+  
+  # convert output to data frame
   # retain only relevant columns
   out <- data.frame(
     datetimestamp = out$datetimestamp,

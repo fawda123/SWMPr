@@ -26,7 +26,7 @@ National Estuarine Research Reserve System (NERRS). 2012. System-wide Monitoring
 
 To cite this package:
 
-Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 1.2.0. https://github.com/fawda123/SWMPr
+Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 1.3.0. https://github.com/fawda123/SWMPr
 
 #Installing the package
 
@@ -75,6 +75,8 @@ single_param('hudscwq', 'do_mgl')
 ```
 
 For larger requests, it's easier to obtain data outside of R using the CDMO query system and then importing within R using the `import_local` function.  Data can be retrieved from the CDMO several ways.  The `import_local` function is designed for data from the [zip downloads](http://cdmo.baruch.sc.edu/aqs/zips.cfm) feature in the advanced query section of the CDMO. The function may also work using data from the [data export system](http://cdmo.baruch.sc.edu/get/export.cfm), but this feature has not been extensively tested (expect bugs).  The [zip downloads](http://cdmo.baruch.sc.edu/aqs/zips.cfm) feature is an easy way to obtain data from multiple stations in one request.  The downloaded data will be in a compressed folder that includes multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.).  It is recommended that all stations at a site and the complete date ranges are requested to avoid repeated requests to CDMO.  The `import_local` function can be used after the folder is decompressed.
+
+Occasionally, duplicate time stamps are present in the raw data.  The function handles duplicate entries differently depending on the data type (water quality,  weather, or nutrients).  For water quality and nutrient data, duplicate time stamps are simply removed.  Note that nutrient data often contain replicate samples with similar but not duplicated time stamps within a few minutes of each other.  Replicates with unique time stamps are not removed but can be further processed using `rem_reps`.  Weather data prior to 2007 may contain duplicate time stamps at frequencies for 60 (hourly) and 144 (daily) averages, in addition to 15 minute frequencies.  Duplicate values that correspond to the smallest value in the frequency column (15 minutes) are retained.  
 
 ```{r eval = F}
 # import data for apaebmet that you downloaded
@@ -156,10 +158,10 @@ qaqcchk(dat)
 
 ```
 
-Raw nutrient data obtained from the CDMO will usually include replicate samples that were taken within a few minutes of each other.  The `rem_reps.swmpr` function combines nutrient data that occur on the same day to preserve an approximate monthly time step.  The \code{datetimestamp} column will always be averaged for replicates, but the actual observations will be combined based on the user-supplied function which defauls to the mean.  Other suggested functions include the \code{\link[stats]{median}}, \code{\link[base]{min}}, or \code{\link[stats]{max}}.  The entire function call including treatment of \code{NA} values should be passed to the \code{FUN} argument (see the examples).  The function is meant to be used after \code{\link{qaqc}} processing, although it works with a warning if QAQC columns are present.
+Raw nutrient data obtained from the CDMO will usually include replicate samples that were taken within a few minutes of each other.  The `rem_reps.swmpr` function combines nutrient data that occur on the same day to preserve an approximate monthly time step.  The datetimestamp column will always be averaged for replicates, but the actual observations will be combined based on the user-supplied function which defauls to the mean.  Other suggested functions include the `median`, `min`, or `max`.  The entire function call including treatment of NA values should be passed to the `FUN` argument (see the examples).  The function is meant to be used after `qaqc` processing, although it works with a warning if QAQC columns are present.
 
 ```{r eval = F}
- get nutrient data
+# get nutrient data
 path <- system.file('zip_ex', package = 'SWMPr')
 swmp1 <- import_local(path, 'apacpnut')
 swmp1 <- qaqc(swmp1)
