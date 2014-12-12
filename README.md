@@ -19,7 +19,7 @@ National Estuarine Research Reserve System (NERRS). 2012. System-wide Monitoring
 
 To cite this package:
 
-Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 1.3.0. https://github.com/fawda123/SWMPr
+Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 1.4.0. https://github.com/fawda123/SWMPr
 
 #Installing the package
 
@@ -172,10 +172,11 @@ methods(class = 'swmpr')
 ```
 
 ```
-##  [1] aggregate.swmpr comb.swmpr      decomp.swmpr    decomp_cj.swmpr
-##  [5] hist.swmpr      lines.swmpr     na.approx.swmpr plot.swmpr     
-##  [9] qaqc.swmpr      qaqcchk.swmpr   rem_reps.swmpr  setstep.swmpr  
-## [13] smoother.swmpr  subset.swmpr
+##  [1] aggregate.swmpr    comb.swmpr         decomp.swmpr      
+##  [4] decomp_cj.swmpr    hist.swmpr         lines.swmpr       
+##  [7] na.approx.swmpr    plot.swmpr         plot_summary.swmpr
+## [10] qaqc.swmpr         qaqcchk.swmpr      rem_reps.swmpr    
+## [13] setstep.swmpr      smoother.swmpr     subset.swmpr
 ```
 
 #An overview of methods for swmpr objects
@@ -196,7 +197,7 @@ qaqc(dat, qaqc_keep = NULL)
 qaqc(dat, qaqc_keep = c(0, -1))
 ```
 
-Viewing the number of observations for each parameter that are assigned to a QAQC flag may be useful for deciding how to process the data qith `qaqc`.  The `qaqcchk` function can be used to view this information.  Consult the [online documentation](http://cdmo.baruch.sc.edu/data/qaqc.cfm) for a description of each QAQC flag. 
+Viewing the number of observations for each parameter that are assigned to a QAQC flag may be useful for deciding how to process the data with `qaqc`.  The `qaqcchk` function can be used to view this information.  Consult the [online documentation](http://cdmo.baruch.sc.edu/data/qaqc.cfm) for a description of each QAQC flag. 
 
 
 ```r
@@ -422,7 +423,7 @@ decomp_cj(dat2, param = 'do_mgl')
 
 ![plot of chunk unnamed-chunk-22](./README_files/figure-html/unnamed-chunk-222.png) 
 
-Finally, a reserve map with all stations can be obtained using the `map_reserve` function.  This function is a simple wrapper to functions in the ggmap package. The current function is limited to Google maps, which allows four map types that can be set with the `map_type` argument: terrain (default), satellite, roadmap, or hybrid.  The `zoom` argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  See the help documentation for ggmap for more info on zoom.  Additionally, station locations are returned using the `site_codes_ind` function if the computer making the request has the IP address registered with CDMO. Otherwise, a local and possibly outdated file is used.  Use the contact at the CDMO [web services](http://cdmo.baruch.sc.edu/webservices.cfm) to register your IP.
+A reserve map with all stations can be obtained using the `map_reserve` function.  This function is a simple wrapper to functions in the ggmap package. The current function is limited to Google maps, which allows four map types that can be set with the `map_type` argument: terrain (default), satellite, roadmap, or hybrid.  The `zoom` argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  See the help documentation for ggmap for more info on zoom.  Additionally, station locations are returned using the `site_codes_ind` function if the computer making the request has the IP address registered with CDMO. Otherwise, a local and possibly outdated file is used.  Use the contact at the CDMO [web services](http://cdmo.baruch.sc.edu/webservices.cfm) to register your IP.
 
 
 ```r
@@ -438,6 +439,21 @@ map_reserve('pdb', map_type = 'satellite', zoom = 12)
 ```
 
 ![plot of chunk unnamed-chunk-23](./README_files/figure-html/unnamed-chunk-232.png) 
+
+Finally, several graphics showing seasonal and annual trends for a given SWMP parameter can be obtained using the `plot_summary` function.  The plots include aggregated monthly distributions, monthly anomalies, and annual anomalies in multiple formats.  Anomalies are defined as the difference between the monthly or annual average from the grand mean for the parameter.  Monthly anomalies are in relation to the grand mean for the same month across all years.  This function currently only works for water quality and weather data.  The function returns a graphics object (Grob) of multiple ggplot objects.  An interactive Shiny widget that uses this function is available: [https://beckmw.shinyapps.io/swmp_summary/](https://beckmw.shinyapps.io/swmp_summary/).
+
+
+```r
+## import data
+path <- system.file('zip_ex', package = 'SWMPr')
+dat <- import_local(path, 'apacpwq')
+dat <- qaqc(dat)
+
+## plot
+plot_summary(dat, param = 'temp')
+```
+
+![plot of chunk unnamed-chunk-24](./README_files/figure-html/unnamed-chunk-24.png) 
 
 #Functions
 
@@ -501,13 +517,11 @@ See help documentation for more details on each function (e.g., `?all_params`).
 
 `map_reserve` Create a map of all stations in a reserve using the ggmap package.
 
+`plot_summary` Create summary plots of seasonal/annual trends and anomalies for a water quality or weather parameter
+
 # Forthcoming
 
 Analysis functions... metab
 
 DOI/release info (see [here](http://computationalproteomic.blogspot.com/2014/08/making-your-code-citable.html))
-
--99 values in some observations
-
-correct selection of duplicated datetimestamps
 
