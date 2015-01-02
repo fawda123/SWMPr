@@ -13,7 +13,7 @@
 #' @seealso \code{\link{qaqcchk}}
 #' 
 #' @details
-#' The qaqc function is a simple screen to retain values from the data with specified QAQC flags, described online: \url{http://cdmo.baruch.sc.edu/data/qaqc.cfm}. Each parameter in the swmpr data typically has a corresponding QAQC column of the same name with the added prefix 'f_'. Values in the QAQC column specify a flag from -5 to 5. Generally, only data with the '0' QAQC flag should be used, which is the default option for the function. Data that do not satisfy QAQC criteria are converted to \code{NA} values. Additionally, simple filters are used to remove obviously bad values, e.g., wind speed values less than zero or pH values greater than 12.  Processed data will have QAQC columns removed, in addition to removal of values in the actual parameter columns that do not meet the criteria.
+#' The qaqc function is a simple screen to retain values from the data with specified QAQC flags, described online: \url{http://cdmo.baruch.sc.edu/data/qaqc.cfm}. Each parameter in the swmpr data typically has a corresponding QAQC column of the same name with the added prefix 'f_'. Values in the QAQC column specify a flag from -5 to 5. Generally, only data with the '0' QAQC flag should be used, which is the default option for the function. Data that do not satisfy QAQC criteria are converted to \code{NA} values. Additionally, simple filters are used to remove obviously bad values, e.g., wind speed values less than zero or pH values greater than 12. Erroneous data entered as -99 are also removed. Processed data will have QAQC columns removed, in addition to removal of values in the actual parameter columns that do not meet the criteria.
 #' 
 #' @examples
 #' ## get data
@@ -115,7 +115,7 @@ qaqc.swmpr <- function(swmpr_in,
   nc <- ncol(out) -1
   out <- c(as.matrix(out[, -1]))
   out[is.nan(out)] <- NA
-  out[out %in%  c(-Inf, Inf)] <- NA
+  out[out %in%  c(-Inf, Inf, -99)] <- NA
   out <- matrix(out, nrow = nr, ncol = nc) 
   out <- data.frame(
     datetimestamp = datetimestamp,

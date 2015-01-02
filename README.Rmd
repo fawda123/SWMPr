@@ -136,7 +136,7 @@ methods(class = 'swmpr')
 
 Three categories of functions are available: retrieve, organize, and analyze.  The retrieval functions import the data into R as a swmpr object for use with the organize and analyze functions.  Methods defined for swmpr objects can be applied with the organize and analyze functions.  These methods are available for generic functions specific to this package, in addition to methods for existing generic functions available from other packages.  S3 methods are implemented in all cases.  
 
-The organize functions are used to clean or prepare the data for analysis, including removal of QAQC flags, subsetting, creating a standardized time series vector, and combining data of different types.  The `qaqc` function is a simple screen to retain values from the data with specified QAQC flags, described [here](http://cdmo.baruch.sc.edu/data/qaqc.cfm).  Each parameter in the swmpr data typically has a corresponding QAQC column of the same name with the added prefix 'f_'.  Values in the QAQC column specify a flag from -5 to 5.  Generally, only data with the '0' QAQC flag should be used, which is the default option for the `qaqc` function.  Data that do not satisfy QAQC criteria are converted to NA values.   Additionally, simple filters are used to remove obviously bad values, e.g., wind speed values less than zero or pH values greater than 12. Processed data will have QAQC columns removed, in addition to removal of values in the actual parameter columns that do not meet the criteria. 
+The organize functions are used to clean or prepare the data for analysis, including removal of QAQC flags, subsetting, creating a standardized time series vector, and combining data of different types.  The `qaqc` function is a simple screen to retain values from the data with specified QAQC flags, described [here](http://cdmo.baruch.sc.edu/data/qaqc.cfm).  Each parameter in the swmpr data typically has a corresponding QAQC column of the same name with the added prefix 'f_'.  Values in the QAQC column specify a flag from -5 to 5.  Generally, only data with the '0' QAQC flag should be used, which is the default option for the `qaqc` function.  Data that do not satisfy QAQC criteria are converted to NA values.   Additionally, simple filters are used to remove obviously bad values, e.g., wind speed values less than zero or pH values greater than 12. Erroneous data entered as -99 are also removed. Processed data will have QAQC columns removed, in addition to removal of values in the actual parameter columns that do not meet the criteria. 
 
 ```{r eval = F}
 # qaqc screen for a swmpr object, retain only '0'
@@ -362,7 +362,7 @@ map_reserve('jac')
 map_reserve('pdb', map_type = 'satellite', zoom = 12)
 ```
 
-Finally, several graphics showing seasonal and annual trends for a given SWMP parameter can be obtained using the `plot_summary` function.  The plots include aggregated monthly distributions, monthly anomalies, and annual anomalies in multiple formats.  Anomalies are defined as the difference between the monthly or annual average from the grand mean for the parameter.  Monthly anomalies are in relation to the grand mean for the same month across all years.  This function currently only works for water quality and weather data.  The function returns a graphics object (Grob) of multiple ggplot objects.  An interactive Shiny widget that uses this function is available: [https://beckmw.shinyapps.io/swmp_summary/](https://beckmw.shinyapps.io/swmp_summary/).
+Finally, several graphics showing seasonal and annual trends for a given SWMP parameter can be obtained using the `plot_summary` function.  The plots include monthly distributions, monthly anomalies, and annual anomalies in multiple formats.  Anomalies are defined as the difference between the monthly or annual average from the grand mean for the parameter.  Monthly anomalies are in relation to the grand mean for the same month across all years.  All data are aggregated for quicker plotting.  Nutrient data are based on monthly averages, whereas weather and water quality data are based on daily averages.  Cumulative precipitation data are based on the daily maximum. The function returns a graphics object (Grob) of multiple ggplot objects.  An interactive Shiny widget that uses this function is available: [https://beckmw.shinyapps.io/swmp_summary/](https://beckmw.shinyapps.io/swmp_summary/).
 
 ```{r fig.height = 7, fig.width = 13, message = F}
 ## import data
@@ -420,6 +420,8 @@ See help documentation for more details on each function (e.g., `?all_params`).
 
 `decomp_cj.swmpr` Decompose a swmpr time series into grandmean, annual, seasonal, and events components.  This is a simple wrapper to `decompTs` in the wq package.  Only monthly decomposition is possible.
 
+`plot_summary` Create summary plots of seasonal/annual trends and anomalies for a water quality or weather parameter.
+
 ##Miscellaneous
 
 `swmpr` Creates object of swmpr class, used internally in retrieval functions.
@@ -435,8 +437,6 @@ See help documentation for more details on each function (e.g., `?all_params`).
 `param_names` Returns column names as a list for the parameter type(s) (nutrients, weather, or water quality).  Includes QAQC columns with 'f_' prefix. Used internally in other functions.
 
 `map_reserve` Create a map of all stations in a reserve using the ggmap package.
-
-`plot_summary` Create summary plots of seasonal/annual trends and anomalies for a water quality or weather parameter
 
 # Forthcoming
 

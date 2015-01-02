@@ -24,7 +24,7 @@ A graphics object (Grob) of multiple \code{\link[ggplot2]{ggplot}} objects.
 Plot graphical summaries of SWMP data for individual parameters, including seasonal/annual trends and anomalies
 }
 \details{
-This function creates several graphics showing seasonal and annual trends for a given swmp parameter.  Plots include aggregated monthly distributions, monthly anomalies, and annual anomalies.  Anomalies are defined as the difference between the monthly or annual average from the grand mean.  Monthly anomalies are in relation to the grand mean for the same month across all years.  This function currently only works for water quality and weather data.  An interactive Shiny widget is available: \url{https://beckmw.shinyapps.io/swmp_summary/}
+This function creates several graphics showing seasonal and annual trends for a given swmp parameter.  Plots include aggregated monthly distributions, monthly anomalies, and annual anomalies.  Anomalies are defined as the difference between the monthly or annual average from the grand mean.  Monthly anomalies are in relation to the grand mean for the same month across all years.  All data are aggregated prior to plotting, although the aggregation method varies by data type.  Nutrient data are based on monthly averages, wheras weather and water quality data are based on daily averages.  Cumulative precipitation data are based on the daily maximum.  An interactive Shiny widget is available: \url{https://beckmw.shinyapps.io/swmp_summary/}
 }
 \examples{
 ## import data
