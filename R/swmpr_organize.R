@@ -110,9 +110,16 @@ qaqc.swmpr <- function(swmpr_in,
     
 	# convert columns to numeric, missing converted to NA
 	# NA values from qaqc still included as NA
-	out <- data.frame(
-    datetimestamp = out[,1],
-    apply(out[, -1, drop = FALSE], 2 , as.numeric)
+  datetimestamp <- out[, 1]
+  nr <- nrow(out)
+  nc <- ncol(out) -1
+  out <- c(as.matrix(out[, -1]))
+  out[is.nan(out)] <- NA
+  out[out %in%  c(-Inf, Inf)] <- NA
+  out <- matrix(out, nrow = nr, ncol = nc) 
+  out <- data.frame(
+    datetimestamp = datetimestamp,
+    out
     )
   names(out) <- c('datetimestamp', parameters)
 

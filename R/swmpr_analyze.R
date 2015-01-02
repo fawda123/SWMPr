@@ -94,9 +94,23 @@ aggregate.swmpr <- function(x, by, FUN = function(x) mean(x, na.rm = TRUE), para
   
   # aggregate
   form_in <- formula(. ~ datetimestamp)
-  out <- aggregate(form_in, data.frame(to_agg), FUN = FUN, 
-    na.action = na.action, simplify = TRUE, ...)
+  out <- suppressWarnings(aggregate(form_in, data.frame(to_agg), FUN = FUN, 
+    na.action = na.action, simplify = TRUE, ...))
 
+  # convert columns to numeric, missing converted to NA
+  datetimestamp <- out[, 1]
+  nr <- nrow(out)
+  nc <- ncol(out) -1
+  out <- c(as.matrix(out[, -1]))
+  out[is.nan(out)] <- NA
+  out[out %in%  c(-Inf, Inf)] <- NA
+  out <- matrix(out, nrow = nr, ncol = nc) 
+  out <- data.frame(
+    datetimestamp = datetimestamp,
+    out
+    )
+  names(out) <- c('datetimestamp', parameters)
+  
   # format output as swmpr object
   out <- swmpr(out, station)
   
@@ -523,20 +537,18 @@ decomp_cj.swmpr <- function(swmpr_in, param, vals_out = FALSE, ...){
 #' ## plot using defualt, add lines
 #' plot(dat$datetimestamp, dat$do_mgl)
 #' lines(dat, select = 'do_mgl', col = 'red')
-plot.swmpr <- function(x, type = 'l', ...) {
+plot.swmpr <- function(swmpr_in, type = 'l', ...) {
   
-  to_plo <- x
+  if(attr(swmpr_in, 'qaqc_cols'))
+    swmpr_in <- qaqc(swmpr_in, qaqc_keep = NULL)
   
-  if(attr(to_plo, 'qaqc_cols'))
-    to_plo <- qaqc(to_plo, qaqc_keep = NULL)
+  if(ncol(swmpr_in) > 2) stop('Only one parameter can be plotted')
   
-  if(ncol(to_plo) > 2) stop('Only one parameter can be plotted')
-  
-  parameters <- attr(to_plo, 'parameters')
+  parameters <- attr(swmpr_in, 'parameters')
 
   form_in <- formula(substitute(i ~ datetimestamp, 
     list(i = as.name(parameters))))
-  plot(form_in, data = to_plo, type = type, ...)
+  plot(form_in, data = swmpr_in, type = type, ...)
    
 }
 

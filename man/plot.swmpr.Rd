@@ -4,16 +4,16 @@
 \alias{plot.swmpr}
 \title{Plot swmpr data}
 \usage{
-\method{plot}{swmpr}(x, type = "l", ...)
+\method{plot}{swmpr}(swmpr_in, type = "l", ...)
 
 \method{lines}{swmpr}(x, subset = NULL, select, operator = NULL, ...)
 }
 \arguments{
-\item{x}{input swmpr object}
-
 \item{type}{chr string for type of plot, default \code{'l'}.  See \code{\link[graphics]{plot}}.}
 
 \item{...}{other arguments passed to \code{par}, \code{plot.default}, \code{lines}, \code{points}}
+
+\item{x}{input swmpr object}
 
 \item{subset}{chr string of form 'YYYY-mm-dd HH:MM' to subset a date range.  Input can be one (requires \code{operator} or two values (a range).  Passed to \code{\link{subset.swmpr}}.}
 
