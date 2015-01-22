@@ -10,3 +10,4 @@
 ^README_files/.*
 ^ggmapTemp.png
 ^test_.*\.R$
+^\.travis\.yml$
