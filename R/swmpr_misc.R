@@ -49,11 +49,11 @@ swmpr <- function(stat_in, meta_in){
 }
 
 ######
-#' Parse SOAP objects for swmpr
+#' Parse web results for swmpr
 #' 
-#' Parsing function for objects returned from SOAP server
+#' Parsing function for objects returned from CDMO web services
 #' 
-#' @param  soap_in soap object returned from CDMO server
+#' @param  resp_in web object returned from CDMO server, response class from httr package
 #' @param  parent_in chr string of parent nodes to parse
 #' 
 #' @import XML plyr
@@ -61,17 +61,13 @@ swmpr <- function(stat_in, meta_in){
 #' @export
 #' 
 #' @details 
-#' This function parses XML objects returned from the CDMO SOAP server, which are further passed to \code{\link{swmpr}}.  It is used internally by the data retrieval functions, excluding \code{\link{import_local}}.  The function does not need to be called explicitly.
+#' This function parses XML objects returned from the CDMO server, which are further passed to \code{\link{swmpr}}.  It is used internally by the data retrieval functions, excluding \code{\link{import_local}}.  The function does not need to be called explicitly.
 #' 
 #' @return Returns a \code{data.frame} of parsed XML nodes
-parser <- function(soap_in, parent_in = 'data'){
-  
-  # sanity check
-  if(!'SOAPHTTPReply' %in% class(soap_in))
-    stop('Input must be of class SOAPHTTPReply')
+parser <- function(resp_in, parent_in = 'data'){
   
   # convert to XMLDocumentContent for parsing
-  raw <- htmlTreeParse(soap_in$content, useInternalNodes = TRUE)
+  raw <- htmlTreeParse(resp_in, useInternalNodes = TRUE)
 
   # get parent data nodes
   parents <- xpathSApply(
@@ -148,7 +144,7 @@ time_vec <- function(chr_in = NULL, station_code, tz_only = FALSE){
 #' 
 #' @return A \code{data.frame} of SWMP metadata
 #' 
-#' @details This function uses the SSOAP package to retrieve data from the CDMO through a SOAP client interface.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{http://cdmo.baruch.sc.edu/webservices.cfm}. This is the CDMO equivalent of \code{exportStationCodesXML}.
+#' @details This function retrieves data from the CDMO web services.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{http://cdmo.baruch.sc.edu/webservices.cfm}. This is the CDMO equivalent of \code{exportStationCodesXML}.
 #' 
 #' @examples
 #' \dontrun{
@@ -159,23 +155,13 @@ time_vec <- function(chr_in = NULL, station_code, tz_only = FALSE){
 #' }
 site_codes <- function(){
   
-  # install SSOAP if not available
-  check_soap <- require('SSOAP')
-  if(!check_soap)
-    install.packages("SSOAP", repos="http://www.omegahat.org/R", 
-      dependencies = TRUE,  type =  "source")
-  
   # access CDMO web services
-  serv <- SOAPServer(
-    "http://cdmo.baruch.sc.edu/webservices2/requests.cfc?wsdl"
-    )
+  serv <- "http://cdmo.baruch.sc.edu/webservices2/requests.cfc?wsdl"
 
   # get all station codes
-  reply <- .SOAP(
+  reply <- httr::GET(
     serv,
-    method = 'exportStationCodesXMLNew',
-    action="", 
-    .convert = FALSE
+    query = list(method = 'exportStationCodesXMLNew'),
     )
 
   # parse reply from server
@@ -198,7 +184,7 @@ site_codes <- function(){
 #' 
 #' @return An abbreviated \code{data.frame} of the SWMP metadata for the requested site
 #' 
-#' @details This function uses the SSOAP package to retrieve data from the CDMO through a SOAP client interface.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{http://cdmo.baruch.sc.edu/webservices.cfm}. This function is the CDMO equivalent of \code{NERRFilterStationCodesXMLNew}.
+#' @details This function retrieves data from the CDMO web services.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{http://cdmo.baruch.sc.edu/webservices.cfm}. This function is the CDMO equivalent of \code{NERRFilterStationCodesXMLNew}.
 #' 
 #' @examples
 #' \dontrun{
@@ -209,25 +195,17 @@ site_codes <- function(){
 #' }
 site_codes_ind <- function(nerr_site_id){
   
-  # install SSOAP if not available
-  check_soap <- require('SSOAP')
-  if(!check_soap)
-    install.packages("SSOAP", repos="http://www.omegahat.org/R", 
-      dependencies = TRUE,  type =  "source")
-  
   # access CDMO web services
-  serv <- SOAPServer(
-    "http://cdmo.baruch.sc.edu/webservices2/requests.cfc?wsdl"
-    )
+  serv <- "http://cdmo.baruch.sc.edu/webservices2/requests.cfc?wsdl"
 
   # get all station codes
-  reply <- .SOAP(
-      serv,
+  reply <- httr::GET(
+    serv,
+    query = list(  
       method = 'NERRFilterStationCodesXMLNew',
-      NERRFilter = nerr_site_id,
-      action="", 
-      .convert = FALSE
-      )
+      NERRFilter = nerr_site_id
+    )
+  )
 
   # parse reply from server
   out <- parser(reply)

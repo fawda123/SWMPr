@@ -1,27 +1,17 @@
 # SWMPr: An R package for the National Estuarine Research Reserve System
 Marcus W. Beck, beck.marcus@epa.gov  
 
-[![Build Status](https://travis-ci.org/fawda123/SWMPr.png?branch=master)](https://travis-ci.org/fawda123/SWMPr)
-
 #Overview 
 
-SWMPr is an R package that contains functions for retrieving, organizing, and analyzing estuary monitoring data from the System Wide Monitoring Program ([SWMP](http://nerrs.noaa.gov/RCDefault.aspx?ID=18)).  SWMP was implemented by the National Estuarine Research Reserve System ([NERRS](http://nerrs.noaa.gov/)) in 1995 to provide continuous monitoring data at over 300 stations in 28 estuaries across the United States.  SWMP data are maintained online by the Centralized Data Management Office (CDMO). This R package provides several functions to retrieve, organize, and analyze SWMP data from the CDMO.  Information on the CDMO web services are available [here](http://cdmo.baruch.sc.edu/webservices.cfm).  Your computer's IP address must be registered with the CDMO website to use most of the data retrieval functions, see contact info in the link.  All other functions can be used after obtaining data from the CDMO, as described below. 
-
-The package has many dependencies, the most important being the SSOAP package for retrieving data from the CDMO using a SOAP client interface. All dependencies are handled automatically when SWMPr is installed and loaded, excluding SSOAP.  The SSOAP package is not required to use SWMPr but is necessary for using most of the data retrieval functions.  The SSOAP package is currently removed from CRAN but accessible at [http://www.omegahat.org/SSOAP/](http://www.omegahat.org/SSOAP/).  Functions that require SSOAP should install the package automatically or it can be installed as follows:
-
-
-```r
-install.packages("SSOAP", repos="http://www.omegahat.org/R", dependencies = T,
-  type =  "source")
-```
+SWMPr is an R package that contains functions for retrieving, organizing, and analyzing estuary monitoring data from the System Wide Monitoring Program ([SWMP](http://nerrs.noaa.gov/RCDefault.aspx?ID=18)).  SWMP was implemented by the National Estuarine Research Reserve System ([NERRS](http://nerrs.noaa.gov/)) in 1995 to provide continuous monitoring data at over 300 stations in 28 estuaries across the United States.  SWMP data are maintained online by the Centralized Data Management Office (CDMO). This R package provides several functions to retrieve, organize, and analyze SWMP data from the CDMO.  Information on the CDMO web services are available [here](http://cdmo.baruch.sc.edu/webservices.cfm).  Data can be downloaded directly from the CDMO using functions in this package, although it is easier to first download data outside of R and then use the `import_local` function.  Your computer's IP address must be registered by CDMO staff for direct downloads in R.  Detailed methods for importing SWMP data in R are described below.  
 
 All data obtained from the CDMO should be [cited](http://cdmo.baruch.sc.edu/data/citation.cfm) using the format:
 
-National Estuarine Research Reserve System (NERRS). 2012. System-wide Monitoring Program. Data accessed from the NOAA NERRS Centralized Data Management Office website: http://cdmo.baruch.sc.edu/; accessed 12 October 2012.
+*National Estuarine Research Reserve System (NERRS). 2012. System-wide Monitoring Program. Data accessed from the NOAA NERRS Centralized Data Management Office website: http://cdmo.baruch.sc.edu/; accessed 12 October 2012.*
 
 To cite this package:
 
-Beck MW. 2014. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 1.5.0. https://github.com/fawda123/SWMPr
+*Beck MW. 2015. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 1.6.0. https://github.com/fawda123/SWMPr*
 
 #Installing the package
 
@@ -30,9 +20,9 @@ This package is currently under development and has not been extensively tested.
 
 ```r
 install.packages('devtools')
-require(devtools)
+library(devtools)
 install_github('fawda123/SWMPr')
-require(SWMPr)
+library(SWMPr)
 ```
 
 
@@ -40,7 +30,7 @@ Note that the current version of devtools (v1.6.1) was built under R version 3.1
 
 #Data retrieval
 
-SWMP data can be used in R after they are obtained directly from the CDMO through an online query or by using the retrieval functions provided in this package.  In the latter case, the IP address for the computer making the request must be registered with CDMO.  This can be done by following instructions [here](http://cdmo.baruch.sc.edu/webservices.cfm).  The [metadata](http://cdmo.baruch.sc.edu/data/metadata.cfm) should also be consulted for available data, including the parameters and date ranges for each monitoring station.  Metadata are included as a .csv file with data requested from the CDMO and can also be obtained using the `site_codes` (all sites) or `site_codes_ind` (individual site) functions.  
+SWMP data can be used in R after they are obtained directly from the CDMO through an online query or by using the retrieval functions provided in this package.  In the latter case, the IP address for the computer making the request must be registered with CDMO.  This can be done by following instructions [here](http://cdmo.baruch.sc.edu/webservices.cfm).  The [metadata](http://cdmo.baruch.sc.edu/data/metadata.cfm) should also be consulted for available data, including the parameters and date ranges for each monitoring station.  Metadata are included as a .csv file with data requested from the CDMO and can also be obtained using the `site_codes` (all sites) or `site_codes_ind` (individual site) functions.  Again, these functions will only work if the computer's IP address is registered with CDMO. 
 
 
 ```r
@@ -51,8 +41,7 @@ site_codes()
 site_codes_ind('apa')
 ```
 
-Due to rate limitations on the server, the retrieval functions in this package return a limited number of records.  The functions are more useful for evaluating short time periods, although these functions could be used iteratively (i.e., with `for` or `while` loops) to obtain longer time series.  Data retrieval functions to access the CDMO include `all_params`, `all_params_dtrng`, and `single_param`.  These are functions that call the available methods on the CDMO SOAP interface.  `all_params` returns the most recent 100 records of all parameters at a station, `all_params_dtrng` returns all records within a date range for all parameters or a single parameter, and `single_param` is identical to `all_params` except that a single parameter is requested.    
-
+Due to rate limitations on the server, the retrieval functions in this package return a limited number of records.  The functions are more useful for evaluating short time periods, although these functions could be used iteratively (i.e., with `for` or `while` loops) to obtain longer time series.  Data retrieval functions to access the CDMO include `all_params`, `all_params_dtrng`, and `single_param`.  These are functions that call the existing methods on the CDMO web services.  `all_params` returns the most recent 100 records of all parameters at a station, `all_params_dtrng` returns all records within a date range for all parameters or a single parameter, and `single_param` is identical to `all_params` except that a single parameter is requested.    
 
 
 ```r
@@ -174,11 +163,12 @@ methods(class = 'swmpr')
 ```
 
 ```
-##  [1] aggregate.swmpr    comb.swmpr         decomp.swmpr      
-##  [4] decomp_cj.swmpr    hist.swmpr         lines.swmpr       
-##  [7] na.approx.swmpr    plot.swmpr         plot_summary.swmpr
-## [10] qaqc.swmpr         qaqcchk.swmpr      rem_reps.swmpr    
-## [13] setstep.swmpr      smoother.swmpr     subset.swmpr
+##  [1] aggregate.swmpr    clean_dat.swmpr    comb.swmpr        
+##  [4] comb_dat.swmpr     decomp.swmpr       decomp_cj.swmpr   
+##  [7] hist.swmpr         lines.swmpr        na.approx.swmpr   
+## [10] plot.swmpr         plot_summary.swmpr qaqc.swmpr        
+## [13] qaqcchk.swmpr      rem_reps.swmpr     setstep.swmpr     
+## [16] smoother.swmpr     subset.swmpr
 ```
 
 #An overview of methods for swmpr objects
@@ -318,7 +308,7 @@ plot(do_mgl ~ datetimestamp, data = dat, type = 'l')
 lines(test, select = 'do_mgl', col = 'red', lwd = 2)
 ```
 
-![plot of chunk unnamed-chunk-18](./README_files/figure-html/unnamed-chunk-18.png) 
+![plot of chunk unnamed-chunk-17](README_files/figure-html/unnamed-chunk-17.png) 
 
 A common issue with any statistical analysis is the treatment of missing values.  Missing data can be excluded from the analysis, included but treated as true zeroes, or interpolated based on similar values.  In either case, an analyst should have a strong rationale for the chosen method.  A common approach used to handle missing data in time series analysis is linear interpolation.  A simple curve fitting method is used to create a continuous set of records between observations separated by missing data.  A challenge with linear interpolation is an appropriate gap size for fitting missing observations.  The ability of the interpolated data to approximate actual trends is a function of the gap size.  Interpolation between larger gaps are less likely to resemble patterns of an actual parameter, whereas interpolation between smaller gaps are more likely to resemble actual patterns.  An appropriate gap size limit depends on the unique characteristics of specific datasets or parameters.  The `na.approx` function can be used to interpolate gaps in a swmpr object.  A required argument for the function is `maxgap` which defines the maximum gap size  for interpolation.
 
@@ -348,7 +338,7 @@ plot(do_mgl ~ datetimestamp, test2, col = 'red',
 lines(dat, select = 'do_mgl')
 ```
 
-![plot of chunk unnamed-chunk-19](./README_files/figure-html/unnamed-chunk-19.png) 
+![plot of chunk unnamed-chunk-18](README_files/figure-html/unnamed-chunk-18.png) 
 
 The `decomp` function is a simple wrapper to `decompose` that separates a time series into additive or multiplicative components describing a trend, cyclical variation (e.g., daily or seasonal), and the remainder.  The additive decomposition assumes that the cyclical component of the time series is stationary (i.e., the variance is constant), whereas a multiplicative decomposition accounts for non-stationarity.  By default, a moving average with a symmetric window is used to filter the seasonal component.  Alternatively, a vector of filter coefficients in reverse time order can be supplied (see the help documentation for `decompose`).  
 
@@ -369,7 +359,7 @@ test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
 plot(test)
 ```
 
-![plot of chunk unnamed-chunk-20](./README_files/figure-html/unnamed-chunk-20.png) 
+![plot of chunk unnamed-chunk-19](README_files/figure-html/unnamed-chunk-19.png) 
 
 The next example illustrates how to handle missing values using the `decomp` function. The `decompose` function used internally within `decomp` currently cannot process time series with missing values.  A recommended approach is to use `na.approx` to interpolate the missing values prior to `decompose`.
 
@@ -398,7 +388,7 @@ test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
 plot(test)
 ```
 
-![plot of chunk unnamed-chunk-21](./README_files/figure-html/unnamed-chunk-21.png) 
+![plot of chunk unnamed-chunk-20](README_files/figure-html/unnamed-chunk-20.png) 
 
 An alternative approach to time series decomposition is provided by the `decomp_cj` function, which is a simple wrapper to the `decompTs` function in the wq package.  Theory describing this method is described in Cloern and Jassby (2010).  The function is similar to `decomp.swmpr` with a few key differences.  The `decomp.swmpr` function decomposes the time series into a trend, seasonal, and random component, whereas the current function decomposes into the grandmean, annual, seasonal, and events components.  For both functions, the random or events components, respectively, can be considered anomalies that don't follow the trends in the remaining categories.  The `decomp_cj` function provides only a monthly decomposition, which is appropriate for characterizing relatively long-term trends.  This approach is meant for nutrient data that are obtained on a monthly cycle.  The function will also work with continuous water quality or weather data but note that the data are first aggregated on the monthly scale before decomposition.  Accordingly, short-term variation less than one-month will be removed. Additional arguments passed to `decompTs` can be used with `decomp_cj`, such as `startyr`, `endyr`, and `type`.  Values passed to `type` are `mult` (default) or `add`, referring to multiplicative or additive decomposition.  See the documentation for `decompTs` for additional explanation and examples.   
 
@@ -413,7 +403,7 @@ dat <- qaqc(dat, qaqc_keep = NULL)
 decomp_cj(dat, param = 'chla_n')
 ```
 
-![plot of chunk unnamed-chunk-22](./README_files/figure-html/unnamed-chunk-221.png) 
+![plot of chunk unnamed-chunk-21](README_files/figure-html/unnamed-chunk-211.png) 
 
 ```r
 # monthly decomposition of continuous data
@@ -423,7 +413,7 @@ dat2 <- qaqc(dat2)
 decomp_cj(dat2, param = 'do_mgl')
 ```
 
-![plot of chunk unnamed-chunk-22](./README_files/figure-html/unnamed-chunk-222.png) 
+![plot of chunk unnamed-chunk-21](README_files/figure-html/unnamed-chunk-212.png) 
 
 A reserve map with all stations can be obtained using the `map_reserve` function.  This function is a simple wrapper to functions in the ggmap package. The current function is limited to Google maps, which allows four map types that can be set with the `map_type` argument: terrain (default), satellite, roadmap, or hybrid.  The `zoom` argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  See the help documentation for ggmap for more info on zoom.  Additionally, station locations are returned using the `site_codes_ind` function if the computer making the request has the IP address registered with CDMO. Otherwise, a local and possibly outdated file is used.  Use the contact at the CDMO [web services](http://cdmo.baruch.sc.edu/webservices.cfm) to register your IP.
 
@@ -433,14 +423,14 @@ A reserve map with all stations can be obtained using the `map_reserve` function
 map_reserve('jac')
 ```
 
-![plot of chunk unnamed-chunk-23](./README_files/figure-html/unnamed-chunk-231.png) 
+![plot of chunk unnamed-chunk-22](README_files/figure-html/unnamed-chunk-221.png) 
 
 ```r
 # plot the stations at Padilla Bay reserve, satellite
 map_reserve('pdb', map_type = 'satellite', zoom = 12)
 ```
 
-![plot of chunk unnamed-chunk-23](./README_files/figure-html/unnamed-chunk-232.png) 
+![plot of chunk unnamed-chunk-22](README_files/figure-html/unnamed-chunk-222.png) 
 
 Finally, several graphics showing seasonal and annual trends for a given SWMP parameter can be obtained using the `plot_summary` function.  The plots include monthly distributions, monthly anomalies, and annual anomalies in multiple formats.  Anomalies are defined as the difference between the monthly or annual average from the grand mean for the parameter.  Monthly anomalies are in relation to the grand mean for the same month across all years.  All data are aggregated for quicker plotting.  Nutrient data are based on monthly averages, whereas weather and water quality data are based on daily averages.  Cumulative precipitation data are based on the daily maximum. The function returns a graphics object (Grob) of multiple ggplot objects.  An interactive Shiny widget that uses this function is available: [https://beckmw.shinyapps.io/swmp_summary/](https://beckmw.shinyapps.io/swmp_summary/).
 
@@ -455,7 +445,7 @@ dat <- qaqc(dat)
 plot_summary(dat, param = 'temp')
 ```
 
-![plot of chunk unnamed-chunk-24](./README_files/figure-html/unnamed-chunk-24.png) 
+![plot of chunk unnamed-chunk-23](README_files/figure-html/unnamed-chunk-23.png) 
 
 #Functions
 
@@ -523,7 +513,5 @@ See help documentation for more details on each function (e.g., `?all_params`).
 
 # Forthcoming
 
-Analysis functions... metab
-
-DOI/release info (see [here](http://computationalproteomic.blogspot.com/2014/08/making-your-code-citable.html))
+Ecosystem metabolism using Odum open water method
 
