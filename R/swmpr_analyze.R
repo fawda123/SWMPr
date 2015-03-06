@@ -537,7 +537,9 @@ decomp_cj.swmpr <- function(swmpr_in, param, vals_out = FALSE, ...){
 #' ## plot using defualt, add lines
 #' plot(dat$datetimestamp, dat$do_mgl)
 #' lines(dat, select = 'do_mgl', col = 'red')
-plot.swmpr <- function(swmpr_in, type = 'l', ...) {
+plot.swmpr <- function(x, type = 'l', ...) {
+  
+  swmpr_in <- x
   
   if(attr(swmpr_in, 'qaqc_cols'))
     swmpr_in <- qaqc(swmpr_in, qaqc_keep = NULL)
@@ -653,7 +655,7 @@ hist.swmpr <- function(x, subset = NULL, select, operator = NULL, ...) {
 #' plot_summary(dat, param = 'temp')
 #' 
 #' ## plot one year
-#' plot_summary(dat, param = 'temp', years = 2011))   
+#' plot_summary(dat, param = 'temp', years = 2011)  
 plot_summary <- function(swmpr_in, ...) UseMethod('plot_summary') 
 
 #' @rdname plot_summary

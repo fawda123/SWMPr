@@ -1,13 +1,10 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^R/dev.R$
-^R/test_analyze\.R$
-^R/test_organize\.R$
-^R/test_retrieval\.R$
 ^\.Rprofile$
 ^data/zip_ex/.*\.csv
 ^README.*
 ^README_files/.*
+^README_cache/.*
 ^ggmapTemp.png
-^test_.*\.R$
 ^\.travis\.yml$
+^\.Rhistory$
