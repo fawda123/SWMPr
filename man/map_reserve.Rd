@@ -25,7 +25,7 @@ A \code{\link[ggplot2]{ggplot}} object for plotting.
 Create a map of all the stations in a reserve
 }
 \details{
-This function is a simple wrapper to functions in the ggmap package which returns a map of all of the stations at a NERRS reserve.  The \code{zoom} argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  Additionally, station locations are returned using the \code{site_codes_ind} function if the computer making the request has the IP address registered with CDMO.  Otherwise, a local and possibly outdated file is used.  See the package documentation.
+This function is a simple wrapper to functions in the ggmap package which returns a map of all of the stations at a NERRS reserve.  The \code{zoom} argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  Additionally, station locations are returned using the \code{site_codes_ind} function if the computer making the request has the IP address registered with CDMO.  Otherwise, a local and possibly outdated file is used.  Instructions for registering with CDMO are online: \url{http://cdmo.baruch.sc.edu/webservices.cfm}
 }
 \examples{
 ## defaults

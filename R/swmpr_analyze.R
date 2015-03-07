@@ -800,7 +800,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
     .variables = c('month', 'year'), 
     .fun = function(x) mean(x[, param],  na.rm = T)
     )
-  to_plo$month <- factor(to_plo$month, labels = mo_labs, level = mo_levs)
+  to_plo$month <- factor(to_plo$month, labels = mo_labs, levels = mo_levs)
   midpt <- mean(to_plo$V1, na.rm = T)
   p4 <- ggplot(to_plo, aes(x = year, y = month, fill = V1)) +
     geom_tile() +

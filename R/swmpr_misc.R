@@ -268,7 +268,7 @@ param_names <- function(param_type = c('nut', 'wq', 'met')){
 #' 
 #' @export
 #' 
-#' @details This function is a simple wrapper to functions in the ggmap package which returns a map of all of the stations at a NERRS reserve.  The \code{zoom} argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  Additionally, station locations are returned using the \code{site_codes_ind} function if the computer making the request has the IP address registered with CDMO.  Otherwise, a local and possibly outdated file is used.  See the package documentation.
+#' @details This function is a simple wrapper to functions in the ggmap package which returns a map of all of the stations at a NERRS reserve.  The \code{zoom} argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  Additionally, station locations are returned using the \code{site_codes_ind} function if the computer making the request has the IP address registered with CDMO.  Otherwise, a local and possibly outdated file is used.  Instructions for registering with CDMO are online: \url{http://cdmo.baruch.sc.edu/webservices.cfm}
 #' 
 #' @return A \code{\link[ggplot2]{ggplot}} object for plotting.
 #' 
@@ -292,30 +292,18 @@ param_names <- function(param_type = c('nut', 'wq', 'met')){
 #' map_reserve('jac', map_type = 'hybrid')
 map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black', map_type = 'terrain'){
   
-  #removing trailing whit space in chr strings
-  trim_trailing<-function(x) sub('^\\s+|\\s+$', '', x)
-  
   # get site stations and locations, online or local 
   stats <- try(site_codes_ind(nerr_site_id), silent = TRUE)
   if('try-error' %in% class(stats)){
   
     warning('IP address not registered, using old station data')
     
-    # find/load local file
-    get_meta <- system.file('sampling_stations.csv', package = 'SWMPr')
-    get_meta <- read.csv(get_meta, header = TRUE, stringsAsFactors = FALSE)
-    names(get_meta) <- gsub('\\.', '_', tolower(names(get_meta)))
-    
-    stats <- get_meta[trim_trailing(get_meta$nerr_site_id) %in% nerr_site_id, ]
+    data(stat_locs)
     
   }
   
-  stats <- stats[grep('Active*', stats$status), ]
-  stats$longitude <- -1 * as.numeric(stats$longitude)
-  stats$latitude <- as.numeric(stats$latitude)
-  stats$station_name <- trim_trailing(as.character(stats$station_name))
-  stats$station_code <- tolower(substr(trim_trailing(as.character(stats$station_code)),1,5))
-  stats <- unique(stats[, c('station_code', 'latitude', 'longitude')])
+  # subset stat_locs by reserve
+  stats <- stat_locs[grepl(paste0('^', nerr_site_id), stat_locs$station_code), ]
   
   # base map
   mapImageData <- get_map(
@@ -339,3 +327,16 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
   return(p)
 
 }
+
+#' Locations of NERRS sites
+#'
+#' Location of NERRS sites in decimal degress.  Only active sites as of January 2015 are included.  Sites are identified by five letters indicing the reserve and site names.  The dataset is used to plot locations with the \code{\link{map_reserve}} function if the user's computer is not able to access the CDMO online web services. 
+#' @format A \code{\link[base]{data.frame}} object with 161 rows and 3 variables:
+#' \describe{
+#'   \item{\code{station_code}}{chr}
+#'   \item{\code{latitude}}{numeric}
+#'   \item{\code{longitude}}{numeric}
+#' }
+#' 
+#' @seealso \code{\link{map_reserve}} 
+"stat_locs"
