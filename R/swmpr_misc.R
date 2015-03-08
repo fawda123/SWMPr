@@ -1,5 +1,5 @@
 ######
-#' Create a wmpr object
+#' Create a swmpr object
 #' 
 #' Wrapper for creating a swmpr object
 #' 
@@ -11,7 +11,7 @@
 #' @return Returns a swmpr object to be used with S3 methods
 #' 
 #' @details 
-#' This function is a simple wrapper to \code{\link[base]{structure}} that is used internally within other functions to create a swmpr object.  The function does not have to be used explicitly.    
+#' This function is a simple wrapper to \code{\link[base]{structure}} that is used internally within other functions to create a swmpr object.  The function does not have to be used explicitly.  Attributes of a swmpr object include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, and \code{stamp_class}. 
 #' 
 swmpr <- function(stat_in, meta_in){
     
@@ -268,11 +268,11 @@ param_names <- function(param_type = c('nut', 'wq', 'met')){
 #' 
 #' @export
 #' 
-#' @details This function is a simple wrapper to functions in the ggmap package which returns a map of all of the stations at a NERRS reserve.  The \code{zoom} argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  Additionally, station locations are returned using the \code{site_codes_ind} function if the computer making the request has the IP address registered with CDMO.  Otherwise, a local and possibly outdated file is used.  Instructions for registering with CDMO are online: \url{http://cdmo.baruch.sc.edu/webservices.cfm}
+#' @details This function is a simple wrapper to functions in the ggmap package which returns a map of all of the stations at a NERRS reserve.  The \code{zoom} argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  A local data file included with the package is used to get the latitude and longitude values of each station.  The files includes only active stations as of January 2015.
 #' 
 #' @return A \code{\link[ggplot2]{ggplot}} object for plotting.
 #' 
-#' @seealso  \code{\link[ggmap]{get_map}}, \code{\link[ggmap]{ggmap}}, \code{\link[ggplot2]{ggplot}}, \code{site_codes_ind}
+#' @seealso  \code{\link[ggmap]{get_map}}, \code{\link[ggmap]{ggmap}}, \code{\link[ggplot2]{ggplot}}
 #' 
 #' @examples
 #' ## defaults
@@ -292,15 +292,8 @@ param_names <- function(param_type = c('nut', 'wq', 'met')){
 #' map_reserve('jac', map_type = 'hybrid')
 map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black', map_type = 'terrain'){
   
-  # get site stations and locations, online or local 
-  stats <- try(site_codes_ind(nerr_site_id), silent = TRUE)
-  if('try-error' %in% class(stats)){
-  
-    warning('IP address not registered, using old station data')
-    
-    data(stat_locs)
-    
-  }
+  # get site stations and locations, local 
+  data(stat_locs)
   
   # subset stat_locs by reserve
   stats <- stat_locs[grepl(paste0('^', nerr_site_id), stat_locs$station_code), ]
@@ -328,9 +321,11 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
 
 }
 
+######
 #' Locations of NERRS sites
 #'
-#' Location of NERRS sites in decimal degress.  Only active sites as of January 2015 are included.  Sites are identified by five letters indicing the reserve and site names.  The dataset is used to plot locations with the \code{\link{map_reserve}} function if the user's computer is not able to access the CDMO online web services. 
+#' Location of NERRS sites in decimal degress.  Only active sites as of January 2015 are included.  Sites are identified by five letters indicing the reserve and site names.  The dataset is used to plot locations with the \code{\link{map_reserve}} function. 
+#' 
 #' @format A \code{\link[base]{data.frame}} object with 161 rows and 3 variables:
 #' \describe{
 #'   \item{\code{station_code}}{chr}
@@ -340,3 +335,137 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
 #' 
 #' @seealso \code{\link{map_reserve}} 
 "stat_locs"
+
+######
+#' Example nutrient data for Apalachicola Bay Cat Point station.
+#'
+#' An example nutrient dataset for Apalachicola Bay Cat Point station.  The data are a \code{\link{smwpr}} object that have been imported into R from csv files using the \code{\link{import_local}} function.  The raw data were obtained from the CDMO data portal but can also be accessed from a zip file created for this package.  See the source below.  The help file for the \code{\link{import_local}} function describes how the data can be imported from the zip file.  Attributes of the dataset include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, and \code{stamp_class}. 
+#'  
+#' @format A \code{\link{swmpr}} object and \code{\link[base]{data.frame}} with 215 rows and 13 variables:
+#' \describe{
+#'   \item{\code{datetimestamp}}{POSIXct}
+#'   \item{\code{po4f}}{num}
+#'   \item{\code{f_po4f}}{chr}
+#'   \item{\code{nh4f}}{num}
+#'   \item{\code{f_nh4f}}{chr}
+#'   \item{\code{no2f}}{num}
+#'   \item{\code{f_no2f}}{chr}
+#'   \item{\code{no3f}}{num}
+#'   \item{\code{f_no3f}}{chr}
+#'   \item{\code{no23f}}{num}
+#'   \item{\code{f_no23f}}{chr}
+#'   \item{\code{chla_n}}{num}
+#'   \item{\code{f_chla_n}}{chr}
+#' }
+#' 
+#' @source \url{https://s3.amazonaws.com/swmpexdata/zip_ex.zip}
+"apacpnut"
+
+######
+#' Example water quality data for Apalachicola Bay Cat Point station.
+#'
+#' An example water quality dataset for Apalachicola Bay Cat Point station.  The data are a \code{\link{smwpr}} object that have been imported into R from csv files using the \code{\link{import_local}} function.  The raw data were obtained from the CDMO data portal but can also be accessed from a zip file created for this package.  See the source below.  The help file for the \code{\link{import_local}} function describes how the data can be imported from the zip file.  Attributes of the dataset include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, and \code{stamp_class}. 
+#'  
+#' @format A \code{\link{swmpr}} object and \code{\link[base]{data.frame}} with 70176 rows and 25 variables:
+#' \describe{
+#'   \item{\code{datetimestamp}}{POSIXct}
+#'   \item{\code{temp}}{num}
+#'   \item{\code{f_temp}}{chr}
+#'   \item{\code{spcond}}{num}
+#'   \item{\code{f_spcond}}{chr}
+#'   \item{\code{sal}}{num}
+#'   \item{\code{f_sal}}{chr}
+#'   \item{\code{do_pct}}{num}
+#'   \item{\code{f_do_pct}}{chr}
+#'   \item{\code{do_mgl}}{num}
+#'   \item{\code{f_do_mgl}}{chr}
+#'   \item{\code{depth}}{num}
+#'   \item{\code{f_depth}}{chr}
+#'   \item{\code{cdepth}}{num}
+#'   \item{\code{f_cdepth}}{chr}
+#'   \item{\code{level}}{num}
+#'   \item{\code{f_level}}{chr}
+#'   \item{\code{clevel}}{num}
+#'   \item{\code{f_clevel}}{chr}
+#'   \item{\code{ph}}{num}
+#'   \item{\code{f_ph}}{chr}
+#'   \item{\code{turb}}{num}
+#'   \item{\code{f_turb}}{chr}
+#'   \item{\code{chlfluor}}{num}
+#'   \item{\code{f_chlfluor}}{chr}
+#' }
+#' 
+#' @source \url{https://s3.amazonaws.com/swmpexdata/zip_ex.zip}
+"apacpwq"
+
+######
+#' Example water quality data for Apalachicola Bay Dry Bar station.
+#'
+#' An example water quality dataset for Apalachicola Bay Dry Bar station.  The data are a \code{\link{smwpr}} object that have been imported into R from csv files using the \code{\link{import_local}} function.  The raw data were obtained from the CDMO data portal but can also be accessed from a zip file created for this package.  See the source below.  The help file for the \code{\link{import_local}} function describes how the data can be imported from the zip file.  Attributes of the dataset include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, and \code{stamp_class}. 
+#'  
+#' @format A \code{\link{swmpr}} object and \code{\link[base]{data.frame}} with 70176 rows and 25 variables:
+#' \describe{
+#'   \item{\code{datetimestamp}}{POSIXct}
+#'   \item{\code{temp}}{num}
+#'   \item{\code{f_temp}}{chr}
+#'   \item{\code{spcond}}{num}
+#'   \item{\code{f_spcond}}{chr}
+#'   \item{\code{sal}}{num}
+#'   \item{\code{f_sal}}{chr}
+#'   \item{\code{do_pct}}{num}
+#'   \item{\code{f_do_pct}}{chr}
+#'   \item{\code{do_mgl}}{num}
+#'   \item{\code{f_do_mgl}}{chr}
+#'   \item{\code{depth}}{num}
+#'   \item{\code{f_depth}}{chr}
+#'   \item{\code{cdepth}}{num}
+#'   \item{\code{f_cdepth}}{chr}
+#'   \item{\code{level}}{num}
+#'   \item{\code{f_level}}{chr}
+#'   \item{\code{clevel}}{num}
+#'   \item{\code{f_clevel}}{chr}
+#'   \item{\code{ph}}{num}
+#'   \item{\code{f_ph}}{chr}
+#'   \item{\code{turb}}{num}
+#'   \item{\code{f_turb}}{chr}
+#'   \item{\code{chlfluor}}{num}
+#'   \item{\code{f_chlfluor}}{chr}
+#' }
+#' 
+#' @source \url{https://s3.amazonaws.com/swmpexdata/zip_ex.zip}
+"apadbwq"
+
+######
+#' Example weather data for Apalachicola Bay East Bay station.
+#'
+#' An example weather dataset for Apalachicola Bay East Bay station.  The data are a \code{\link{smwpr}} object that have been imported into R from csv files using the \code{\link{import_local}} function.  The raw data were obtained from the CDMO data portal but can also be accessed from a zip file created for this package.  See the source below.  The help file for the \code{\link{import_local}} function describes how the data can be imported from the zip file.  Attributes of the dataset include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, and \code{stamp_class}. 
+#'  
+#' @format A \code{\link{swmpr}} object and \code{\link[base]{data.frame}} with 70176 rows and 23 variables:
+#' \describe{
+#'   \item{\code{datetimestamp}}{POSIXct}
+#'   \item{\code{atemp}}{num}
+#'   \item{\code{f_atemp}}{chr}
+#'   \item{\code{rh}}{num}
+#'   \item{\code{f_rh}}{chr}
+#'   \item{\code{bp}}{num}
+#'   \item{\code{f_bp}}{chr}
+#'   \item{\code{wspd}}{num}
+#'   \item{\code{f_wspd}}{chr}
+#'   \item{\code{maxwspd}}{num}
+#'   \item{\code{f_maxwspd}}{chr}
+#'   \item{\code{wdir}}{num}
+#'   \item{\code{f_wdir}}{chr}
+#'   \item{\code{sdwdir}}{num}
+#'   \item{\code{f_sdwdir}}{chr}
+#'   \item{\code{totpar}}{num}
+#'   \item{\code{f_totpar}}{chr}
+#'   \item{\code{totprcp}}{num}
+#'   \item{\code{f_totprcp}}{chr}
+#'   \item{\code{cumprcp}}{num}
+#'   \item{\code{f_cumprcp}}{chr}
+#'   \item{\code{totsorad}}{num}
+#'   \item{\code{f_totsorad}}{chr}
+#' }
+#' 
+#' @source \url{https://s3.amazonaws.com/swmpexdata/zip_ex.zip}
+"apaebmet"

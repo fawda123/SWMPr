@@ -19,6 +19,7 @@ Imports:
     reshape2,
     wq,
     XML
+LazyData: true
 Depends:
     R (>= 3.0.0),
     ggmap,

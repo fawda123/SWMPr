@@ -2,7 +2,7 @@
 % Please edit documentation in R/swmpr_misc.R
 \name{swmpr}
 \alias{swmpr}
-\title{Create a wmpr object}
+\title{Create a swmpr object}
 \usage{
 swmpr(stat_in, meta_in)
 }
@@ -18,6 +18,6 @@ Returns a swmpr object to be used with S3 methods
 Wrapper for creating a swmpr object
 }
 \details{
-This function is a simple wrapper to \code{\link[base]{structure}} that is used internally within other functions to create a swmpr object.  The function does not have to be used explicitly.
+This function is a simple wrapper to \code{\link[base]{structure}} that is used internally within other functions to create a swmpr object.  The function does not have to be used explicitly.  Attributes of a swmpr object include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, and \code{stamp_class}.
 }
 

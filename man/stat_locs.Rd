@@ -14,7 +14,7 @@
 stat_locs
 }
 \description{
-Location of NERRS sites in decimal degress.  Only active sites as of January 2015 are included.  Sites are identified by five letters indicing the reserve and site names.  The dataset is used to plot locations with the \code{\link{map_reserve}} function if the user's computer is not able to access the CDMO online web services.
+Location of NERRS sites in decimal degress.  Only active sites as of January 2015 are included.  Sites are identified by five letters indicing the reserve and site names.  The dataset is used to plot locations with the \code{\link{map_reserve}} function.
 }
 \seealso{
 \code{\link{map_reserve}}
