@@ -33,8 +33,8 @@ This function is used to subset swmpr data by date and/or a selected parameter. 
 }
 \examples{
 ## get data
-path <- system.file('zip_ex', package = 'SWMPr')
-dat <- import_local(path, 'apaebmet')
+data(apaebmet)
+dat <- apaebmet
 
 ## select two parameters from dat
 subset(dat, select = c('rh', 'bp'))

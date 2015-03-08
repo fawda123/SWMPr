@@ -30,8 +30,8 @@ The swmpr method for plotting is a convenience function for plotting a univariat
 }
 \examples{
 ## get data
-path <- system.file('zip_ex', package = 'SWMPr')
-swmp1 <- import_local(path, 'apadbwq')
+data(apadbwq)
+swmp1 <- apadbwq
 
 ## subset
 dat <- subset(swmp1, select = 'do_mgl', subset = c('2013-07-01 00:00', '2013-07-31 00:00'))

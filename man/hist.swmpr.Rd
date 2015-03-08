@@ -25,8 +25,8 @@ The swmpr method for histograms is a convenience function for the default histog
 }
 \examples{
 ## get data
-path <- system.file('zip_ex', package = 'SWMPr')
-dat <- import_local(path, 'apadbwq')
+data(apadbwq)
+dat <- apadbwq
 
 ## plot using swmpr method, note default line plot
 hist(dat, select = 'do_mgl')

@@ -29,15 +29,11 @@ This function creates several graphics showing seasonal and annual trends for a 
 }
 \examples{
 ## import data
-path <- system.file('zip_ex', package = 'SWMPr')
-dat <- import_local(path, 'apacpwq')
-dat <- qaqc(dat)
+data(apacpnut)
+dat <- qaqc(apacpnut)
 
 ## plot
-plot_summary(dat, param = 'temp')
-
-## plot one year
-plot_summary(dat, param = 'temp', years = 2011)
+plot_summary(dat, param = 'chla_n')
 }
 \seealso{
 \code{\link[ggplot2]{ggplot}}

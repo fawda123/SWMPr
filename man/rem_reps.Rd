@@ -28,9 +28,8 @@ Raw nutrient data obtained from the CDMO will usually include replicate samples 
 }
 \examples{
 ## get nutrient data
-path <- system.file('zip_ex', package = 'SWMPr')
-swmp1 <- import_local(path, 'apacpnut')
-swmp1 <- qaqc(swmp1)
+data(apacpnut)
+swmp1 <- apacpnut
 
 # remove replicate nutrient data
 rem_reps(swmp1)

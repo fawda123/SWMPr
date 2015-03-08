@@ -33,10 +33,12 @@ The function requires one or more swmpr objects as input as separate, undefined 
 \examples{
 ## get nuts, wq, and met data as separate objects for the same station
 ## note that most sites usually have one weather station
-path <- system.file('zip_ex', package = 'SWMPr')
-swmp1 <- import_local(path, 'apacpnut')
-swmp2 <- import_local(path, 'apacpwq')
-swmp3 <- import_local(path, 'apaebmet')
+data(apacpnut)
+data(apacpwq)
+data(apaebmet)
+swmp1 <- apacpnut
+swmp2 <- apacpwq
+swmp3 <- apaebmet
 
 ## combine nuts and wq data by union
 comb(swmp1, swmp2, method = 'union')

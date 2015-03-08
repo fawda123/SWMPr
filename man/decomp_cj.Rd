@@ -34,8 +34,8 @@ Additional arguments passed to \code{\link[wq]{decompTs}} can be used with \code
 }
 \examples{
 ## get data
-path <- system.file('zip_ex', package = 'SWMPr')
-dat <- import_local(path, 'apacpnut')
+data(apacpnut)
+dat <- apacpnut
 dat <- qaqc(dat, qaqc_keep = NULL)
 
 ## decomposition of chl, values as data.frame
@@ -48,8 +48,8 @@ decomp_cj(dat, param = 'chla_n')
 decomp_cj(dat, param = 'chla_n', startyr = 2008, type = 'add')
 
 ## monthly decomposition of continuous data
-dat2 <- import_local(path, 'apacpwq')
-dat2 <- qaqc(dat2)
+data(apacpwq)
+dat2 <- qaqc(apacpwq)
 
 decomp_cj(dat2, param = 'do_mgl')
 }

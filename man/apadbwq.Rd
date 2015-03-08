@@ -39,7 +39,7 @@
 apadbwq
 }
 \description{
-An example water quality dataset for Apalachicola Bay Dry Bar station.  The data are a \code{\link{smwpr}} object that have been imported into R from csv files using the \code{\link{import_local}} function.  The raw data were obtained from the CDMO data portal but can also be accessed from a zip file created for this package.  See the source below.  The help file for the \code{\link{import_local}} function describes how the data can be imported from the zip file.  Attributes of the dataset include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, and \code{stamp_class}.
+An example water quality dataset for Apalachicola Bay Dry Bar station.  The data are a \code{\link{swmpr}} object that have been imported into R from csv files using the \code{\link{import_local}} function.  The raw data were obtained from the CDMO data portal but can also be accessed from a zip file created for this package.  See the source below.  The help file for the \code{\link{import_local}} function describes how the data can be imported from the zip file.  Attributes of the dataset include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, and \code{stamp_class}.
 }
 \keyword{datasets}
 

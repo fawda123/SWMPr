@@ -26,8 +26,8 @@
 #' 
 #' @examples
 #' ## get data, prep
-#' path <- system.file('zip_ex', package = 'SWMPr')
-#' dat <- import_local(path, 'apacpwq')
+#' data(apacpwq)
+#' dat <- apacpwq
 #' swmpr_in <- subset(qaqc(dat), rem_cols = TRUE)
 #'
 #' ## get mean DO by quarters
@@ -147,8 +147,8 @@ smoother <- function(swmpr_in, ...) UseMethod('smoother')
 #' 
 #' @examples
 #' ## import data
-#' path <- system.file('zip_ex', package = 'SWMPr')
-#' swmp1 <- import_local(path, 'apadbwq')
+#' data(apadbwq)
+#' swmp1 <- apadbwq
 #' 
 #' ## qaqc and subset imported data
 #' dat <- qaqc(swmp1)
@@ -215,8 +215,8 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL, ...){
 #' 
 #' @examples
 #' ## import data
-#' path <- system.file('zip_ex', package = 'SWMPr')
-#' swmp1 <- import_local(path, 'apadbwq')
+#' data(apadbwq)
+#' swmp1 <- apadbwq
 #' 
 #' ## qaqc and subset imported data
 #' dat <- qaqc(swmp1)
@@ -313,11 +313,10 @@ na.approx.swmpr <- function(object, params = NULL, maxgap, ...){
 #' @return Returns a decomposed.ts object
 #' 
 #' @examples
-#' 
-#' path <- system.file('zip_ex', package = 'SWMPr')
 #'
 #' ## get data
-#' swmp1 <- import_local(path, 'apadbwq')
+#' data(apadbwq)
+#' swmp1 <- apadbwq
 #'
 #' ## subset for daily decomposition
 #' dat <- subset(swmp1, subset = c('2013-07-01 00:00', '2013-07-31 00:00'))
@@ -436,8 +435,8 @@ decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily'
 #' 
 #' @examples
 #' ## get data
-#' path <- system.file('zip_ex', package = 'SWMPr')
-#' dat <- import_local(path, 'apacpnut')
+#' data(apacpnut)
+#' dat <- apacpnut
 #' dat <- qaqc(dat, qaqc_keep = NULL)
 #' 
 #' ## decomposition of chl, values as data.frame
@@ -450,8 +449,8 @@ decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily'
 #' decomp_cj(dat, param = 'chla_n', startyr = 2008, type = 'add')
 #' 
 #' ## monthly decomposition of continuous data
-#' dat2 <- import_local(path, 'apacpwq')
-#' dat2 <- qaqc(dat2)
+#' data(apacpwq)
+#' dat2 <- qaqc(apacpwq)
 #' 
 #' decomp_cj(dat2, param = 'do_mgl')
 decomp_cj <- function(swmpr_in, ...) UseMethod('decomp_cj') 
@@ -522,8 +521,8 @@ decomp_cj.swmpr <- function(swmpr_in, param, vals_out = FALSE, ...){
 #' 
 #' @examples
 #' ## get data
-#' path <- system.file('zip_ex', package = 'SWMPr')
-#' swmp1 <- import_local(path, 'apadbwq')
+#' data(apadbwq)
+#' swmp1 <- apadbwq
 #' 
 #' ## subset
 #' dat <- subset(swmp1, select = 'do_mgl', subset = c('2013-07-01 00:00', '2013-07-31 00:00'))
@@ -597,8 +596,8 @@ lines.swmpr <- function(x, subset = NULL, select, operator = NULL, ...) {
 #' 
 #' @examples
 #' ## get data
-#' path <- system.file('zip_ex', package = 'SWMPr')
-#' dat <- import_local(path, 'apadbwq')
+#' data(apadbwq)
+#' dat <- apadbwq
 #'
 #' ## plot using swmpr method, note default line plot
 #' hist(dat, select = 'do_mgl')
@@ -647,15 +646,12 @@ hist.swmpr <- function(x, subset = NULL, select, operator = NULL, ...) {
 #' 
 #' @examples
 #' ## import data
-#' path <- system.file('zip_ex', package = 'SWMPr')
-#' dat <- import_local(path, 'apacpwq')
-#' dat <- qaqc(dat)
+#' data(apacpnut)
+#' dat <- qaqc(apacpnut)
 #' 
 #' ## plot
-#' plot_summary(dat, param = 'temp')
+#' plot_summary(dat, param = 'chla_n')
 #' 
-#' ## plot one year
-#' plot_summary(dat, param = 'temp', years = 2011)  
 plot_summary <- function(swmpr_in, ...) UseMethod('plot_summary') 
 
 #' @rdname plot_summary

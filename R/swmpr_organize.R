@@ -17,8 +17,8 @@
 #' 
 #' @examples
 #' ## get data
-#' path <- system.file('zip_ex', package = 'SWMPr')
-#' dat <- import_local(path, 'apadbwq')
+#' data(apadbwq)
+#' dat <- apadbwq
 #' 
 #' ## qaqc screen for a swmpr object, retain only '0'
 #' qaqc(dat)
@@ -179,8 +179,8 @@ qaqc.swmpr <- function(swmpr_in,
 #' 
 #' @examples
 #' ## get data
-#' path <- system.file('zip_ex', package = 'SWMPr')
-#' dat <- import_local(path, 'apadbwq')
+#' data(apadbwq)
+#' dat <- apadbwq
 #' 
 #' ## view the number observations in each QAQC flag
 #' qaqcchk(dat)
@@ -238,9 +238,8 @@ qaqcchk.swmpr <- function(swmpr_in){
 #' 
 #' @examples
 #' ## get nutrient data
-#' path <- system.file('zip_ex', package = 'SWMPr')
-#' swmp1 <- import_local(path, 'apacpnut')
-#' swmp1 <- qaqc(swmp1)
+#' data(apacpnut)
+#' swmp1 <- apacpnut
 #' 
 #' # remove replicate nutrient data
 #' rem_reps(swmp1)
@@ -325,8 +324,8 @@ rem_reps.swmpr <- function(swmpr_in, FUN = function(x) mean(x, na.rm = TRUE), ..
 #' 
 #' @examples
 #' ## get data
-#' path <- system.file('zip_ex', package = 'SWMPr')
-#' dat <- import_local(path, 'apaebmet')
+#' data(apaebmet)
+#' dat <- apaebmet
 #' 
 #' ## select two parameters from dat
 #' subset(dat, select = c('rh', 'bp'))
@@ -476,8 +475,8 @@ subset.swmpr <- function(x, subset = NULL, select = NULL,
 #' 
 #' @examples
 #' ## import data
-#' path <- system.file('zip_ex', package = 'SWMPr')
-#' dat <- import_local(path, 'apaebmet')
+#' data(apaebmet)
+#' dat <- apaebmet
 #' 
 #' ## convert time series to two hour invervals
 #' ## tolerance of +/- 30 minutes for matching existing data
@@ -485,7 +484,8 @@ subset.swmpr <- function(x, subset = NULL, select = NULL,
 #' 
 #' ## convert a nutrient time series to a continuous time series
 #' ## then remove empty rows and columns
-#' dat_nut <- import_local(path, 'apacpnut')
+#' data(apacpnut)
+#' dat_nut <- apacpnut
 #' dat_nut <- setstep(dat_nut, timestep = 60)
 #' subset(dat_nut, rem_rows = TRUE, rem_cols = TRUE)
 setstep <- function(swmpr_in, ...) UseMethod('setstep')
@@ -570,10 +570,12 @@ setstep.swmpr <- function(swmpr_in, timestep = 15, differ= timestep/2, ...){
 #' 
 #' ## get nuts, wq, and met data as separate objects for the same station
 #' ## note that most sites usually have one weather station
-#' path <- system.file('zip_ex', package = 'SWMPr')
-#' swmp1 <- import_local(path, 'apacpnut')
-#' swmp2 <- import_local(path, 'apacpwq')
-#' swmp3 <- import_local(path, 'apaebmet')
+#' data(apacpnut)
+#' data(apacpwq)
+#' data(apaebmet)
+#' swmp1 <- apacpnut
+#' swmp2 <- apacpwq
+#' swmp3 <- apaebmet
 #' 
 #' ## combine nuts and wq data by union
 #' comb(swmp1, swmp2, method = 'union')

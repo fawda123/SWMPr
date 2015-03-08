@@ -29,8 +29,8 @@ The setstep function formats a swmpr object to a continuous time series at a giv
 }
 \examples{
 ## import data
-path <- system.file('zip_ex', package = 'SWMPr')
-dat <- import_local(path, 'apaebmet')
+data(apaebmet)
+dat <- apaebmet
 
 ## convert time series to two hour invervals
 ## tolerance of +/- 30 minutes for matching existing data
@@ -38,7 +38,8 @@ setstep(dat, timestep = 120, differ = 30)
 
 ## convert a nutrient time series to a continuous time series
 ## then remove empty rows and columns
-dat_nut <- import_local(path, 'apacpnut')
+data(apacpnut)
+dat_nut <- apacpnut
 dat_nut <- setstep(dat_nut, timestep = 60)
 subset(dat_nut, rem_rows = TRUE, rem_cols = TRUE)
 }

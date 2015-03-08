@@ -26,8 +26,8 @@ A common approach for handling missing data in time series analysis is linear in
 }
 \examples{
 ## import data
-path <- system.file('zip_ex', package = 'SWMPr')
-swmp1 <- import_local(path, 'apadbwq')
+data(apadbwq)
+swmp1 <- apadbwq
 
 ## qaqc and subset imported data
 dat <- qaqc(swmp1)

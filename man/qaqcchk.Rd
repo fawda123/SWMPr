@@ -23,8 +23,8 @@ Viewing the number of observations for each parameter that are assigned to a QAQ
 }
 \examples{
 ## get data
-path <- system.file('zip_ex', package = 'SWMPr')
-dat <- import_local(path, 'apadbwq')
+data(apadbwq)
+dat <- apadbwq
 
 ## view the number observations in each QAQC flag
 qaqcchk(dat)

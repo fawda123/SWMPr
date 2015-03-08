@@ -292,9 +292,6 @@ param_names <- function(param_type = c('nut', 'wq', 'met')){
 #' map_reserve('jac', map_type = 'hybrid')
 map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black', map_type = 'terrain'){
   
-  # get site stations and locations, local 
-  data(stat_locs)
-  
   # subset stat_locs by reserve
   stats <- stat_locs[grepl(paste0('^', nerr_site_id), stat_locs$station_code), ]
   
@@ -339,7 +336,7 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
 ######
 #' Example nutrient data for Apalachicola Bay Cat Point station.
 #'
-#' An example nutrient dataset for Apalachicola Bay Cat Point station.  The data are a \code{\link{smwpr}} object that have been imported into R from csv files using the \code{\link{import_local}} function.  The raw data were obtained from the CDMO data portal but can also be accessed from a zip file created for this package.  See the source below.  The help file for the \code{\link{import_local}} function describes how the data can be imported from the zip file.  Attributes of the dataset include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, and \code{stamp_class}. 
+#' An example nutrient dataset for Apalachicola Bay Cat Point station.  The data are a \code{\link{swmpr}} object that have been imported into R from csv files using the \code{\link{import_local}} function.  The raw data were obtained from the CDMO data portal but can also be accessed from a zip file created for this package.  See the source below.  The help file for the \code{\link{import_local}} function describes how the data can be imported from the zip file.  Attributes of the dataset include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, and \code{stamp_class}. 
 #'  
 #' @format A \code{\link{swmpr}} object and \code{\link[base]{data.frame}} with 215 rows and 13 variables:
 #' \describe{
@@ -364,7 +361,7 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
 ######
 #' Example water quality data for Apalachicola Bay Cat Point station.
 #'
-#' An example water quality dataset for Apalachicola Bay Cat Point station.  The data are a \code{\link{smwpr}} object that have been imported into R from csv files using the \code{\link{import_local}} function.  The raw data were obtained from the CDMO data portal but can also be accessed from a zip file created for this package.  See the source below.  The help file for the \code{\link{import_local}} function describes how the data can be imported from the zip file.  Attributes of the dataset include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, and \code{stamp_class}. 
+#' An example water quality dataset for Apalachicola Bay Cat Point station.  The data are a \code{\link{swmpr}} object that have been imported into R from csv files using the \code{\link{import_local}} function.  The raw data were obtained from the CDMO data portal but can also be accessed from a zip file created for this package.  See the source below.  The help file for the \code{\link{import_local}} function describes how the data can be imported from the zip file.  Attributes of the dataset include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, and \code{stamp_class}. 
 #'  
 #' @format A \code{\link{swmpr}} object and \code{\link[base]{data.frame}} with 70176 rows and 25 variables:
 #' \describe{
@@ -401,7 +398,7 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
 ######
 #' Example water quality data for Apalachicola Bay Dry Bar station.
 #'
-#' An example water quality dataset for Apalachicola Bay Dry Bar station.  The data are a \code{\link{smwpr}} object that have been imported into R from csv files using the \code{\link{import_local}} function.  The raw data were obtained from the CDMO data portal but can also be accessed from a zip file created for this package.  See the source below.  The help file for the \code{\link{import_local}} function describes how the data can be imported from the zip file.  Attributes of the dataset include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, and \code{stamp_class}. 
+#' An example water quality dataset for Apalachicola Bay Dry Bar station.  The data are a \code{\link{swmpr}} object that have been imported into R from csv files using the \code{\link{import_local}} function.  The raw data were obtained from the CDMO data portal but can also be accessed from a zip file created for this package.  See the source below.  The help file for the \code{\link{import_local}} function describes how the data can be imported from the zip file.  Attributes of the dataset include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, and \code{stamp_class}. 
 #'  
 #' @format A \code{\link{swmpr}} object and \code{\link[base]{data.frame}} with 70176 rows and 25 variables:
 #' \describe{
@@ -438,7 +435,7 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
 ######
 #' Example weather data for Apalachicola Bay East Bay station.
 #'
-#' An example weather dataset for Apalachicola Bay East Bay station.  The data are a \code{\link{smwpr}} object that have been imported into R from csv files using the \code{\link{import_local}} function.  The raw data were obtained from the CDMO data portal but can also be accessed from a zip file created for this package.  See the source below.  The help file for the \code{\link{import_local}} function describes how the data can be imported from the zip file.  Attributes of the dataset include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, and \code{stamp_class}. 
+#' An example weather dataset for Apalachicola Bay East Bay station.  The data are a \code{\link{swmpr}} object that have been imported into R from csv files using the \code{\link{import_local}} function.  The raw data were obtained from the CDMO data portal but can also be accessed from a zip file created for this package.  See the source below.  The help file for the \code{\link{import_local}} function describes how the data can be imported from the zip file.  Attributes of the dataset include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, and \code{stamp_class}. 
 #'  
 #' @format A \code{\link{swmpr}} object and \code{\link[base]{data.frame}} with 70176 rows and 23 variables:
 #' \describe{

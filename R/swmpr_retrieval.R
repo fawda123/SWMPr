@@ -268,22 +268,25 @@ single_param <- function(station_code, param, Max = 500){
 #' @return Returns a swmpr object with all parameters and QAQC columns for the station.  The full date range in the raw data are also imported.
 #' 
 #' @details 
-#' The function is designed to import local data that were downloaded from the CDMO outside of R. This approach works best for larger data requests, specifically those from the zip downloads feature in the advanced query section of the CDMO. The function may also work using data from the data export system, but this feature has not been extensively tested (expect bugs). The downloaded data will be in a compressed folder that includes multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.). The import_local function can be used after the folder is decompressed.
+#' The function is designed to import local data that were downloaded from the CDMO outside of R. This approach works best for larger data requests, specifically those from the zip downloads feature in the advanced query section of the CDMO. The function may also work using data from the data export system, but this feature has not been extensively tested (expect bugs). The downloaded data will be in a compressed folder that includes multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.). The import_local function can be used after the folder is decompressed.  An example dataset is available online to illustrate the format of the data provided through the zip downloads feature.  See the link below to access these data.  All example datasets included with the package were derived from these raw data.
 #' 
 #' Occasionally, duplicate time stamps are present in the raw data.  The function handles duplicate entries differently depending on the data type (water quality,  weather, or nutrients).  For water quality and nutrient data, duplicate time stamps are simply removed.  Note that nutrient data often contain replicate samples with similar but not duplicated time stamps within a few minutes of each other.  Replicates with unique time stamps are not removed but can be further processed using \code{\link{rem_reps}}.  Weather data prior to 2007 may contain duplicate time stamps at frequencies for 60 (hourly) and 144 (daily) averages, in addition to 15 minute frequencies.  Duplicate values that correspond to the smallest value in the frequency column (15 minutes) are retained.  
 #' 
 #' Zip download request through CDMO: \url{http://cdmo.baruch.sc.edu/aqs/zips.cfm}
 #' 
+#' Example dataset: \url{https://s3.amazonaws.com/swmpexdata/zip_ex.zip}
+#' 
 #' @seealso \code{\link{all_params}}, \code{\link{all_params_dtrng}}, \code{\link{rem_reps}}, \code{\link{single_param}}
 #' 
 #' @examples
 #' 
+#' \dontrun{
 #' ## this is the path for csv example files
-#' path <- system.file('zip_ex', package = 'SWMPr')
+#' path <- 'C:/this/is/my/data/path'
 #'
 #' ## import, do not include file extension
 #' import_local(path, 'apaebmet') 
-#' 
+#' }
 import_local <- function(path, station_code, trace = FALSE){
   
   # sanity check

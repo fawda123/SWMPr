@@ -29,8 +29,8 @@ The qaqc function is a simple screen to retain values from the data with specifi
 }
 \examples{
 ## get data
-path <- system.file('zip_ex', package = 'SWMPr')
-dat <- import_local(path, 'apadbwq')
+data(apadbwq)
+dat <- apadbwq
 
 ## qaqc screen for a swmpr object, retain only '0'
 qaqc(dat)

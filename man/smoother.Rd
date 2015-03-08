@@ -32,8 +32,8 @@ The \code{smoother} function can be used to smooth parameters in a swmpr object 
 }
 \examples{
 ## import data
-path <- system.file('zip_ex', package = 'SWMPr')
-swmp1 <- import_local(path, 'apadbwq')
+data(apadbwq)
+swmp1 <- apadbwq
 
 ## qaqc and subset imported data
 dat <- qaqc(swmp1)

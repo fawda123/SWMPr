@@ -35,8 +35,8 @@ The method of treating NA values for the user-supplied function should be noted 
 }
 \examples{
 ## get data, prep
-path <- system.file('zip_ex', package = 'SWMPr')
-dat <- import_local(path, 'apacpwq')
+data(apacpwq)
+dat <- apacpwq
 swmpr_in <- subset(qaqc(dat), rem_cols = TRUE)
 
 ## get mean DO by quarters
