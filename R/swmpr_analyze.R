@@ -852,3 +852,387 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
   ))
 
 }
+
+######
+#' Identify metabolic days in a swmpr time series
+#'
+#' Identify metabolic days in a swmpr time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.
+#' 
+#' @param dat_in data.frame
+#' @param stat_in chr vector of station name including data type
+#' 
+#' @import maptools reshape2
+#' 
+#' @export 
+#' 
+#' @details This function is only used within \code{\link{ecometab}} and should not be called explicitly.
+#' 
+#' @seealso 
+#' \code{\link{ecometab}}
+#' 
+met_day <- function(dat_in, stat_in){
+  
+  stat_meta <- stat_locs[grep(gsub('wq$', '', stat_in), stat_locs$station_code),]
+  
+  # all times are standard - no DST!
+  gmt_tab <- data.frame(
+    gmt_off=c(-4, -5, -6, -8, -9),
+    tz = c('America/Virgin', 'America/Jamaica', 'America/Regina',
+      'Pacific/Pitcairn', 'Pacific/Gambier'),
+    stringsAsFactors = F
+    )
+  
+  # get sunrise/sunset times using functions from maptools
+  # adapted from streammetabolism sunrise.set function
+  lat <- stat_meta$latitude
+  long <- stat_meta$longitude
+  gmt_off <- stat_meta$gmt_off
+  tz <- gmt_tab[gmt_tab$gmt_off == gmt_off, 'tz']
+  start_day <- format(
+    dat_in$datetimestamp[which.min(dat_in$datetimestamp)] - (60 * 60 * 24), 
+    format = '%Y/%m/%d'
+    )
+  tot_days <- 1 + length(unique(as.Date(dat_in$datetimestamp)))
+  lat.long <- matrix(c(long, lat), nrow = 1)
+  sequence <- seq(
+    from = as.POSIXct(start_day, tz = tz), 
+    length.out = tot_days, 
+    by = "days"
+    )
+  sunrise <- sunriset(lat.long, sequence, direction = "sunrise", 
+      POSIXct = TRUE)
+  sunset <- sunriset(lat.long, sequence, direction = "sunset", 
+      POSIXct = TRUE)
+  ss_dat <- data.frame(sunrise, sunset)
+  ss_dat <- ss_dat[, -c(1, 3)]
+  colnames(ss_dat) <- c("sunrise", "sunset")
+  
+  # remove duplicates, if any
+  ss_dat <- ss_dat[!duplicated(strftime(ss_dat[, 1], format = '%Y-%m_%d')), ]
+  ss_dat <- data.frame(
+    ss_dat,
+    met_date = as.Date(ss_dat$sunrise, tz = tz)
+    )
+  ss_dat <- melt(ss_dat, id.vars = 'met_date')
+  if(!"POSIXct" %in% class(ss_dat$value))
+    ss_dat$value <- as.POSIXct(ss_dat$value, origin='1970-01-01',tz=tz)
+  ss_dat <- ss_dat[order(ss_dat$value),]
+  ss_dat$day_hrs <- unlist(lapply(
+    split(ss_dat, ss_dat$met_date),
+    function(x) rep(as.numeric(x[2, 'value'] - x[1, 'value']), 2) 
+    ))
+  names(ss_dat)[names(ss_dat) %in% c('variable', 'value')] <- c('solar_period', 'solar_time')
+  
+  # matches is vector of row numbers indicating starting value that each
+  # unique datetimestamp is within in ss_dat
+  # output is meteorological day matches appended to dat_in
+  matches <- findInterval(dat_in$datetimestamp, ss_dat$solar_time)
+  out <- data.frame(dat_in, ss_dat[matches, ])
+  return(out)
+      
+  }
+
+######
+#' Calculate oxygen mass transfer coefficient
+#' 
+#' Calculate oxygen mass transfer coefficient using equations in Thiebault et al. 2008.  Output is used to estimate the volumetric reaeration coefficient for ecosystem metabolism.
+#'
+#' @param temp numeric for water temperature (C)
+#' @param sal numeric for salinity (ppt)
+#' @param atemp numeric for air temperature (C)
+#' @param wspd numeric for wind speed (m/s)
+#' @param bp numeric for barometric pressure (mb)
+#' @param height numeric for height of anemometer (meters)
+#'
+#' @import oce
+#' 
+#' @export
+#' 
+#' @details
+#' This function is used within the \code{\link{ecometab}} function and should not be used explicitly.
+#' 
+#' @references
+#' Thebault J, Schraga TS, Cloern JE, Dunlavey EG. 2008. Primary production and carrying capacity of former salt ponds after reconnection to San Francisco Bay. Wetlands. 28(3):841–851.
+#' 
+#' @seealso 
+#' \code{\link{ecometab}}
+#' 
+calcKL <- function(temp, sal, atemp, wspd, bp, height = 10){
+  
+  #celsius to kelvin conversion
+  CtoK <- function(val) val + 273.15 
+    
+  Patm <- bp * 100; # convert from millibars to Pascals
+  zo <- 1e-5; # assumed surface roughness length (m) for smooth water surface
+  U10 <- wspd * log(10 / zo) / log(height / zo)
+  tempK <- CtoK(temp)
+  atempK <- CtoK(atemp)
+  sigT <- swSigmaT(sal, temp, 10) # set for 10 decibars = 1000mbar = 1 bar = 1atm
+  rho_w <- 1000 + sigT #density of SW (kg m-3)
+  Upw <- 1.002e-3 * 10^((1.1709 * (20 - temp) - (1.827 * 10^-3 * (temp - 20)^2)) / (temp + 89.93)) #dynamic viscosity of pure water (sal + 0);
+  Uw <- Upw * (1 + (5.185e-5 * temp + 1.0675e-4) * (rho_w * sal / 1806.55)^0.5 + (3.3e-5 * temp + 2.591e-3) * (rho_w * sal / 1806.55))  # dynamic viscosity of SW
+  Vw <- Uw / rho_w  #kinematic viscosity
+  Ew <- 6.112 * exp(17.65 * atemp / (243.12 + atemp))  # water vapor pressure (hectoPascals)
+  Pv <- Ew * 100 # Water vapor pressure in Pascals
+  Rd <- 287.05  # gas constant for dry air ( kg-1 K-1)
+  Rv <- 461.495  # gas constant for water vapor ( kg-1 K-1)
+  rho_a <- (Patm - Pv) / (Rd * atempK) + Pv / (Rv * tempK)
+  kB <- 1.3806503e-23 # Boltzman constant (m2 kg s-2 K-1)
+  Ro <- 1.72e-10     #radius of the O2 molecule (m)
+  Dw <- kB * tempK / (4 * pi * Uw * Ro)  #diffusivity of O2 in water 
+  KL <- 0.24 * 170.6 * (Dw / Vw)^0.5 * (rho_a / rho_w)^0.5 * U10^1.81  #mass xfer coef (m d-1)
+  
+  return(KL)
+  
+  }
+
+######
+#' Ecosystem metabolism
+#' 
+#' Estimate ecosystem metabolism using the Odum open-water method.  Estimates of daily integrated gross production, total respiration, and net ecosystem metabolism are returned.
+#' 
+#' @param swmpr_in Input swmpr object which must include time series of dissolved oxygen, 
+#' @param depth_val numeric value for station depth if time series is not available
+#' @param units chr indicating units of output for oxygen, either as mmol or grams
+#' @param trace logical indicating if progress is shown in the console
+#' @param ... arguments passed to other methods
+#' 
+#' @return A \code{\link[base]{data.frame}} of daily integrated metabolism estimates.  
+#' \describe{
+#'  \item{\code{date}}{The metabolic day for each estimate, defined as the approximate 24 hour period between sunsets on adjacent calendar days.}
+#'  \item{\code{ddo}}{Mean hourly rate of change for DO, mmol/m3/hr}
+#'  \item{\code{D}}{Mean air-sea gas exchange of DO, mmol/m2/hr}
+#'  \item{\code{DOF_d}}{Mean DO flux during day hours, mmol/m2/hr}
+#'  \item{\code{D_d}}{Mean air-sea gas exchange of DO during day hours, mmol/m2/hr}
+#'  \item{\code{DOF_n}}{Mean DO flux during night hours, mmol/m2/hr}
+#'  \item{\code{D_n}}{Mean air-sea gas exchange of DO during night hours, mmol/m2/hr}
+#'  \item{\code{Pg}}{Gross production, O2 mmol/m2/d}
+#'  \item{\code{Rt}}{Total respiration, O2 mmol/m2/d}
+#'  \item{\code{NEM}}{Net ecosytem metabolism, O2 mmol/m2/d}
+#'  \item{\code{Pg_vol}}{Volumetric gross production,  O2 mmol/m3/d}
+#'  \item{\code{Rt_vol}}{Volumetric total respiration, O2 mmold/m3/d}
+#' }
+#' 
+#' @import dplyr oce reshape2 tictoc wq
+#' 
+#' @export
+#'
+#' @details 
+#' Input data must be combined water quality and weather datasets.  This is typically done using the \code{\link{comb}} function after creating separate swmpr objects.
+#' 
+#' The open-water method is used to infer net ecosystem metabolism using a mass balance equation that describes the change in dissolved oxygen (DO) over time as a function of photosynthetic rate, minus respiration rate, corrected for air-sea gas exchange. The air-sea gas exchange is estimated as the difference between the DO saturation concentration and observed DO concentration, multiplied by a volumetric reaeration coefficient (see the appendix in Thebault et al. 2008).  The diffusion-corrected DO flux estimates are averaged during day and night for each 24 hour period in the time series, where flux is an hourly rate of DO change. DO flux is averaged during night hours for respiration and averaged during day hours for net production. Respiration rates are assumed constant during day and night such that total daily rates are calculated as hourly respiration multiplied by 24. The metabolic day is considered the approximate 24 hour period between sunsets on two adjacent calendar days.  Respiration is subtracted from daily net production estimates to yield gross production.  
+#' 
+#' Volumetric rates for gross production and total respiration are based on total depth of the water column, which is assumed to be mixed.  Water column depth is based on mean value for the depth variable across the time series in the \code{\link{swmpr}} object and is floored at 1 meter for very shallow stations.  Additionally, the volumetric reaeration coefficient requires an estimate of the anemometer height of the weather station, which is set as 10 meters by default.  The metadata should be consulted for exact height.  The value can be changed manually using a \code{height} argument, which is passed to \code{\link{calcKL}}.
+#' 
+#' Metabolism estimates are not returned for dates with less than three hourly records during either day or night periods. Missing values for air temperature, barometric pressure, and wind speed are replaced with the climatological means for the period of record.  Climatological means are based on hourly average values by month.
+#' 
+#' All estimates are in mmol of oxygen but can be converted  to grams by changing the default arguments (i.e., 1mmol O2 = 32 mg O2, 1000 mg = 1g, multiply all estimates by 32/1000).
+#' 
+#' The specific approach for estimating metabolism is described in more detail in Caffrey et al. 2013.
+#' 
+#' @references 
+#' Caffrey JM, Murrell MC, Amacker KS, Harper J, Phipps S, Woodrey M. 2013. Seasonal and inter-annual patterns in primary production, respiration and net ecosystem metabolism in 3 estuaries in the northeast Gulf of Mexico. Estuaries and Coasts. 37(1):222–241.
+#' 
+#' Odum HT. 1956. Primary production in flowing waters. Limnology and Oceanography. 1(2):102–117.
+#' 
+#' Thebault J, Schraga TS, Cloern JE, Dunlavey EG. 2008. Primary production and carrying capacity of former salt ponds after reconnection to San Francisco Bay. Wetlands. 28(3):841–851.
+#' 
+#' @seealso 
+#' \code{\link{comb}}
+#' 
+#' @examples
+#'
+#' ## import water quality and weather data
+#' data(apadbwq)
+#' data(apaebmet)
+#' 
+#' ## qaqc, combine
+#' wq <- qaqc(apadbwq)
+#' met <- qaqc(apaebmet)
+#' dat <- comb(wq, met)
+#' 
+#' ## estimate metabolism
+#' res <- ecometab(dat, trace = TRUE)
+#' 
+#' ## change height (m) of weather station anemometer
+#' res <- ecometab(dat, trace = TRUE, height = 5)
+#' 
+#' ## output units in grams of oxygen
+#' res <- ecometab(dat, trace = TRUE, units = 'grams')
+ecometab <- function(swmpr_in, ...) UseMethod('ecometab')
+
+#' @rdname ecometab
+#' 
+#' @export
+#' 
+#' @method ecometab swmpr
+ecometab.swmpr <- function(swmpr_in, depth_val = NULL, units = 'mmol', trace = FALSE, ...){
+  
+  stat <- attr(swmpr_in, 'station')
+  
+  # stop if units not mmol or grams
+  if(any(!(grepl('mmol|grams', units))))
+    stop('Units must be mmol or grams')
+
+  # stop if input data does not include wq and met
+  if(sum(grepl('wq$|met$', stat)) != 2)
+    stop('Requires water quality and weather data')
+  stat <- grep('wq$', stat, value = T)
+  
+  # start timer
+  if(trace){
+    tic()
+    cat(paste0('Estimating ecosystem metabolism for ', stat, '...\n\n'))
+  }
+  
+  # set all timesteps to one hour
+  swmpr_in <- setstep(swmpr_in, timestep = 60)
+  
+  # columns to keep
+  dat <- data.frame(swmpr_in)
+  to_keep <- c('datetimestamp', 'do_mgl', 'depth', 'atemp', 'sal', 'temp', 
+    'wspd', 'bp')
+  dat <- dat[,names(dat) %in% to_keep]
+  
+  #convert do from mg/L to mmol/m3
+  dat$do <- dat[, 'do_mgl'] / 32 * 1000
+  
+  # get change in do per hour, as mmol m^-3 hr^-1
+  ddo <- diff(dat$do)
+  
+  # take diff of each column, divide by 2, add original value
+  datetimestamp <- diff(dat$datetimestamp)/2 + dat$datetimestamp[-c(nrow(dat))]
+  dat <- apply(
+    dat[,2:ncol(dat)],
+    2,
+    function(x) diff(x)/2 + x[1:(length(x) -1)]
+    )
+  dat <- data.frame(datetimestamp, dat)
+  do <- dat$do
+  
+  ##
+  # replace missing wx values with climatological means
+  # only atemp, wspd, and bp
+  
+  # monthly and hourly averages
+  months <- as.character(format(dat$datetimestamp, '%m'))
+  hours <- as.character(format(dat$datetimestamp, '%H'))
+  clim_means <- mutate(dat, months = months, hours = hours) %>% 
+    select(months, hours, atemp, wspd, bp) %>% 
+    group_by(months, hours) %>% 
+    summarise_each(funs(mean(., na.rm = T)))
+  
+  # merge with original data
+  to_join <- data.frame(datetimestamp = dat$datetimestamp, months, 
+    hours, stringsAsFactors = FALSE) 
+  clim_means <- left_join(
+    to_join,
+    clim_means, by = c('months','hours')
+  )
+  clim_means <- clim_means[order(clim_means$datetimestamp),]
+
+  # datetimestamp order in dat must be ascending to match
+  if(is.unsorted(dat$datetimestamp))
+    stop('datetimestamp is unsorted')
+  
+  # reassign empty values to means, objects are removed later
+  atemp_mix <- dat$atemp
+  wspd_mix <- dat$wspd
+  bp_mix <- dat$bp
+  atemp_mix[is.na(atemp_mix)] <- clim_means$atemp[is.na(atemp_mix)]
+  wspd_mix[is.na(wspd_mix)] <- clim_means$wspd[is.na(wspd_mix)]
+  bp_mix[is.na(bp_mix)] <- clim_means$bp[is.na(bp_mix)]
+
+  ##
+  # get sigma_t estimates
+  sigt <- with(dat, swSigmaT(sal, temp, mean(dat$bp/100, na.rm = T)))
+  
+  # dosat is do at saturation given temp (C), salinity (st. unit), and press (atm)
+  # dosat as proportion
+  # used to get loss of O2 from diffusion
+  dosat <- with(dat, do_mgl/(oxySol(temp * (1000 + sigt)/1000, sal)))
+  
+  #station depth, defaults to mean depth value, floored at 1 in case not on bottom
+  #uses 'depth.val' if provided
+  if(is.null(depth_val))
+    H <- rep(mean(pmax(1, dat$depth), na.rm = T), nrow(dat))
+  else H <- rep(depth.val, nrow(dat))
+  
+  #use met_day to add columns indicating light/day, date, and hours of sunlight
+  dat <- met_day(dat, stat)
+  
+  #get air sea gas-exchange using wx data with climate means
+  KL <- with(dat, calcKL(temp, sal, atemp_mix, wspd_mix, bp_mix, ...))
+  rm(list = c('atemp_mix', 'wspd_mix', 'bp_mix'))
+  
+  #get volumetric reaeration coefficient from KL 
+  Ka <- KL / 24 / H
+  
+  #get exchange at air water interface
+  D = Ka * (do / dosat - do)
+  
+  #combine all data for processing
+  proc_dat <- dat[, names(dat) %in% c('met_date', 'solar_period', 'day_hrs')]
+  proc_dat <- data.frame(proc_dat, ddo, H, D)
+
+  #get daily/nightly flux estimates for Pg, Rt, NEM estimates
+  out <- lapply(
+    split(proc_dat, proc_dat$met_date),
+    function(x){
+      
+      #filter for minimum no. of records 
+      if(length(with(x[x$solar_period == 'sunrise', ], na.omit(ddo))) < 3 |
+         length(with(x[x$solar_period == 'sunset', ], na.omit(ddo))) < 3 ){
+        DOF_d <- NA; D_d <- NA; DOF_n <- NA; D_n <- NA
+      
+      } else {
+        #day
+        DOF_d <- mean(with(x[x$solar_period == 'sunrise', ], ddo * H), na.rm = T)
+        D_d <- mean(with(x[x$solar_period == 'sunrise', ], D), na.rm = T)
+        
+        #night
+        DOF_n <- mean(with(x[x$solar_period == 'sunset', ], ddo * H), na.rm = T)
+        D_n <- mean(with(x[x$solar_period == 'sunset', ], D), na.rm = T)
+        
+      }
+      
+      # metabolism
+      # account for air-sea exchange if surface station
+      # else do not
+      Pg <- ((DOF_d - D_d) - (DOF_n - D_n)) * unique(x$day_hrs)
+      Rt <- (DOF_n - D_n) * 24
+      NEM <- Pg + Rt
+      Pg_vol <- Pg / mean(x$H, na.rm = T)
+      Rt_vol <- Rt / mean(x$H, na.rm = T)
+      
+      #dep vars to take mean
+      var_out <- x[!names(x) %in% c('solar_period', 'solar_time', 'met_date',
+        'day_hrs', 'H')] 
+      var_out <- data.frame(rbind(apply(var_out, 2, function(x) mean(x, na.rm = T))))
+      
+      data.frame(date = unique(x$met_date), 
+        var_out, DOF_d, D_d, DOF_n, D_n, Pg, Rt, NEM, 
+        Pg_vol, Rt_vol
+        )
+      
+      }
+    )
+  
+  out <- do.call('rbind',out)
+  row.names(out) <- 1:nrow(out)
+
+  # chants units to grams
+  if('grams' %in% units){
+    
+    # convert metab data to g m^-2 d^-1
+    # 1mmolO2 = 32 mg O2, 1000mg = 1g, multiply by 32/1000
+    as_grams <- apply(out[, -1], 2, function(x) x * 0.032)
+    out <- data.frame(date = out[, 'date'], as_grams)
+    
+  }
+  
+  if(trace) toc()
+  
+  return(out)
+  
+}

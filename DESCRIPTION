@@ -15,8 +15,11 @@ License: CC0
 Imports:
     data.table,
     httr,
-    plyr,
+    maptools,
+    oce,
+    dplyr,
     reshape2,
+    tictoc,
     wq,
     XML
 LazyData: true
