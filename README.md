@@ -75,53 +75,7 @@ path <- 'C:/my_path/'
 import_local(path, 'apaebmet') 
 ```
 
-For the following example, the `import_local` function is used to load data included with the SWMPr distribution.  To use it, set the path variable using the `system.file` command shown below (you can see this full path by executing `path` at the command line).  Execute both lines to import the data.
-
-
-```r
-# import data for apaebmet that comes with SWMPr
-
-# this is the path for csv example files
-path <- system.file('zip_ex', package = 'SWMPr')
-
-# import, do not include file extension
-import_local(path, 'apaebmet') 
-```
-
-A character string for the station code that also includes a date can be used as input if a specific year is desired, e.g., 'apaebmet2011'.  In all cases, the imported data need to assigned to an object in the workspace for use with other functions:
-
-
-```r
-# import data and assign to dat
-dat <- import_local(path, 'apaebmet', trace = F) 
-
-# view first six rows
-head(dat)
-```
-
-```
-##         datetimestamp atemp f_atemp rh f_rh   bp f_bp wspd f_wspd maxwspd
-## 1 2011-01-01 00:00:00  15.4    <0>  94 <0>  1019 <0>   2.6   <0>      3.4
-## 2 2011-01-01 00:15:00  15.2    <0>  95 <0>  1019 <0>   2.7   <0>      4.0
-## 3 2011-01-01 00:30:00  15.2    <0>  95 <0>  1019 <0>   2.8   <0>      3.5
-## 4 2011-01-01 00:45:00  15.3    <0>  95 <0>  1019 <0>   3.1   <0>      4.2
-## 5 2011-01-01 01:00:00  15.3    <0>  95 <0>  1018 <0>   3.2   <0>      4.4
-## 6 2011-01-01 01:15:00  15.3    <0>  95 <0>  1018 <0>   3.6   <0>      4.9
-##   f_maxwspd wdir f_wdir sdwdir f_sdwdir totpar  f_totpar totprcp f_totprcp
-## 1      <0>   145   <0>       8     <0>     0.8 <1> (CSM)       0      <0> 
-## 2      <0>   146   <0>       7     <0>     0.8 <1> (CSM)       0      <0> 
-## 3      <0>   139   <0>       7     <0>     0.8 <1> (CSM)       0      <0> 
-## 4      <0>   140   <0>       7     <0>     0.8 <1> (CSM)       0      <0> 
-## 5      <0>   144   <0>       6     <0>     0.8 <1> (CSM)       0      <0> 
-## 6      <0>   141   <0>       7     <0>     0.8 <1> (CSM)       0      <0> 
-##   cumprcp f_cumprcp totsorad f_totsorad
-## 1       0      <0>        NA      <-1> 
-## 2       0      <0>        NA      <-1> 
-## 3       0      <0>        NA      <-1> 
-## 4       0      <0>        NA      <-1> 
-## 5       0      <0>        NA      <-1> 
-## 6       0      <0>        NA      <-1>
-```
+Raw csv data have not been included in the package due to size limitations.  However, a sample dataset can be [downloaded](https://s3.amazonaws.com/swmpexdata/zip_ex.zip) for use with the examples below.  This dataset has an identical format as the data returned from the zip downloads feature of the CDMO.  However, import time of the raw data may slow down use of the examples below and I have included binary data files (.RData) that are processed versions of the raw data.    
 
 #The swmpr object class
 
@@ -129,6 +83,10 @@ All data retrieval functions return a swmpr object that includes relevant data a
 
 
 ```r
+# import binary data
+data(apadbwq)
+dat <- apadbwq
+
 # verify that dat is swmpr class
 class(dat)
 ```
@@ -153,7 +111,7 @@ attr(dat, 'station')
 ```
 
 ```
-## [1] "apaebmet"
+## [1] "apadbwq"
 ```
 
 The swmpr object class was created for use with specific methods and it is suggested that these methods be used for data organization and analysis.  A swmpr object also secondarily inherits methods from the data.frame class, such that common data.frame methods also apply to swmpr objects.  Available methods for the swmpr class are described below and can also be viewed:
@@ -165,12 +123,12 @@ methods(class = 'swmpr')
 ```
 
 ```
-##  [1] aggregate.swmpr    clean_dat.swmpr    comb.swmpr        
-##  [4] comb_dat.swmpr     decomp.swmpr       decomp_cj.swmpr   
-##  [7] hist.swmpr         lines.swmpr        na.approx.swmpr   
-## [10] plot.swmpr         plot_summary.swmpr qaqc.swmpr        
-## [13] qaqcchk.swmpr      rem_reps.swmpr     setstep.swmpr     
-## [16] smoother.swmpr     subset.swmpr
+##  [1] aggregate.swmpr    comb.swmpr         decomp.swmpr      
+##  [4] decomp_cj.swmpr    ecometab.swmpr     hist.swmpr        
+##  [7] lines.swmpr        na.approx.swmpr    plot.swmpr        
+## [10] plot_summary.swmpr qaqc.swmpr         qaqcchk.swmpr     
+## [13] rem_reps.swmpr     setstep.swmpr      smoother.swmpr    
+## [16] subset.swmpr
 ```
 
 #An overview of methods for swmpr objects
@@ -204,8 +162,8 @@ Raw nutrient data obtained from the CDMO will usually include replicate samples 
 
 ```r
 # get nutrient data
-path <- system.file('zip_ex', package = 'SWMPr')
-swmp1 <- import_local(path, 'apacpnut')
+data(apacpnut)
+swmp1 <- apacpnut
 swmp1 <- qaqc(swmp1)
 
 # remove replicate nutrient data
@@ -247,7 +205,8 @@ setstep(dat, timestep = 120, differ = 30)
 
 # convert a nutrient time series to a continuous time series
 # then remove empty rows and columns
-dat_nut <- import_local(path, 'apacpnut')
+data(apacpnut)
+dat_nut <- apacpnut
 dat_nut <- setstep(dat_nut, timestep = 60)
 subset(dat_nut, rem_rows = T, rem_cols = T)
 ```
@@ -258,9 +217,12 @@ The `comb` function is used to combine multiple swmpr objects into a single obje
 ```r
 # get nuts, wq, and met data as separate objects for the same station
 # note that most sites usually have one weather station
-swmp1 <- import_local(path, 'apacpnut')
-swmp2 <- import_local(path, 'apacpwq')
-swmp3 <- import_local(path, 'apaebmet')
+data(apacpnut)
+data(apacpwq)
+data(apaebmet)
+swmp1 <- apacpnut
+swmp2 <- apacpwq
+swmp3 <- apaebmet
 
 # combine nuts and wq data by union
 comb(swmp1, swmp2, method = 'union')
@@ -296,7 +258,8 @@ Time series can be smoothed to better characterize a signal independent of noise
 
 ```r
 # import data
-swmp1 <- import_local(path, 'apadbwq')
+data(apadbwq)
+swmp1 <- apadbwq
 
 # qaqc and subset imported data
 dat <- qaqc(swmp1)
@@ -310,14 +273,15 @@ plot(do_mgl ~ datetimestamp, data = dat, type = 'l')
 lines(test, select = 'do_mgl', col = 'red', lwd = 2)
 ```
 
-![plot of chunk unnamed-chunk-17](README_files/figure-html/unnamed-chunk-17.png) 
+![plot of chunk unnamed-chunk-15](README_files/figure-html/unnamed-chunk-15.png) 
 
 A common issue with any statistical analysis is the treatment of missing values.  Missing data can be excluded from the analysis, included but treated as true zeroes, or interpolated based on similar values.  In either case, an analyst should have a strong rationale for the chosen method.  A common approach used to handle missing data in time series analysis is linear interpolation.  A simple curve fitting method is used to create a continuous set of records between observations separated by missing data.  A challenge with linear interpolation is an appropriate gap size for fitting missing observations.  The ability of the interpolated data to approximate actual trends is a function of the gap size.  Interpolation between larger gaps are less likely to resemble patterns of an actual parameter, whereas interpolation between smaller gaps are more likely to resemble actual patterns.  An appropriate gap size limit depends on the unique characteristics of specific datasets or parameters.  The `na.approx` function can be used to interpolate gaps in a swmpr object.  A required argument for the function is `maxgap` which defines the maximum gap size  for interpolation.
 
 
 ```r
 # get data
-swmp1 <- import_local(path, 'apadbwq')
+data(apadbwq)
+swmp1 <- apadbwq
 
 # qaqc and subset imported data
 dat <- qaqc(swmp1)
@@ -340,7 +304,7 @@ plot(do_mgl ~ datetimestamp, test2, col = 'red',
 lines(dat, select = 'do_mgl')
 ```
 
-![plot of chunk unnamed-chunk-18](README_files/figure-html/unnamed-chunk-18.png) 
+![plot of chunk unnamed-chunk-16](README_files/figure-html/unnamed-chunk-16.png) 
 
 The `decomp` function is a simple wrapper to `decompose` that separates a time series into additive or multiplicative components describing a trend, cyclical variation (e.g., daily or seasonal), and the remainder.  The additive decomposition assumes that the cyclical component of the time series is stationary (i.e., the variance is constant), whereas a multiplicative decomposition accounts for non-stationarity.  By default, a moving average with a symmetric window is used to filter the seasonal component.  Alternatively, a vector of filter coefficients in reverse time order can be supplied (see the help documentation for `decompose`).  
 
@@ -351,7 +315,8 @@ Note that the `decompose` function is a relatively simple approach and alternati
 
 ```r
 # get data
-swmp1 <- import_local(path, 'apadbwq')
+data(apadbwq)
+swmp1 <- apadbwq
 
 # subset for daily decomposition
 dat <- subset(swmp1, subset = c('2013-07-01 00:00', '2013-07-31 00:00'))
@@ -361,7 +326,7 @@ test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
 plot(test)
 ```
 
-![plot of chunk unnamed-chunk-19](README_files/figure-html/unnamed-chunk-19.png) 
+![plot of chunk unnamed-chunk-17](README_files/figure-html/unnamed-chunk-17.png) 
 
 The next example illustrates how to handle missing values using the `decomp` function. The `decompose` function used internally within `decomp` currently cannot process time series with missing values.  A recommended approach is to use `na.approx` to interpolate the missing values prior to `decompose`.
 
@@ -390,32 +355,22 @@ test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
 plot(test)
 ```
 
-![plot of chunk unnamed-chunk-20](README_files/figure-html/unnamed-chunk-20.png) 
+![plot of chunk unnamed-chunk-18](README_files/figure-html/unnamed-chunk-18.png) 
 
 An alternative approach to time series decomposition is provided by the `decomp_cj` function, which is a simple wrapper to the `decompTs` function in the wq package.  Theory describing this method is described in Cloern and Jassby (2010).  The function is similar to `decomp.swmpr` with a few key differences.  The `decomp.swmpr` function decomposes the time series into a trend, seasonal, and random component, whereas the current function decomposes into the grandmean, annual, seasonal, and events components.  For both functions, the random or events components, respectively, can be considered anomalies that don't follow the trends in the remaining categories.  The `decomp_cj` function provides only a monthly decomposition, which is appropriate for characterizing relatively long-term trends.  This approach is meant for nutrient data that are obtained on a monthly cycle.  The function will also work with continuous water quality or weather data but note that the data are first aggregated on the monthly scale before decomposition.  Accordingly, short-term variation less than one-month will be removed. Additional arguments passed to `decompTs` can be used with `decomp_cj`, such as `startyr`, `endyr`, and `type`.  Values passed to `type` are `mult` (default) or `add`, referring to multiplicative or additive decomposition.  See the documentation for `decompTs` for additional explanation and examples.   
 
 
 ```r
 # get data
-path <- system.file('zip_ex', package = 'SWMPr')
-dat <- import_local(path, 'apacpnut')
+data(apacpnut)
+dat <- apacpnut
 dat <- qaqc(dat, qaqc_keep = NULL)
 
 # decomposition of chl, ggplot
 decomp_cj(dat, param = 'chla_n')
 ```
 
-![plot of chunk unnamed-chunk-21](README_files/figure-html/unnamed-chunk-211.png) 
-
-```r
-# monthly decomposition of continuous data
-dat2 <- import_local(path, 'apacpwq')
-dat2 <- qaqc(dat2)
-
-decomp_cj(dat2, param = 'do_mgl')
-```
-
-![plot of chunk unnamed-chunk-21](README_files/figure-html/unnamed-chunk-212.png) 
+![plot of chunk unnamed-chunk-19](README_files/figure-html/unnamed-chunk-19.png) 
 
 A reserve map with all stations can be obtained using the `map_reserve` function.  This function is a simple wrapper to functions in the ggmap package. The current function is limited to Google maps, which allows four map types that can be set with the `map_type` argument: terrain (default), satellite, roadmap, or hybrid.  The `zoom` argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  See the help documentation for ggmap for more info on zoom.  Additionally, station locations are returned using the `site_codes_ind` function if the computer making the request has the IP address registered with CDMO. Otherwise, a local and possibly outdated file is used.  Use the contact at the CDMO [web services](http://cdmo.baruch.sc.edu/webservices.cfm) to register your IP.
 
@@ -425,31 +380,52 @@ A reserve map with all stations can be obtained using the `map_reserve` function
 map_reserve('jac')
 ```
 
-![plot of chunk unnamed-chunk-22](README_files/figure-html/unnamed-chunk-221.png) 
+![plot of chunk unnamed-chunk-20](README_files/figure-html/unnamed-chunk-201.png) 
 
 ```r
 # plot the stations at Padilla Bay reserve, satellite
 map_reserve('pdb', map_type = 'satellite', zoom = 12)
 ```
 
-![plot of chunk unnamed-chunk-22](README_files/figure-html/unnamed-chunk-222.png) 
+![plot of chunk unnamed-chunk-20](README_files/figure-html/unnamed-chunk-202.png) 
 
-Finally, several graphics showing seasonal and annual trends for a given SWMP parameter can be obtained using the `plot_summary` function.  The plots include monthly distributions, monthly anomalies, and annual anomalies in multiple formats.  Anomalies are defined as the difference between the monthly or annual average from the grand mean for the parameter.  Monthly anomalies are in relation to the grand mean for the same month across all years.  All data are aggregated for quicker plotting.  Nutrient data are based on monthly averages, whereas weather and water quality data are based on daily averages.  Cumulative precipitation data are based on the daily maximum. The function returns a graphics object (Grob) of multiple ggplot objects.  An interactive Shiny widget that uses this function is available: [https://beckmw.shinyapps.io/swmp_summary/](https://beckmw.shinyapps.io/swmp_summary/).
+Several graphics showing seasonal and annual trends for a given SWMP parameter can be obtained using the `plot_summary` function.  The plots include monthly distributions, monthly anomalies, and annual anomalies in multiple formats.  Anomalies are defined as the difference between the monthly or annual average from the grand mean for the parameter.  Monthly anomalies are in relation to the grand mean for the same month across all years.  All data are aggregated for quicker plotting.  Nutrient data are based on monthly averages, whereas weather and water quality data are based on daily averages.  Cumulative precipitation data are based on the daily maximum. The function returns a graphics object (Grob) of multiple ggplot objects.  An interactive Shiny widget that uses this function is available: [https://beckmw.shinyapps.io/swmp_summary/](https://beckmw.shinyapps.io/swmp_summary/).
 
 
 ```r
 ## import data
-path <- system.file('zip_ex', package = 'SWMPr')
-dat <- import_local(path, 'apacpwq')
-dat <- qaqc(dat)
+data(apacpnut)
+dat <- qaqc(apacpnut)
 
 ## plot
-plot_summary(dat, param = 'temp')
+plot_summary(dat, param = 'chla_n')
 ```
 
-![plot of chunk unnamed-chunk-23](README_files/figure-html/unnamed-chunk-23.png) 
+![plot of chunk unnamed-chunk-21](README_files/figure-html/unnamed-chunk-21.png) 
 
-#Functions
+Estimates of ecosystem metabolism provide a useful measure of overall system productivity.  Such estimates are commonly used to evaluate whether an ecosystem is a net source or sink of organic material.  The open-water method is used to infer net ecosystem metabolism using a mass balance equation that describes the change in dissolved oxygen over time as a function of photosynthetic rate, minus respiration rate, corrected for air-sea gas diffusion at the surface.  The diffusion-corrected DO flux estimates are averaged during day and night for each 24 hour period in the time series, where flux is an hourly rate of DO change. DO flux is averaged during night hours for respiration and averaged during day hours for net production. Respiration rates are assumed constant during day and night such that total daily rates are calculated as hourly respiration multiplied by 24. The metabolic day is considered the approximate 24 hour period between sunsets on two adjacent calendar days.  Respiration is subtracted from daily net production estimates to yield gross production.  
+
+The `ecometab` function is used to implement an adaptation of the open-water method.  
+Several assumptions must be met for a valid interpretation of the results.  In general, the dissolved oxygen time series is assumed to represent the same water mass over time.  Tidal advection may have a significant influence on the time series, which can contribute to a significant amount of noise in metabolic estimates.  The extent to which tidal advection influences the dissolved oxygen signal depends on various site-level characteristics and an intimate knowledge of the site may be required.  Volumetric rates for gross production and total respiration are also based on total depth of the water column, which is assumed to be mixed.  Water column depth is based on mean value for the depth variable across the time series and is floored at 1 meter for very shallow stations.  Additionally, the volumetric reaeration coefficient requires an estimate of the anemometer height of the weather station, which is set as 10 meters by default.  The metadata should be consulted for exact height. Other assumptions may apply and the user should consult the relevant literature (see the references in the help file).  All estimates are in mmol of oxygen but can be converted  to grams by changing the default arguments (i.e., 1mmol O2 = 32 mg O2, 1000 mg = 1g, multiply all estimates by 32/1000). 
+
+The following is an example that shows how to use wihte function from a combined water quality and weather data set.
+
+
+```r
+## import water quality and weather data
+data(apadbwq)
+data(apaebmet)
+
+## qaqc, combine
+wq <- qaqc(apadbwq)
+met <- qaqc(apaebmet)
+dat <- comb(wq, met)
+
+## estimate metabolism
+res <- ecometab(dat, trace = TRUE)
+```
+
+#Function list
 
 See help documentation for more details on each function (e.g., `?all_params`).
 
@@ -459,11 +435,13 @@ See help documentation for more details on each function (e.g., `?all_params`).
 
 `all_params_dtrng` Retrieve records of all parameters within a given date range for a station.  Optional argument for a single parameter.  Maximum of 1000 records. Wrapper to `exportAllParamsDateRangeXMLNew`.
 
-`single_param` Retrieve up to 100 records for a single parameter starting with the most recent at a given station.  Wrapper to `exportSingleParamXMLNew` function on web services. 
-
 `import_local` Import files from a local path.  The files must be in a specific format, specifically those returned from the CDMO using the [zip downloads](http://cdmo.baruch.sc.edu/aqs/zips.cfm) option for a reserve.
 
+`single_param` Retrieve up to 100 records for a single parameter starting with the most recent at a given station.  Wrapper to `exportSingleParamXMLNew` function on web services. 
+
 ##Organize
+
+`comb.swmpr` Combines swmpr objects to a common time series using setstep, such as combining the weather, nutrients, and water quality data for a single station. Only different data types can be combined.
 
 `qaqc.swmpr` Remove QAQC columns and remove data based on QAQC flag values for a swmpr object.  Only applies if QAQC columns are present.  
 
@@ -471,49 +449,48 @@ See help documentation for more details on each function (e.g., `?all_params`).
 
 `rem_reps.swmpr` Remove replicate nutrient data that occur on the same day.  The default is to average replicates.
 
-`subset.swmpr` Subset by dates and/or columns for a swmpr object.  This is a method passed to the generic `subset' function provided in the base package.
-
 `setstep.swmpr` Format data from a swmpr object to a continuous time series at a given timestep.  The function is used in `comb.swmpr` and can also be used with individual stations.
 
-`comb.swmpr` Combines swmpr objects to a common time series using setstep, such as combining the weather, nutrients, and water quality data for a single station. Only different data types can be combined.
+`subset.swmpr` Subset by dates and/or columns for a swmpr object.  This is a method passed to the generic `subset' function provided in the base package.
 
 ##Analyze
 
 `aggregate.swmpr` Aggregate swmpr objects for different time periods - years, quarters, months,  weeks, days, or hours.  Aggregation function is user-supplied but defaults to mean. 
 
-`smoother.swmpr` Smooth swmpr objects with a moving window average.  Window size and sides can be specified, passed to `filter`.
-
-`na.approx.swmpr` Linearly interpolate missing data (`NA` values) in a swmpr object. The maximum gap size that is interpolated is defined as a maximum number of records with missing data. 
-
-`plot.swmpr` Plot a univariate  time series for a swmpr object.  The parameter name must be specified.
-
-`lines.swmpr` Add lines to an existing swmpr plot.
-
-`hist.swmpr` Plot a histogram for a swmpr object.
+`ecometab.swmpr` Estimate ecosystem metabolism for a combined water quality and weatehr dataset using the open-water method.
 
 `decomp.swmpr` Decompose a swmpr time series into trend, seasonal, and residual components.  This is a simple wrapper to `decompose`.  Decomposition of monthly or daily trends is possible.
 
 `decomp_cj.swmpr` Decompose a swmpr time series into grandmean, annual, seasonal, and events components.  This is a simple wrapper to `decompTs` in the wq package.  Only monthly decomposition is possible.
 
+`hist.swmpr` Plot a histogram for a swmpr object.
+
+`lines.swmpr` Add lines to an existing swmpr plot.
+
+`na.approx.swmpr` Linearly interpolate missing data (`NA` values) in a swmpr object. The maximum gap size that is interpolated is defined as a maximum number of records with missing data. 
+
+`plot.swmpr` Plot a univariate  time series for a swmpr object.  The parameter name must be specified.
+
 `plot_summary` Create summary plots of seasonal/annual trends and anomalies for a water quality or weather parameter.
+
+`smoother.swmpr` Smooth swmpr objects with a moving window average.  Window size and sides can be specified, passed to `filter`.
 
 ##Miscellaneous
 
-`swmpr` Creates object of swmpr class, used internally in retrieval functions.
+`calcKL` Estimate the reaeration coefficient for air-sea gas exchange.  This is only used within the `ecometab` function.
+
+`map_reserve` Create a map of all stations in a reserve using the ggmap package.
+
+`met_day` Identify the metabolic day for each approximate 24 period in an hourly time series.  This is only used within the `ecometab` function.
+
+`param_names` Returns column names as a list for the parameter type(s) (nutrients, weather, or water quality).  Includes QAQC columns with 'f_' prefix. Used internally in other functions.
 
 `parser` Parses html returned from CDMO web services, used internally in retrieval functions.
-
-`time_vec` Converts time vectors to POSIX objects with correct time zone for a site/station, used internally in retrieval functions.
 
 `site_codes` Metadata for all stations, wrapper to `exportStationCodesXMLNew` function on web services.
 
 `site_codes_ind` Metadata for all stations at a single site, wrapper  to `NERRFilterStationCodesXMLNew` function on web services.
 
-`param_names` Returns column names as a list for the parameter type(s) (nutrients, weather, or water quality).  Includes QAQC columns with 'f_' prefix. Used internally in other functions.
+`swmpr` Creates object of swmpr class, used internally in retrieval functions.
 
-`map_reserve` Create a map of all stations in a reserve using the ggmap package.
-
-# Forthcoming
-
-Ecosystem metabolism using Odum open water method
-
+`time_vec` Converts time vectors to POSIX objects with correct time zone for a site/station, used internally in retrieval functions.

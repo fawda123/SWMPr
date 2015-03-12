@@ -75,7 +75,7 @@ aggregate.swmpr <- function(x, by, FUN = function(x) mean(x, na.rm = TRUE), para
     } else {
       
       to_agg$datetimestamp <- round(
-        as.IDate(to_agg$datetimestamp, tz = timezone),
+        data.table::as.IDate(to_agg$datetimestamp, tz = timezone),
         digits = by
       )
       
@@ -180,7 +180,7 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL, ...){
   
   # filter
   window <- rep(1, window)/window
-  out <- filter(to_filt, window, sides, method = 'convolution')
+  out <- stats::filter(to_filt, window, sides, method = 'convolution')
   out <- data.frame(datetimestamp, out)
   names(out) <- c('datetimestamp', parameters)
   
@@ -201,7 +201,7 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL, ...){
 #' @param maxgap numeric vector indicating maximum gap size to interpolate where size is numer of records, must be explicit
 #' @param ... additional arguments passed to other methods
 #' 
-#' @import plyr zoo
+#' @import zoo
 #'
 #' @export na.approx.swmpr
 #' 
@@ -264,8 +264,8 @@ na.approx.swmpr <- function(object, params = NULL, maxgap, ...){
   to_interp$datetimestamp <- NULL
   
   # interpolate column-wise
-  out <- mlply(matrix(to_interp),
-    .fun = function(in_col){
+  out <- lapply(c(to_interp),
+    FUN = function(in_col){
       
       interp <- try(zoo::na.approx(in_col, maxgap = maxgap, 
         na.rm = FALSE), silent = TRUE, ...)
@@ -634,7 +634,7 @@ hist.swmpr <- function(x, subset = NULL, select, operator = NULL, ...) {
 #' @param years numeric vector of starting and ending years to plot, default all
 #' @param ... additional arguments passed to other methods, currently not used
 #' 
-#' @import ggplot2 gridExtra plyr
+#' @import ggplot2 gridExtra
 #' 
 #' @export
 #' 
@@ -792,11 +792,12 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
     my_theme
   
   # monthly means by year
-  to_plo <- plyr::ddply(dat_plo, 
-    .variables = c('month', 'year'), 
-    .fun = function(x) mean(x[, param],  na.rm = T)
-    )
+  to_plo <- dat_plo[, names(dat_plo) %in% c('month', 'year', param)]
+  form_in <- as.formula(paste(param, '~ .'))
+  to_plo <- aggregate(form_in, to_plo, function(x) mean(x, na.rm = T))
+  
   to_plo$month <- factor(to_plo$month, labels = mo_labs, levels = mo_levs)
+  names(to_plo)[names(to_plo) %in% param] <- 'V1'
   midpt <- mean(to_plo$V1, na.rm = T)
   p4 <- ggplot(to_plo, aes(x = year, y = month, fill = V1)) +
     geom_tile() +
@@ -854,139 +855,6 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 }
 
 ######
-#' Identify metabolic days in a swmpr time series
-#'
-#' Identify metabolic days in a swmpr time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.
-#' 
-#' @param dat_in data.frame
-#' @param stat_in chr vector of station name including data type
-#' 
-#' @import maptools reshape2
-#' 
-#' @export 
-#' 
-#' @details This function is only used within \code{\link{ecometab}} and should not be called explicitly.
-#' 
-#' @seealso 
-#' \code{\link{ecometab}}
-#' 
-met_day <- function(dat_in, stat_in){
-  
-  stat_meta <- stat_locs[grep(gsub('wq$', '', stat_in), stat_locs$station_code),]
-  
-  # all times are standard - no DST!
-  gmt_tab <- data.frame(
-    gmt_off=c(-4, -5, -6, -8, -9),
-    tz = c('America/Virgin', 'America/Jamaica', 'America/Regina',
-      'Pacific/Pitcairn', 'Pacific/Gambier'),
-    stringsAsFactors = F
-    )
-  
-  # get sunrise/sunset times using functions from maptools
-  # adapted from streammetabolism sunrise.set function
-  lat <- stat_meta$latitude
-  long <- stat_meta$longitude
-  gmt_off <- stat_meta$gmt_off
-  tz <- gmt_tab[gmt_tab$gmt_off == gmt_off, 'tz']
-  start_day <- format(
-    dat_in$datetimestamp[which.min(dat_in$datetimestamp)] - (60 * 60 * 24), 
-    format = '%Y/%m/%d'
-    )
-  tot_days <- 1 + length(unique(as.Date(dat_in$datetimestamp)))
-  lat.long <- matrix(c(long, lat), nrow = 1)
-  sequence <- seq(
-    from = as.POSIXct(start_day, tz = tz), 
-    length.out = tot_days, 
-    by = "days"
-    )
-  sunrise <- sunriset(lat.long, sequence, direction = "sunrise", 
-      POSIXct = TRUE)
-  sunset <- sunriset(lat.long, sequence, direction = "sunset", 
-      POSIXct = TRUE)
-  ss_dat <- data.frame(sunrise, sunset)
-  ss_dat <- ss_dat[, -c(1, 3)]
-  colnames(ss_dat) <- c("sunrise", "sunset")
-  
-  # remove duplicates, if any
-  ss_dat <- ss_dat[!duplicated(strftime(ss_dat[, 1], format = '%Y-%m_%d')), ]
-  ss_dat <- data.frame(
-    ss_dat,
-    met_date = as.Date(ss_dat$sunrise, tz = tz)
-    )
-  ss_dat <- melt(ss_dat, id.vars = 'met_date')
-  if(!"POSIXct" %in% class(ss_dat$value))
-    ss_dat$value <- as.POSIXct(ss_dat$value, origin='1970-01-01',tz=tz)
-  ss_dat <- ss_dat[order(ss_dat$value),]
-  ss_dat$day_hrs <- unlist(lapply(
-    split(ss_dat, ss_dat$met_date),
-    function(x) rep(as.numeric(x[2, 'value'] - x[1, 'value']), 2) 
-    ))
-  names(ss_dat)[names(ss_dat) %in% c('variable', 'value')] <- c('solar_period', 'solar_time')
-  
-  # matches is vector of row numbers indicating starting value that each
-  # unique datetimestamp is within in ss_dat
-  # output is meteorological day matches appended to dat_in
-  matches <- findInterval(dat_in$datetimestamp, ss_dat$solar_time)
-  out <- data.frame(dat_in, ss_dat[matches, ])
-  return(out)
-      
-  }
-
-######
-#' Calculate oxygen mass transfer coefficient
-#' 
-#' Calculate oxygen mass transfer coefficient using equations in Thiebault et al. 2008.  Output is used to estimate the volumetric reaeration coefficient for ecosystem metabolism.
-#'
-#' @param temp numeric for water temperature (C)
-#' @param sal numeric for salinity (ppt)
-#' @param atemp numeric for air temperature (C)
-#' @param wspd numeric for wind speed (m/s)
-#' @param bp numeric for barometric pressure (mb)
-#' @param height numeric for height of anemometer (meters)
-#'
-#' @import oce
-#' 
-#' @export
-#' 
-#' @details
-#' This function is used within the \code{\link{ecometab}} function and should not be used explicitly.
-#' 
-#' @references
-#' Thebault J, Schraga TS, Cloern JE, Dunlavey EG. 2008. Primary production and carrying capacity of former salt ponds after reconnection to San Francisco Bay. Wetlands. 28(3):841–851.
-#' 
-#' @seealso 
-#' \code{\link{ecometab}}
-#' 
-calcKL <- function(temp, sal, atemp, wspd, bp, height = 10){
-  
-  #celsius to kelvin conversion
-  CtoK <- function(val) val + 273.15 
-    
-  Patm <- bp * 100; # convert from millibars to Pascals
-  zo <- 1e-5; # assumed surface roughness length (m) for smooth water surface
-  U10 <- wspd * log(10 / zo) / log(height / zo)
-  tempK <- CtoK(temp)
-  atempK <- CtoK(atemp)
-  sigT <- swSigmaT(sal, temp, 10) # set for 10 decibars = 1000mbar = 1 bar = 1atm
-  rho_w <- 1000 + sigT #density of SW (kg m-3)
-  Upw <- 1.002e-3 * 10^((1.1709 * (20 - temp) - (1.827 * 10^-3 * (temp - 20)^2)) / (temp + 89.93)) #dynamic viscosity of pure water (sal + 0);
-  Uw <- Upw * (1 + (5.185e-5 * temp + 1.0675e-4) * (rho_w * sal / 1806.55)^0.5 + (3.3e-5 * temp + 2.591e-3) * (rho_w * sal / 1806.55))  # dynamic viscosity of SW
-  Vw <- Uw / rho_w  #kinematic viscosity
-  Ew <- 6.112 * exp(17.65 * atemp / (243.12 + atemp))  # water vapor pressure (hectoPascals)
-  Pv <- Ew * 100 # Water vapor pressure in Pascals
-  Rd <- 287.05  # gas constant for dry air ( kg-1 K-1)
-  Rv <- 461.495  # gas constant for water vapor ( kg-1 K-1)
-  rho_a <- (Patm - Pv) / (Rd * atempK) + Pv / (Rv * tempK)
-  kB <- 1.3806503e-23 # Boltzman constant (m2 kg s-2 K-1)
-  Ro <- 1.72e-10     #radius of the O2 molecule (m)
-  Dw <- kB * tempK / (4 * pi * Uw * Ro)  #diffusivity of O2 in water 
-  KL <- 0.24 * 170.6 * (Dw / Vw)^0.5 * (rho_a / rho_w)^0.5 * U10^1.81  #mass xfer coef (m d-1)
-  
-  return(KL)
-  
-  }
-
-######
 #' Ecosystem metabolism
 #' 
 #' Estimate ecosystem metabolism using the Odum open-water method.  Estimates of daily integrated gross production, total respiration, and net ecosystem metabolism are returned.
@@ -1013,7 +881,7 @@ calcKL <- function(temp, sal, atemp, wspd, bp, height = 10){
 #'  \item{\code{Rt_vol}}{Volumetric total respiration, O2 mmold/m3/d}
 #' }
 #' 
-#' @import dplyr oce reshape2 tictoc wq
+#' @import oce reshape2 wq
 #' 
 #' @export
 #'
@@ -1031,11 +899,11 @@ calcKL <- function(temp, sal, atemp, wspd, bp, height = 10){
 #' The specific approach for estimating metabolism is described in more detail in Caffrey et al. 2013.
 #' 
 #' @references 
-#' Caffrey JM, Murrell MC, Amacker KS, Harper J, Phipps S, Woodrey M. 2013. Seasonal and inter-annual patterns in primary production, respiration and net ecosystem metabolism in 3 estuaries in the northeast Gulf of Mexico. Estuaries and Coasts. 37(1):222–241.
+#' Caffrey JM, Murrell MC, Amacker KS, Harper J, Phipps S, Woodrey M. 2013. Seasonal and inter-annual patterns in primary production, respiration and net ecosystem metabolism in 3 estuaries in the northeast Gulf of Mexico. Estuaries and Coasts. 37(1):222-241.
 #' 
-#' Odum HT. 1956. Primary production in flowing waters. Limnology and Oceanography. 1(2):102–117.
+#' Odum HT. 1956. Primary production in flowing waters. Limnology and Oceanography. 1(2):102-117.
 #' 
-#' Thebault J, Schraga TS, Cloern JE, Dunlavey EG. 2008. Primary production and carrying capacity of former salt ponds after reconnection to San Francisco Bay. Wetlands. 28(3):841–851.
+#' Thebault J, Schraga TS, Cloern JE, Dunlavey EG. 2008. Primary production and carrying capacity of former salt ponds after reconnection to San Francisco Bay. Wetlands. 28(3):841-851.
 #' 
 #' @seealso 
 #' \code{\link{comb}}
@@ -1081,7 +949,7 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, units = 'mmol', trace = F
   
   # start timer
   if(trace){
-    tic()
+    tictoc::tic()
     cat(paste0('Estimating ecosystem metabolism for ', stat, '...\n\n'))
   }
   
@@ -1117,15 +985,15 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, units = 'mmol', trace = F
   # monthly and hourly averages
   months <- as.character(format(dat$datetimestamp, '%m'))
   hours <- as.character(format(dat$datetimestamp, '%H'))
-  clim_means <- mutate(dat, months = months, hours = hours) %>% 
-    select(months, hours, atemp, wspd, bp) %>% 
-    group_by(months, hours) %>% 
-    summarise_each(funs(mean(., na.rm = T)))
+  clim_means <-dplyr:: mutate(dat, months = months, hours = hours) 
+  clim_means <- dplyr::select(clim_means, months, hours, atemp, wspd, bp)
+  clim_means <- dplyr::group_by(clim_means, months, hours)
+  clim_means <- dplyr::summarise_each(clim_means, dplyr::funs(mean(., na.rm = T)))
   
   # merge with original data
   to_join <- data.frame(datetimestamp = dat$datetimestamp, months, 
     hours, stringsAsFactors = FALSE) 
-  clim_means <- left_join(
+  clim_means <- dplyr::left_join(
     to_join,
     clim_means, by = c('months','hours')
   )
@@ -1221,7 +1089,7 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, units = 'mmol', trace = F
   out <- do.call('rbind',out)
   row.names(out) <- 1:nrow(out)
 
-  # chants units to grams
+  # change units to grams
   if('grams' %in% units){
     
     # convert metab data to g m^-2 d^-1
@@ -1231,7 +1099,7 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, units = 'mmol', trace = F
     
   }
   
-  if(trace) toc()
+  if(trace) tictoc::toc()
   
   return(out)
   

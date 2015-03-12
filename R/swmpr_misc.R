@@ -56,7 +56,7 @@ swmpr <- function(stat_in, meta_in){
 #' @param  resp_in web object returned from CDMO server, response class from httr package
 #' @param  parent_in chr string of parent nodes to parse
 #' 
-#' @import XML plyr
+#' @import XML
 #' 
 #' @export
 #' 
@@ -76,10 +76,12 @@ parser <- function(resp_in, parent_in = 'data'){
   )
   
   # get children nodes from data parents
-  out <- ldply(parents, 
-    .fun = function(x) getChildrenStrings(x)
+  out <- lapply(parents, 
+    function(x) getChildrenStrings(x)
     )
-
+  out <- do.call('rbind', out)
+  out <- data.frame(out)
+  
   # return output
   return(out)
   
@@ -296,7 +298,7 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
   stats <- stat_locs[grepl(paste0('^', nerr_site_id), stat_locs$station_code), ]
   
   # base map
-  mapImageData <- get_map(
+  mapImageData <- ggmap::get_map(
     location = c(lon = mean(stats$longitude),lat = mean(stats$latitude)),
     source = 'google',
     maptype = map_type,
@@ -305,7 +307,7 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
     )
   
   # plot
-  p <- ggmap(mapImageData,
+  p <- ggmap::ggmap(mapImageData,
     extent = "panel"
       ) + 
     geom_text(data = stats, aes(x = longitude, y = latitude, 
@@ -467,3 +469,137 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
 #' 
 #' @source \url{https://s3.amazonaws.com/swmpexdata/zip_ex.zip}
 "apaebmet"
+
+
+######
+#' Identify metabolic days in a swmpr time series
+#'
+#' Identify metabolic days in a swmpr time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.
+#' 
+#' @param dat_in data.frame
+#' @param stat_in chr vector of station name including data type
+#' 
+#' @import maptools reshape2
+#' 
+#' @export 
+#' 
+#' @details This function is only used within \code{\link{ecometab}} and should not be called explicitly.
+#' 
+#' @seealso 
+#' \code{\link{ecometab}}
+#' 
+met_day <- function(dat_in, stat_in){
+  
+  stat_meta <- stat_locs[grep(gsub('wq$', '', stat_in), stat_locs$station_code),]
+  
+  # all times are standard - no DST!
+  gmt_tab <- data.frame(
+    gmt_off=c(-4, -5, -6, -8, -9),
+    tz = c('America/Virgin', 'America/Jamaica', 'America/Regina',
+      'Pacific/Pitcairn', 'Pacific/Gambier'),
+    stringsAsFactors = F
+    )
+  
+  # get sunrise/sunset times using functions from maptools
+  # adapted from streammetabolism sunrise.set function
+  lat <- stat_meta$latitude
+  long <- stat_meta$longitude
+  gmt_off <- stat_meta$gmt_off
+  tz <- gmt_tab[gmt_tab$gmt_off == gmt_off, 'tz']
+  start_day <- format(
+    dat_in$datetimestamp[which.min(dat_in$datetimestamp)] - (60 * 60 * 24), 
+    format = '%Y/%m/%d'
+    )
+  tot_days <- 1 + length(unique(as.Date(dat_in$datetimestamp)))
+  lat.long <- matrix(c(long, lat), nrow = 1)
+  sequence <- seq(
+    from = as.POSIXct(start_day, tz = tz), 
+    length.out = tot_days, 
+    by = "days"
+    )
+  sunrise <- sunriset(lat.long, sequence, direction = "sunrise", 
+      POSIXct = TRUE)
+  sunset <- sunriset(lat.long, sequence, direction = "sunset", 
+      POSIXct = TRUE)
+  ss_dat <- data.frame(sunrise, sunset)
+  ss_dat <- ss_dat[, -c(1, 3)]
+  colnames(ss_dat) <- c("sunrise", "sunset")
+  
+  # remove duplicates, if any
+  ss_dat <- ss_dat[!duplicated(strftime(ss_dat[, 1], format = '%Y-%m_%d')), ]
+  ss_dat <- data.frame(
+    ss_dat,
+    met_date = as.Date(ss_dat$sunrise, tz = tz)
+    )
+  ss_dat <- melt(ss_dat, id.vars = 'met_date')
+  if(!"POSIXct" %in% class(ss_dat$value))
+    ss_dat$value <- as.POSIXct(ss_dat$value, origin='1970-01-01',tz=tz)
+  ss_dat <- ss_dat[order(ss_dat$value),]
+  ss_dat$day_hrs <- unlist(lapply(
+    split(ss_dat, ss_dat$met_date),
+    function(x) rep(as.numeric(x[2, 'value'] - x[1, 'value']), 2) 
+    ))
+  names(ss_dat)[names(ss_dat) %in% c('variable', 'value')] <- c('solar_period', 'solar_time')
+  
+  # matches is vector of row numbers indicating starting value that each
+  # unique datetimestamp is within in ss_dat
+  # output is meteorological day matches appended to dat_in
+  matches <- findInterval(dat_in$datetimestamp, ss_dat$solar_time)
+  out <- data.frame(dat_in, ss_dat[matches, ])
+  return(out)
+      
+  }
+
+######
+#' Calculate oxygen mass transfer coefficient
+#' 
+#' Calculate oxygen mass transfer coefficient using equations in Thiebault et al. 2008.  Output is used to estimate the volumetric reaeration coefficient for ecosystem metabolism.
+#'
+#' @param temp numeric for water temperature (C)
+#' @param sal numeric for salinity (ppt)
+#' @param atemp numeric for air temperature (C)
+#' @param wspd numeric for wind speed (m/s)
+#' @param bp numeric for barometric pressure (mb)
+#' @param height numeric for height of anemometer (meters)
+#'
+#' @import oce
+#' 
+#' @export
+#' 
+#' @details
+#' This function is used within the \code{\link{ecometab}} function and should not be used explicitly.
+#' 
+#' @references
+#' Thebault J, Schraga TS, Cloern JE, Dunlavey EG. 2008. Primary production and carrying capacity of former salt ponds after reconnection to San Francisco Bay. Wetlands. 28(3):841-851.
+#' 
+#' @seealso 
+#' \code{\link{ecometab}}
+#' 
+calcKL <- function(temp, sal, atemp, wspd, bp, height = 10){
+  
+  #celsius to kelvin conversion
+  CtoK <- function(val) val + 273.15 
+    
+  Patm <- bp * 100; # convert from millibars to Pascals
+  zo <- 1e-5; # assumed surface roughness length (m) for smooth water surface
+  U10 <- wspd * log(10 / zo) / log(height / zo)
+  tempK <- CtoK(temp)
+  atempK <- CtoK(atemp)
+  sigT <- swSigmaT(sal, temp, 10) # set for 10 decibars = 1000mbar = 1 bar = 1atm
+  rho_w <- 1000 + sigT #density of SW (kg m-3)
+  Upw <- 1.002e-3 * 10^((1.1709 * (20 - temp) - (1.827 * 10^-3 * (temp - 20)^2)) / (temp + 89.93)) #dynamic viscosity of pure water (sal + 0);
+  Uw <- Upw * (1 + (5.185e-5 * temp + 1.0675e-4) * (rho_w * sal / 1806.55)^0.5 + (3.3e-5 * temp + 2.591e-3) * (rho_w * sal / 1806.55))  # dynamic viscosity of SW
+  Vw <- Uw / rho_w  #kinematic viscosity
+  Ew <- 6.112 * exp(17.65 * atemp / (243.12 + atemp))  # water vapor pressure (hectoPascals)
+  Pv <- Ew * 100 # Water vapor pressure in Pascals
+  Rd <- 287.05  # gas constant for dry air ( kg-1 K-1)
+  Rv <- 461.495  # gas constant for water vapor ( kg-1 K-1)
+  rho_a <- (Patm - Pv) / (Rd * atempK) + Pv / (Rv * tempK)
+  kB <- 1.3806503e-23 # Boltzman constant (m2 kg s-2 K-1)
+  Ro <- 1.72e-10     #radius of the O2 molecule (m)
+  Dw <- kB * tempK / (4 * pi * Uw * Ro)  #diffusivity of O2 in water 
+  KL <- 0.24 * 170.6 * (Dw / Vw)^0.5 * (rho_a / rho_w)^0.5 * U10^1.81  #mass xfer coef (m d-1)
+  
+  return(KL)
+  
+  }

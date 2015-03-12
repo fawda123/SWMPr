@@ -74,11 +74,11 @@ res <- ecometab(dat, trace = TRUE, height = 5)
 res <- ecometab(dat, trace = TRUE, units = 'grams')
 }
 \references{
-Caffrey JM, Murrell MC, Amacker KS, Harper J, Phipps S, Woodrey M. 2013. Seasonal and inter-annual patterns in primary production, respiration and net ecosystem metabolism in 3 estuaries in the northeast Gulf of Mexico. Estuaries and Coasts. 37(1):222–241.
+Caffrey JM, Murrell MC, Amacker KS, Harper J, Phipps S, Woodrey M. 2013. Seasonal and inter-annual patterns in primary production, respiration and net ecosystem metabolism in 3 estuaries in the northeast Gulf of Mexico. Estuaries and Coasts. 37(1):222-241.
 
-Odum HT. 1956. Primary production in flowing waters. Limnology and Oceanography. 1(2):102–117.
+Odum HT. 1956. Primary production in flowing waters. Limnology and Oceanography. 1(2):102-117.
 
-Thebault J, Schraga TS, Cloern JE, Dunlavey EG. 2008. Primary production and carrying capacity of former salt ponds after reconnection to San Francisco Bay. Wetlands. 28(3):841–851.
+Thebault J, Schraga TS, Cloern JE, Dunlavey EG. 2008. Primary production and carrying capacity of former salt ponds after reconnection to San Francisco Bay. Wetlands. 28(3):841-851.
 }
 \seealso{
 \code{\link{comb}}

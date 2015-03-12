@@ -1,8 +1,8 @@
 Package: SWMPr
 Type: Package
 Title: SWMPr package for estuarine monitoring data
-Version: 1.6.0
-Date: 2015-3-16
+Version: 1.7.0
+Date: 2015-3-12
 Author: Marcus Beck
 Maintainer: Marcus Beck <mbafs2012@gmail.com>
 Description: This packages provides functions for retrieving, organizing, and
@@ -15,19 +15,20 @@ License: CC0
 Imports:
     data.table,
     httr,
+    ggmap,
+    gridExtra,
     maptools,
     oce,
     dplyr,
     reshape2,
     tictoc,
+    tidyr,
     wq,
     XML
 LazyData: true
 Depends:
     R (>= 3.0.0),
-    ggmap,
     ggplot2,
-    gridExtra,
     zoo
 Authors@R: person("Marcus", "Beck", email = "mbafs2012@gmail.com",
     role = c("aut", "cre"))

@@ -168,7 +168,7 @@ qaqc.swmpr <- function(swmpr_in,
 #' 
 #' @export
 #' 
-#' @import plyr reshape2
+#' @import reshape2
 #' 
 #' @seealso \code{\link{qaqc}}
 #' 
@@ -204,14 +204,15 @@ qaqcchk.swmpr <- function(swmpr_in){
   # qaqc flag columns
   qaqc_ind <- grep('^f_', names(swmpr_in))
   qaqc <- swmpr_in[, qaqc_ind]
-  
+
   # summarize number of qaqc flags by column
-  out <- plyr::alply(qaqc, 2, table)
-  names(out) <- attr(out, 'split_labels')$X1
+  out <- lapply(c(qaqc), table)
   
   # format output as data.frame
-  out <- reshape2::melt(out)
-  out <- reshape2::dcast(out, piece ~ L1)
+  out <- melt(out)
+  names(out) <- c('flag', 'count', 'variable')
+  out <- tidyr::spread(out, variable, count)
+  out[is.na(out)] <- 0
   
   # return output
   return(out)
@@ -462,9 +463,13 @@ subset.swmpr <- function(x, subset = NULL, select = NULL,
 #' Create a continuous time vector at set time step for a swmpr object
 #' 
 #' @param swmpr_in input swmpr object
+#' @param timestep numeric value of time step to use in minutes
+#' @param differ numeric value defining buffer for merging time stamps to standardized time series
 #' @param ... arguments passed to or from other methods
 #' 
-#' @export setstep
+#' @export
+#' 
+#' @import data.table
 #' 
 #' @return Returns a swmpr object for the specified time step
 #' 
@@ -492,12 +497,7 @@ setstep <- function(swmpr_in, ...) UseMethod('setstep')
 
 #' @rdname setstep
 #' 
-#' @param timestep numeric value of time step to use in minutes
-#' @param differ numeric value defining buffer for merging time stamps to standardized time series
-#' 
-#' @import data.table plyr
-#' 
-#' @export setstep.swmpr
+#' @export
 #' 
 #' @method setstep swmpr
 setstep.swmpr <- function(swmpr_in, timestep = 15, differ= timestep/2, ...){ 
@@ -527,8 +527,8 @@ setstep.swmpr <- function(swmpr_in, timestep = 15, differ= timestep/2, ...){
   # time_dum is vector of original times for removing outside of differ
   mrg_dat <- dat
   mrg_dat$time_dum <- mrg_dat$datetimestamp
-  mrg_dat <- data.table(mrg_dat, key = 'datetimestamp')
-  mrg_std <- data.table(dts_std, key = 'datetimestamp')
+  mrg_dat <- data.table::data.table(mrg_dat, key = 'datetimestamp')
+  mrg_std <- data.table::data.table(dts_std, key = 'datetimestamp')
   
   # merge all the data  using  mrg_std as master
   mrg <- mrg_dat[mrg_std, roll = 'nearest']
@@ -554,8 +554,13 @@ setstep.swmpr <- function(swmpr_in, timestep = 15, differ= timestep/2, ...){
 #' Combine swmpr data types for a station by common time series
 #' 
 #' @param ... swmpr object input from one to many
+#' @param timestep numeric value of time step to use in minutes, passed to \code{setstep}
+#' @param differ numeric value defining buffer for merging time stamps to standardized time series, passed to \code{setstep}
+#' @param method chr string indicating method of combining (\code{'union'} for all dates as continuous time series, \code{'intersect'} for areas of overlap, or \code{'station'} for date ranges of a given station)
 #' 
-#' @export comb
+#' @import data.table
+#' 
+#' @export 
 #' 
 #' @return Returns a combined swmpr object
 #' 
@@ -589,20 +594,14 @@ comb <- function(...) UseMethod('comb')
 
 #' @rdname comb
 #' 
-#' @param timestep numeric value of time step to use in minutes, passed to \code{setstep}
-#' @param differ numeric value defining buffer for merging time stamps to standardized time series, passed to \code{setstep}
-#' @param method chr string indicating method of combining (\code{'union'} for all dates as continuous time series, \code{'intersect'} for areas of overlap, or \code{'station'} for a given station)
-#' 
-#' @import data.table plyr
-#' 
-#' @export comb.swmpr
+#' @export
 #' 
 #' @method comb swmpr
 comb.swmpr <- function(..., timestep = 15, differ= timestep/2, method = 'union'){
   
   # swmp objects list and attributes
   all_dat <- list(...)
-  attrs <- llply(all_dat, attributes)
+  attrs <- lapply(all_dat, attributes)
   
   ##
   # sanity checks
@@ -610,30 +609,30 @@ comb.swmpr <- function(..., timestep = 15, differ= timestep/2, method = 'union')
     stop('Input data must include more than one swmpr object')
   
   # stop if from more than one timezone
-  timezone <- unique(unlist(llply(attrs, function(x) x$timezone)))
+  timezone <- unique(unlist(lapply(attrs, function(x) x$timezone)))
     
   if(length(timezone) > 1)
     stop('Input data are from multiple timezones')
   
   # stop of method is invalid
-  stations <- unlist(llply(attrs, function(x) x$station))
+  stations <- unlist(lapply(attrs, function(x) x$station))
   
   if(!method %in% c('intersect', 'union', stations))
     stop('Method must be intersect, union, or station name')
 
   # stop if more than one data type
-  types <- unlist(llply(attrs, function(x) substring(x$station, 6)))
+  types <- unlist(lapply(attrs, function(x) substring(x$station, 6)))
   
   if(any(duplicated(types))) 
     stop('Unable to combine duplicated data types')
   
   ##
   # setstep applied to data before combining
-  all_dat <- llply(all_dat, setstep, timestep, differ)
+  all_dat <- lapply(all_dat, function(x) setstep(x, timestep, differ))
   
   ##
   # dates
-  date_vecs <- llply(all_dat, function(x) x$datetimestamp)
+  date_vecs <- lapply(all_dat, function(x) x$datetimestamp)
   
   ## 
   # date vector for combining
@@ -646,7 +645,7 @@ comb.swmpr <- function(..., timestep = 15, differ= timestep/2, method = 'union')
   # for a station
   } else {
     
-    sel <- unlist(llply(attrs, function(x) x$station == method))
+    sel <- unlist(lapply(attrs, function(x) x$station == method))
     
     date_vec <- date_vecs[sel][[1]]
     
@@ -654,7 +653,7 @@ comb.swmpr <- function(..., timestep = 15, differ= timestep/2, method = 'union')
     
   ##
   # merge stations by date_vec
-  out <- data.table(datetimestamp = date_vec, key = 'datetimestamp')
+  out <- data.table::data.table(datetimestamp = date_vec, key = 'datetimestamp')
   
   for(dat in all_dat){
     
@@ -663,7 +662,7 @@ comb.swmpr <- function(..., timestep = 15, differ= timestep/2, method = 'union')
     dat_parms <- attr(dat, 'parameters')
 
     # merge
-    dat <- data.table(dat, key = 'datetimestamp')
+    dat <- data.table::data.table(dat, key = 'datetimestamp')
     out <- dat[out, roll = 'nearest']
  
     # set values outside of differ to NA
@@ -672,7 +671,7 @@ comb.swmpr <- function(..., timestep = 15, differ= timestep/2, method = 'union')
     out <- data.frame(out)
     out[time_diff, names(out) %in% dat_parms] <- NA
     out$time_dum <- NULL
-    out <- data.table(out, key = 'datetimestamp')
+    out <- data.table::data.table(out, key = 'datetimestamp')
       
   }
 

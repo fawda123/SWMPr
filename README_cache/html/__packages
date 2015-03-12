@@ -1,13 +1,6 @@
 base
-data.table
-devtools
-ggmap
 ggplot2
-gridExtra
 mapproj
 maps
-plyr
-SSOAP
 SWMPr
-XML
 zoo

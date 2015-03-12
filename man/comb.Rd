@@ -17,7 +17,7 @@ comb(...)
 
 \item{differ}{numeric value defining buffer for merging time stamps to standardized time series, passed to \code{setstep}}
 
-\item{method}{chr string indicating method of combining (\code{'union'} for all dates as continuous time series, \code{'intersect'} for areas of overlap, or \code{'station'} for a given station)}
+\item{method}{chr string indicating method of combining (\code{'union'} for all dates as continuous time series, \code{'intersect'} for areas of overlap, or \code{'station'} for date ranges of a given station)}
 }
 \value{
 Returns a combined swmpr object
