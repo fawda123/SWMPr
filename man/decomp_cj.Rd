@@ -19,8 +19,7 @@ decomp_cj(swmpr_in, ...)
 \item{vals_out}{logical indicating of numeric output is returned, default is \code{FALSE} to return a plot.}
 }
 \value{
-A \code{\link[ggplot2]{ggplot}} object if \code{vals_out = TRUE} (default), otherwise
-a monthly time series matrix of class \code{\link[stats]{ts}}.
+A \code{\link[ggplot2]{ggplot}} object if \code{vals_out = TRUE} (default), otherwise a monthly time series matrix of class \code{\link[stats]{ts}}.
 }
 \description{
 Decompose monthly SWMP time series into grandmean, annual, seasonal, and event series using \code{\link[wq]{decompTs}}, as described in Cloern and Jassby 2010.

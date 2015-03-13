@@ -414,8 +414,7 @@ decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily'
 #' @param ... additional arguments passed to other methods, including \code{\link[wq]{decompTs}} 
 #' 
 #' @return  
-#' A \code{\link[ggplot2]{ggplot}} object if \code{vals_out = TRUE} (default), otherwise 
-#' a monthly time series matrix of class \code{\link[stats]{ts}}.
+#' A \code{\link[ggplot2]{ggplot}} object if \code{vals_out = TRUE} (default), otherwise a monthly time series matrix of class \code{\link[stats]{ts}}.
 #' 
 #' @details
 #' This function is a simple wrapper to the \code{\link[wq]{decompTs}} function in the wq package, also described in Cloern and Jassby (2010).  The function is similar to \code{\link{decomp.swmpr}} (which is a wrapper to \code{\link[stats]{decompose}}) with a few key differences.  The \code{\link{decomp.swmpr}} function decomposes the time series into a trend, seasonal, and random components, whereas the current function decomposes into the grandmean, annual, seasonal, and events components.  For both functions, the random or events components, respectively, can be considered anomalies that don't follow the trends in the remaining categories.  
@@ -861,7 +860,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 #' 
 #' @param swmpr_in Input swmpr object which must include time series of dissolved oxygen, 
 #' @param depth_val numeric value for station depth if time series is not available
-#' @param units chr indicating units of output for oxygen, either as mmol or grams
+#' @param met_units chr indicating units of output for oxygen, either as mmol or grams
 #' @param trace logical indicating if progress is shown in the console
 #' @param ... arguments passed to other methods
 #' 
@@ -906,10 +905,9 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 #' Thebault J, Schraga TS, Cloern JE, Dunlavey EG. 2008. Primary production and carrying capacity of former salt ponds after reconnection to San Francisco Bay. Wetlands. 28(3):841-851.
 #' 
 #' @seealso 
-#' \code{\link{comb}}
+#' \code{\link{comb}}, \code{\link{plot_met}}
 #' 
 #' @examples
-#'
 #' ## import water quality and weather data
 #' data(apadbwq)
 #' data(apaebmet)
@@ -927,7 +925,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 #' res <- attr(res, 'metabolism')
 #' 
 #' ## output units in grams of oxygen
-#' res <- ecometab(dat, trace = TRUE, units = 'grams')
+#' res <- ecometab(dat, trace = TRUE, met_units = 'grams')
 #' res <- attr(res, 'metabolism')
 ecometab <- function(swmpr_in, ...) UseMethod('ecometab')
 
@@ -936,12 +934,12 @@ ecometab <- function(swmpr_in, ...) UseMethod('ecometab')
 #' @export
 #' 
 #' @method ecometab swmpr
-ecometab.swmpr <- function(swmpr_in, depth_val = NULL, units = 'mmol', trace = FALSE, ...){
+ecometab.swmpr <- function(swmpr_in, depth_val = NULL, met_units = 'mmol', trace = FALSE, ...){
   
   stat <- attr(swmpr_in, 'station')
   
   # stop if units not mmol or grams
-  if(any(!(grepl('mmol|grams', units))))
+  if(any(!(grepl('mmol|grams', met_units))))
     stop('Units must be mmol or grams')
 
   # stop if input data does not include wq and met
@@ -1092,7 +1090,7 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, units = 'mmol', trace = F
   row.names(out) <- 1:nrow(out)
 
   # change units to grams
-  if('grams' %in% units){
+  if('grams' %in% met_units){
     
     # convert metab data to g m^-2 d^-1
     # 1mmolO2 = 32 mg O2, 1000mg = 1g, multiply by 32/1000
@@ -1103,9 +1101,93 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, units = 'mmol', trace = F
   
   # append to metabolism attribute
   attr(swmpr_in, 'metabolism') <- out
+  attr(swmpr_in, 'met_units') <- met_units
   
   if(trace) tictoc::toc()
   
   return(swmpr_in)
+  
+}
+
+######
+#' Plot ecosystem metabolism for a swmpr object
+#'
+#' Plot gross production, total respiration, and net ecosystem metabolism for a swmpr object. 
+#'
+#' @param swmpr_in input swmpr object
+#' @param pretty logical indicating use of predefined plot aesthetics
+#' @param ...
+#'
+#' @export
+#' 
+#' @import ggplot2
+#'
+#' @details 
+#' A plot will only be returned if the \code{metabolism} attribute for the \code{\link{swmpr}} object is not \code{NULL}.  The \code{\link{ecometab}} function is used to create metabolism estimates.  See the examples.
+#' 
+#' By default, \code{pretty = TRUE} will return a \code{\link[ggplot2]{ggplot}} object with predefined aesthetics.  Setting \code{pretty = FALSE} will return the plot with minimal modifications to the \code{\link[ggplot2]{object}}.  Use the latter approach for easier customization of the plot.  
+#' 
+#' @return 
+#' A \code{\link[ggplot2]{ggplot}} object which can be further modified.
+#' 
+#' @seealso 
+#' \code\link{ecometab}
+#' 
+#' @examples
+#' ## import water quality and weather data
+#' data(apadbwq)
+#' data(apaebmet)
+#' 
+#' ## qaqc, combine
+#' wq <- qaqc(apadbwq)
+#' met <- qaqc(apaebmet)
+#' dat <- comb(wq, met)
+#' 
+#' ## estimate metabolism
+#' res <- ecometab(dat, trace = TRUE)
+#' 
+#' ## plot
+#' plot_met(res)
+plot_met <- function(swmpr_in, ...) UseMethod('plot_met')
+
+#' @rdname plot_met
+#'
+#' @export
+#'
+#' @method plot_met swmpr
+plot_met.swmpr <- function(swmpr_in, pretty = TRUE, ...){
+  
+  # get metabolism estimates
+  metabolism <- attr(swmpr_in, 'metabolism')
+  met_units <- attr(swmpr_in, 'met_units')
+  
+  if(is.null(metabolism)) 
+    stop('No metabolism data, use the ecometab function')
+  
+  # format for plotting
+  to_plo <- metabolism[, c('date', 'Pg', 'Rt', 'NEM')]
+  to_plo <- tidyr::gather(to_plo, Estimate, Value, -date)
+  
+  # plot
+  p <- ggplot(to_plo, aes(x = date, y = Value, group = Estimate)) +
+    geom_line()
+  
+  if(!pretty) 
+    return(p)
+  
+  # ylabs
+  ylab <- expression(paste('mmol ', O [2], ' ', m^-2, d^-1))
+  if(met_units == 'grams')
+    ylab <- expression(paste('g ', O [2], ' ', m^-2, d^-1))
+  
+  p <- p + 
+    geom_line(aes(colour = Estimate)) +
+    geom_point(aes(colour = Estimate)) +
+    theme_bw() +
+    theme(axis.title.x = element_blank())
+    scale_y_continuous(ylab)
+  
+  return(p)
+  
   
 }
