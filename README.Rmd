@@ -353,14 +353,14 @@ dat <- qaqc(apacpnut)
 plot_summary(dat, param = 'chla_n')
 ```
 
-Estimates of ecosystem metabolism provide a useful measure of overall system productivity.  These estimates are commonly used to evaluate whether an ecosystem is a net source or sink of organic material.  The open-water method is a common approach to quantify net ecosystem metabolism using a mass balance equation that describes the change in dissolved oxygen over time from the balance between photosynthetic and respiration rates, corrected for air-sea gas diffusion at the surface.  The diffusion-corrected DO flux estimates are averaged during day and night for each 24 hour period in the time series, where flux is an hourly rate of DO change. DO flux is averaged during night hours for respiration and averaged during day hours for net production. Respiration rates are assumed constant during day and night such that total daily rates are calculated as hourly respiration multiplied by 24. The metabolic day is considered the approximate 24 hour period between sunsets on two adjacent calendar days.  Respiration is subtracted from daily net production estimates to yield gross production.  
+Estimates of ecosystem metabolism provide a useful measure of overall system productivity.  These estimates are commonly used to evaluate whether an ecosystem is a net source or sink of organic material.  The open-water method is a common approach to quantify net ecosystem metabolism using a mass balance equation that describes the change in dissolved oxygen over time from the balance between photosynthetic and respiration rates, corrected for air-sea gas diffusion at the surface.  The diffusion-corrected DO flux estimates are averaged during day and night for each 24 hour period in the time series, where flux is an hourly rate of DO change. DO flux is averaged during night hours for respiration and averaged during day hours for net production. Respiration rates are assumed constant during day and night such that total daily rates are calculated as hourly respiration multiplied by 24. The metabolic day is considered the 24 hour period between sunsets on two adjacent calendar days.  Respiration is subtracted from daily net production estimates to yield gross production.  
 
 The `ecometab` function is used to implement an adaptation of the open-water method.  
 Several assumptions must be met for a valid interpretation of the results.  In general, the dissolved oxygen time series is assumed to represent the same water mass over time.  Tidal advection may have a significant influence on the time series, which can contribute to a significant amount of noise in metabolic estimates.  The extent to which tidal advection influences the dissolved oxygen signal depends on various site-level characteristics and an intimate knowledge of the site may be required.  Volumetric rates for gross production and total respiration are also based on total depth of the water column, which is assumed to be mixed.  Water column depth is based on mean value for the depth variable across the time series and is floored at 1 meter for very shallow stations.  Additionally, the volumetric reaeration coefficient requires an estimate of the anemometer height of the weather station, which is set as 10 meters by default.  The metadata should be consulted for exact height. Other assumptions may apply and the user should consult the relevant literature (see the references in the help file).  All estimates are in mmol of oxygen but can be converted  to grams by changing the default arguments (i.e., 1mmol O2 = 32 mg O2, 1000 mg = 1g, multiply all estimates by 32/1000). 
 
-The following is an example that shows how to use the function from a combined water quality and weather data set.
+The following is an example that shows how to use the function from a combined water quality and weather data set.  The results can be plotted using `plot_metab`.
 
-```{r eval = FALSE}
+```{r eval = TRUE, cache = TRUE, fig.height = 4, fig.width = 8, warning = FALSE}
 ## import water quality and weather data
 data(apadbwq)
 data(apaebmet)
@@ -371,7 +371,8 @@ met <- qaqc(apaebmet)
 dat <- comb(wq, met)
 
 ## estimate metabolism
-res <- ecometab(dat, trace = TRUE)
+res <- ecometab(dat, trace = FALSE)
+plot_metab(res)
 ```
 
 #Function list
@@ -406,6 +407,8 @@ See help documentation for more details on each function (e.g., `?all_params`).
 
 `aggregate.swmpr` Aggregate swmpr objects for different time periods - years, quarters, months,  weeks, days, or hours.  Aggregation function is user-supplied but defaults to mean. 
 
+`aggregate_metab` Aggregate metabolism data from a swmpr object.  This is primarly used within `plot_metab` but may be useful for simple summaries of raw daily data.
+
 `ecometab.swmpr` Estimate ecosystem metabolism for a combined water quality and weatehr dataset using the open-water method.
 
 `decomp.swmpr` Decompose a swmpr time series into trend, seasonal, and residual components.  This is a simple wrapper to `decompose`.  Decomposition of monthly or daily trends is possible.
@@ -420,6 +423,8 @@ See help documentation for more details on each function (e.g., `?all_params`).
 
 `plot.swmpr` Plot a univariate  time series for a swmpr object.  The parameter name must be specified.
 
+`plot_metab` Plot ecosystem metabolism estimates after running `ecometab` on a swmpr object.  
+
 `plot_summary` Create summary plots of seasonal/annual trends and anomalies for a water quality or weather parameter.
 
 `smoother.swmpr` Smooth swmpr objects with a moving window average.  Window size and sides can be specified, passed to `filter`.
@@ -430,7 +435,7 @@ See help documentation for more details on each function (e.g., `?all_params`).
 
 `map_reserve` Create a map of all stations in a reserve using the ggmap package.
 
-`met_day` Identify the metabolic day for each approximate 24 period in an hourly time series.  This is only used within the `ecometab` function.
+`metab_day` Identify the metabolic day for each approximate 24 period in an hourly time series.  This is only used within the `ecometab` function.
 
 `param_names` Returns column names as a list for the parameter type(s) (nutrients, weather, or water quality).  Includes QAQC columns with 'f_' prefix. Used internally in other functions.
 

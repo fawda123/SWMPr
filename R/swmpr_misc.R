@@ -11,7 +11,7 @@
 #' @return Returns a swmpr object to be used with S3 methods
 #' 
 #' @details 
-#' This function is a simple wrapper to \code{\link[base]{structure}} that is used internally within other functions to create a swmpr object.  The function does not have to be used explicitly.  Attributes of a swmpr object include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, \code{stamp_class}, \code{metabolism} (if present), and \code{met_units} (if present). 
+#' This function is a simple wrapper to \code{\link[base]{structure}} that is used internally within other functions to create a swmpr object.  The function does not have to be used explicitly.  Attributes of a swmpr object include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, \code{stamp_class}, \code{metabolism} (if present), and \code{metab_units} (if present). 
 #' 
 swmpr <- function(stat_in, meta_in){
     
@@ -45,7 +45,7 @@ swmpr <- function(stat_in, meta_in){
     timezone = timezone, 
     stamp_class = class(stat_in$datetimestamp),
     metabolism = NULL, 
-    met_units = NULL
+    metab_units = NULL
     )
   
 }
@@ -490,7 +490,7 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
 #' @seealso 
 #' \code{\link{ecometab}}
 #' 
-met_day <- function(dat_in, stat_in){
+metab_day <- function(dat_in, stat_in){
   
   stat_meta <- stat_locs[grep(gsub('wq$', '', stat_in), stat_locs$station_code),]
   
@@ -531,14 +531,14 @@ met_day <- function(dat_in, stat_in){
   ss_dat <- ss_dat[!duplicated(strftime(ss_dat[, 1], format = '%Y-%m_%d')), ]
   ss_dat <- data.frame(
     ss_dat,
-    met_date = as.Date(ss_dat$sunrise, tz = tz)
+    metab_date = as.Date(ss_dat$sunrise, tz = tz)
     )
-  ss_dat <- melt(ss_dat, id.vars = 'met_date')
+  ss_dat <- melt(ss_dat, id.vars = 'metab_date')
   if(!"POSIXct" %in% class(ss_dat$value))
     ss_dat$value <- as.POSIXct(ss_dat$value, origin='1970-01-01',tz=tz)
   ss_dat <- ss_dat[order(ss_dat$value),]
   ss_dat$day_hrs <- unlist(lapply(
-    split(ss_dat, ss_dat$met_date),
+    split(ss_dat, ss_dat$metab_date),
     function(x) rep(as.numeric(x[2, 'value'] - x[1, 'value']), 2) 
     ))
   names(ss_dat)[names(ss_dat) %in% c('variable', 'value')] <- c('solar_period', 'solar_time')
@@ -577,7 +577,7 @@ met_day <- function(dat_in, stat_in){
 #' @seealso 
 #' \code{\link{ecometab}}
 #' 
-calcKL <- function(temp, sal, atemp, wspd, bp, height = 10){
+calckl <- function(temp, sal, atemp, wspd, bp, height = 10){
   
   #celsius to kelvin conversion
   CtoK <- function(val) val + 273.15 

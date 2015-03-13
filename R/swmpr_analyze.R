@@ -119,6 +119,103 @@ aggregate.swmpr <- function(x, by, FUN = function(x) mean(x, na.rm = TRUE), para
   
 }
 
+#' Aggregate metabolism data
+#' 
+#' Aggregate a metabolism attribute from swmpr data by a specified time period and method
+#' 
+#' @param swmpr_in input swmpr object
+#' @param by chr string of time period for aggregation one of \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'weeks'}, \code{'days'}, or \code{'hours'}
+#' @param na.action function for treating missing data, default \code{na.pass}
+#' @param alpha numeric indicating alpha level of confidence interval for aggregated data
+#' @param ... additional arguments passed to other methods
+#' 
+#' @import data.table
+#' 
+#' @export
+#' 
+#' @details The function summarizes metabolism data by averaging across set periods of observation. Confidence intervals are also returned based on the specified alpha level.  It is used within \code{\link{plot_metab}} function to view summarized metabolism results.  Data can be aggregated by \code{'years'}, \code{'quarters'}, \code{'months'}, or \code{'weeks'} for the supplied function, which defaults to the \code{\link[base]{mean}}. The method of treating NA values for the user-supplied function should be noted since this may greatly affect the quantity of data that are returned.
+#' 
+#' @return Returns an aggregated metabolism \code{\link[base]{data.frame}} if the \code{metabolism} attribute of the swmpr object is not \code{NULL}.
+#' 
+#' @seealso \code{\link[stats]{aggregate}}, \code{\link{aggregate.swmpr}}, \code{\link{ecometab}}, \code{\link{plot_metab}}
+#' 
+#' @examples
+#' ## import water quality and weather data
+#' data(apadbwq)
+#' data(apaebmet)
+#' 
+#' ## qaqc, combine
+#' wq <- qaqc(apadbwq)
+#' met <- qaqc(apaebmet)
+#' dat <- comb(wq, met)
+#' 
+#' ## estimate metabolism
+#' res <- ecometab(dat, trace = TRUE)
+#' 
+#' ## aggregate metabolism
+#' aggregate_metab(res, by = 'weeks')
+#' 
+#' ## change aggregatin period and alpha
+#' aggregate_metab(res, by = 'months', alpha = 0.1)
+aggregate_metab <- function(swmpr_in, ...) UseMethod('aggregate_metab')
+
+#' @rdname aggregate_metab
+#'
+#' @export
+#'
+#' @method aggregate_metab swmpr
+aggregate_metab.swmpr <- function(swmpr_in, by = 'weeks', na.action = na.pass, alpha = 0.05, ...){
+  
+  # attributes
+  timezone <- attr(swmpr_in, 'timezone')
+  metabolism <- attr(swmpr_in, 'metabolism')
+  
+  # sanity checks
+  if(is.null(metabolism)) 
+    stop('No metabolism data, use the ecometab function')
+  if(!by %in% c('years', 'quarters', 'months', 'weeks', 'days'))
+    stop('Unknown value for by, see help documentation')
+    
+  # data
+  to_agg <- metabolism
+  to_agg <- to_agg[, names(to_agg) %in% c('date', 'Pg', 'Rt', 'NEM')]
+
+  # create agg values from date
+  if(by != 'days'){
+    to_agg$date <- round(
+      data.table::as.IDate(to_agg$date, tz = timezone),
+      digits = by
+    )
+    to_agg$date <- base::as.Date(to_agg$date, tz = timezone)
+  }
+
+  # long-form
+  to_agg <- tidyr::gather(to_agg, Estimate, Value, -date)
+  to_agg$Estimate <- as.character(to_agg$Estimate)
+  
+  # aggregate
+  sum_fun <- function(x, alpha_in = alpha, out){
+      x <- na.omit(x)
+      means <- mean(x)
+      margs <- suppressWarnings(
+        qt(1 - alpha_in/2, length(x) - 1) * sd(x)/sqrt(length(x))
+      )
+      upper <- means + margs
+      lower <- means - margs
+      return(get(out))
+    }
+  aggs <- dplyr::group_by(to_agg, date, Estimate)
+  aggs <- dplyr::summarize(aggs,
+    means = sum_fun(Value, out = 'means'),
+    lower = sum_fun(Value, out = 'lower'),
+    upper = sum_fun(Value, out = 'upper')
+  )
+    
+  # return output
+  return(aggs)
+  
+}
+
 #' Smooth swmpr data
 #' 
 #' Smooth swmpr data with a moving window average
@@ -542,7 +639,7 @@ plot.swmpr <- function(x, type = 'l', ...) {
   if(attr(swmpr_in, 'qaqc_cols'))
     swmpr_in <- qaqc(swmpr_in, qaqc_keep = NULL)
   
-  if(ncol(swmpr_in) > 2) stop('Only one parameter can be plotted')
+  if(ncol(swmpr_in) > 2) stop('Specify the parameter to plot')
   
   parameters <- attr(swmpr_in, 'parameters')
 
@@ -860,24 +957,20 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 #' 
 #' @param swmpr_in Input swmpr object which must include time series of dissolved oxygen, 
 #' @param depth_val numeric value for station depth if time series is not available
-#' @param met_units chr indicating units of output for oxygen, either as mmol or grams
+#' @param metab_units chr indicating units of output for oxygen, either as mmol or grams
 #' @param trace logical indicating if progress is shown in the console
 #' @param ... arguments passed to other methods
 #' 
 #' @return The original \code{\link{swmpr}} object is returned that includes a metabolism attribute as a \code{\link[base]{data.frame}} of daily integrated metabolism estimates.  See the examples for retrieval.  
 #' \describe{
 #'  \item{\code{date}}{The metabolic day for each estimate, defined as the approximate 24 hour period between sunsets on adjacent calendar days.}
-#'  \item{\code{ddo}}{Mean hourly rate of change for DO, mmol/m3/hr}
-#'  \item{\code{D}}{Mean air-sea gas exchange of DO, mmol/m2/hr}
 #'  \item{\code{DOF_d}}{Mean DO flux during day hours, mmol/m2/hr}
 #'  \item{\code{D_d}}{Mean air-sea gas exchange of DO during day hours, mmol/m2/hr}
 #'  \item{\code{DOF_n}}{Mean DO flux during night hours, mmol/m2/hr}
 #'  \item{\code{D_n}}{Mean air-sea gas exchange of DO during night hours, mmol/m2/hr}
-#'  \item{\code{Pg}}{Gross production, O2 mmol/m2/d}
-#'  \item{\code{Rt}}{Total respiration, O2 mmol/m2/d}
-#'  \item{\code{NEM}}{Net ecosytem metabolism, O2 mmol/m2/d}
-#'  \item{\code{Pg_vol}}{Volumetric gross production,  O2 mmol/m3/d}
-#'  \item{\code{Rt_vol}}{Volumetric total respiration, O2 mmold/m3/d}
+#'  \item{\code{Pg}}{Gross production, O2 mmol/m2/d, calculated as ((DOF_d - D_d) - (DOF_n - D_n)) * day hours}
+#'  \item{\code{Rt}}{Total respiration, O2 mmol/m2/d, calculated as (DOF_n - D_n) * 24}
+#'  \item{\code{NEM}}{Net ecosytem metabolism, O2 mmol/m2/d, calculated as Pg + Rt}
 #' }
 #' 
 #' @import oce reshape2 wq
@@ -887,15 +980,15 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 #' @details 
 #' Input data must be combined water quality and weather datasets.  This is typically done using the \code{\link{comb}} function after creating separate swmpr objects.
 #' 
-#' The open-water method is a common approach to quantify net ecosystem metabolism using a mass balance equation that describes the change in dissolved oxygen over time from the balance between photosynthetic and respiration rates, corrected for air-sea gas diffusion at the surface. The air-sea gas exchange is estimated as the difference between the DO saturation concentration and observed DO concentration, multiplied by a volumetric reaeration coefficient (see the appendix in Thebault et al. 2008).  The diffusion-corrected DO flux estimates are averaged during day and night for each 24 hour period in the time series, where flux is an hourly rate of DO change. DO flux is averaged during night hours for respiration and averaged during day hours for net production. Respiration rates are assumed constant during day and night such that total daily rates are calculated as hourly respiration multiplied by 24. The metabolic day is considered the approximate 24 hour period between sunsets on two adjacent calendar days.  Respiration is subtracted from daily net production estimates to yield gross production.  
+#' The open-water method is a common approach to quantify net ecosystem metabolism using a mass balance equation that describes the change in dissolved oxygen over time from the balance between photosynthetic and respiration rates, corrected for air-sea gas diffusion at the surface. The air-sea gas exchange is estimated as the difference between the DO saturation concentration and observed DO concentration, multiplied by a volumetric reaeration coefficient (see the appendix in Thebault et al. 2008).  The diffusion-corrected DO flux estimates are averaged during day and night for each 24 hour period in the time series, where flux is an hourly rate of DO change. DO flux is averaged during night hours for respiration and averaged during day hours for net production. Respiration rates are assumed constant during day and night such that total daily rates are calculated as hourly respiration multiplied by 24. The metabolic day is considered the 24 hour period between sunsets on two adjacent calendar days.  Respiration is subtracted from daily net production estimates to yield gross production.  
 #' 
-#' Volumetric rates for gross production and total respiration are based on total depth of the water column, which is assumed to be mixed.  Water column depth is based on mean value for the depth variable across the time series in the \code{\link{swmpr}} object and is floored at 1 meter for very shallow stations.  Additionally, the volumetric reaeration coefficient requires an estimate of the anemometer height of the weather station, which is set as 10 meters by default.  The metadata should be consulted for exact height.  The value can be changed manually using a \code{height} argument, which is passed to \code{\link{calcKL}}.
+#' Aereal rates for gross production and total respiration are based on volumetric rates corrected for total depth of the water column, which is assumed to be mixed.  Water column depth is based on mean value for the depth variable across the time series in the \code{\link{swmpr}} object and is floored at 1 meter for very shallow stations.  Additionally, the volumetric reaeration coefficient requires an estimate of the anemometer height of the weather station, which is set as 10 meters by default.  The metadata should be consulted for exact height.  The value can be changed manually using a \code{height} argument, which is passed to \code{\link{calckl}}.
 #' 
 #' Metabolism estimates are not returned for dates with less than three hourly records during either day or night periods. Missing values for air temperature, barometric pressure, and wind speed are replaced with the climatological means for the period of record.  Climatological means are based on hourly average values by month.
 #' 
-#' All estimates are in mmol of oxygen but can be converted  to grams by changing the default arguments (i.e., 1mmol O2 = 32 mg O2, 1000 mg = 1g, multiply all estimates by 32/1000).
+#' All estimates are in mmol of oxygen but can be converted to grams by setting \code{metab_units = 'grams'} (i.e., 1mmol O2 = 32 mg O2, 1000 mg = 1g, multiply all estimates by 32/1000).
 #' 
-#' The specific approach for estimating metabolism is described in more detail in Caffrey et al. 2013.
+#' The specific approach for estimating metabolism with the open-water method is described in more detail in Caffrey et al. 2013.
 #' 
 #' @references 
 #' Caffrey JM, Murrell MC, Amacker KS, Harper J, Phipps S, Woodrey M. 2013. Seasonal and inter-annual patterns in primary production, respiration and net ecosystem metabolism in 3 estuaries in the northeast Gulf of Mexico. Estuaries and Coasts. 37(1):222-241.
@@ -905,7 +998,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 #' Thebault J, Schraga TS, Cloern JE, Dunlavey EG. 2008. Primary production and carrying capacity of former salt ponds after reconnection to San Francisco Bay. Wetlands. 28(3):841-851.
 #' 
 #' @seealso 
-#' \code{\link{comb}}, \code{\link{plot_met}}
+#' \code{\link{comb}}, \code{\link{plot_metab}}
 #' 
 #' @examples
 #' ## import water quality and weather data
@@ -925,7 +1018,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 #' res <- attr(res, 'metabolism')
 #' 
 #' ## output units in grams of oxygen
-#' res <- ecometab(dat, trace = TRUE, met_units = 'grams')
+#' res <- ecometab(dat, trace = TRUE, metab_units = 'grams')
 #' res <- attr(res, 'metabolism')
 ecometab <- function(swmpr_in, ...) UseMethod('ecometab')
 
@@ -934,12 +1027,12 @@ ecometab <- function(swmpr_in, ...) UseMethod('ecometab')
 #' @export
 #' 
 #' @method ecometab swmpr
-ecometab.swmpr <- function(swmpr_in, depth_val = NULL, met_units = 'mmol', trace = FALSE, ...){
+ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', trace = FALSE, ...){
   
   stat <- attr(swmpr_in, 'station')
   
   # stop if units not mmol or grams
-  if(any(!(grepl('mmol|grams', met_units))))
+  if(any(!(grepl('mmol|grams', metab_units))))
     stop('Units must be mmol or grams')
 
   # stop if input data does not include wq and met
@@ -1026,11 +1119,11 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, met_units = 'mmol', trace
     H <- rep(mean(pmax(1, dat$depth), na.rm = T), nrow(dat))
   else H <- rep(depth.val, nrow(dat))
   
-  #use met_day to add columns indicating light/day, date, and hours of sunlight
-  dat <- met_day(dat, stat)
+  #use metab_day to add columns indicating light/day, date, and hours of sunlight
+  dat <- metab_day(dat, stat)
   
   #get air sea gas-exchange using wx data with climate means
-  KL <- with(dat, calcKL(temp, sal, atemp_mix, wspd_mix, bp_mix, ...))
+  KL <- with(dat, calckl(temp, sal, atemp_mix, wspd_mix, bp_mix, ...))
   rm(list = c('atemp_mix', 'wspd_mix', 'bp_mix'))
   
   #get volumetric reaeration coefficient from KL 
@@ -1040,12 +1133,12 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, met_units = 'mmol', trace
   D = Ka * (do / dosat - do)
   
   #combine all data for processing
-  proc_dat <- dat[, names(dat) %in% c('met_date', 'solar_period', 'day_hrs')]
+  proc_dat <- dat[, names(dat) %in% c('metab_date', 'solar_period', 'day_hrs')]
   proc_dat <- data.frame(proc_dat, ddo, H, D)
 
   #get daily/nightly flux estimates for Pg, Rt, NEM estimates
   out <- lapply(
-    split(proc_dat, proc_dat$met_date),
+    split(proc_dat, proc_dat$metab_date),
     function(x){
       
       #filter for minimum no. of records 
@@ -1073,14 +1166,9 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, met_units = 'mmol', trace
       Pg_vol <- Pg / mean(x$H, na.rm = T)
       Rt_vol <- Rt / mean(x$H, na.rm = T)
       
-      #dep vars to take mean
-      var_out <- x[!names(x) %in% c('solar_period', 'solar_time', 'met_date',
-        'day_hrs', 'H')] 
-      var_out <- data.frame(rbind(apply(var_out, 2, function(x) mean(x, na.rm = T))))
-      
-      data.frame(date = unique(x$met_date), 
-        var_out, DOF_d, D_d, DOF_n, D_n, Pg, Rt, NEM, 
-        Pg_vol, Rt_vol
+      # output
+      data.frame(date = unique(x$metab_date), 
+        DOF_d, D_d, DOF_n, D_n, Pg, Rt, NEM
         )
       
       }
@@ -1090,7 +1178,7 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, met_units = 'mmol', trace
   row.names(out) <- 1:nrow(out)
 
   # change units to grams
-  if('grams' %in% met_units){
+  if('grams' %in% metab_units){
     
     # convert metab data to g m^-2 d^-1
     # 1mmolO2 = 32 mg O2, 1000mg = 1g, multiply by 32/1000
@@ -1101,7 +1189,7 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, met_units = 'mmol', trace
   
   # append to metabolism attribute
   attr(swmpr_in, 'metabolism') <- out
-  attr(swmpr_in, 'met_units') <- met_units
+  attr(swmpr_in, 'metab_units') <- metab_units
   
   if(trace) tictoc::toc()
   
@@ -1115,23 +1203,26 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, met_units = 'mmol', trace
 #' Plot gross production, total respiration, and net ecosystem metabolism for a swmpr object. 
 #'
 #' @param swmpr_in input swmpr object
+#' @param by chr string describing aggregation period, passed to \code{\link{aggregate_metab}}. See details for accepted values.
+#' @param alpha numeric indicating alpha level for confidence intervals in aggregated data. Use \code{NULL} to remove from the plot.
+#' @param width numeric indicating width of top and bottom segments on error bars
 #' @param pretty logical indicating use of predefined plot aesthetics
-#' @param ...
+#' @param ... arguments passed to or from other methods
 #'
 #' @export
 #' 
 #' @import ggplot2
 #'
 #' @details 
-#' A plot will only be returned if the \code{metabolism} attribute for the \code{\link{swmpr}} object is not \code{NULL}.  The \code{\link{ecometab}} function is used to create metabolism estimates.  See the examples.
+#' A plot will only be returned if the \code{metabolism} attribute for the \code{\link{swmpr}} object is not \code{NULL}.  Daily metabolism estimates are also aggregated into weekly averages.  Accepted aggregation periods are \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'weeks'}, and \code{'days'} (if no aggregation is preferred).
 #' 
-#' By default, \code{pretty = TRUE} will return a \code{\link[ggplot2]{ggplot}} object with predefined aesthetics.  Setting \code{pretty = FALSE} will return the plot with minimal modifications to the \code{\link[ggplot2]{object}}.  Use the latter approach for easier customization of the plot.  
+#' By default, \code{pretty = TRUE} will return a \code{\link[ggplot2]{ggplot}} object with predefined aesthetics.  Setting \code{pretty = FALSE} will return the plot with minimal modifications to the \code{\link[ggplot2]{ggplot}} object.  Use the latter approach for easier customization of the plot.  
 #' 
 #' @return 
 #' A \code{\link[ggplot2]{ggplot}} object which can be further modified.
 #' 
 #' @seealso 
-#' \code\link{ecometab}
+#' \code{\link{aggregate_metab}}, \code{\link{ecometab}}
 #' 
 #' @examples
 #' ## import water quality and weather data
@@ -1147,47 +1238,63 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, met_units = 'mmol', trace
 #' res <- ecometab(dat, trace = TRUE)
 #' 
 #' ## plot
-#' plot_met(res)
-plot_met <- function(swmpr_in, ...) UseMethod('plot_met')
+#' plot_metab(res)
+#' 
+#' ## change alpha, aggregation period, widths
+#' plot_metab(res, by = 'quarters', alpha = 0.1, widths = 0)
+#'
+#' ## plot daily raw, no aesthetics
+#' plot_metab(res, by = 'days', pretty = FALSE)
+plot_metab <- function(swmpr_in, ...) UseMethod('plot_metab')
 
-#' @rdname plot_met
+#' @rdname plot_metab
 #'
 #' @export
 #'
-#' @method plot_met swmpr
-plot_met.swmpr <- function(swmpr_in, pretty = TRUE, ...){
+#' @method plot_metab swmpr
+plot_metab.swmpr <- function(swmpr_in, by = 'months', alpha = 0.05, width = 10, pretty = TRUE, ...){
   
   # get metabolism estimates
   metabolism <- attr(swmpr_in, 'metabolism')
-  met_units <- attr(swmpr_in, 'met_units')
+  metab_units <- attr(swmpr_in, 'metab_units')
   
   if(is.null(metabolism)) 
     stop('No metabolism data, use the ecometab function')
   
-  # format for plotting
-  to_plo <- metabolism[, c('date', 'Pg', 'Rt', 'NEM')]
-  to_plo <- tidyr::gather(to_plo, Estimate, Value, -date)
+  # aggregate metab results by time period
+  to_plo <- aggregate_metab(swmpr_in, by = by, alpha = alpha)
   
-  # plot
-  p <- ggplot(to_plo, aes(x = date, y = Value, group = Estimate)) +
+  ## base plot
+  p <- ggplot(to_plo, aes(x = date, y = means, group = Estimate)) +
     geom_line()
   
+  # add bars if not days and alpha not null
+  if(by != 'days' & !is.null(alpha))
+    p <- p +
+      geom_errorbar(aes(ymin = lower, ymax = upper, group = Estimate), 
+      width = width) 
+  
+  # return blank
   if(!pretty) 
     return(p)
   
   # ylabs
-  ylab <- expression(paste('mmol ', O [2], ' ', m^-2, d^-1))
-  if(met_units == 'grams')
-    ylab <- expression(paste('g ', O [2], ' ', m^-2, d^-1))
+  ylabs <- expression(paste('mmol ', O [2], ' ', m^-2, d^-1))
+  if(metab_units == 'grams')
+    ylabs <- expression(paste('g ', O [2], ' ', m^-2, d^-1))
   
   p <- p + 
     geom_line(aes(colour = Estimate)) +
     geom_point(aes(colour = Estimate)) +
     theme_bw() +
-    theme(axis.title.x = element_blank())
-    scale_y_continuous(ylab)
+    theme(axis.title.x = element_blank()) +
+    scale_y_continuous(ylabs)
   
+  if(by != 'days' & !is.null(alpha))
+    p <- p + 
+      geom_errorbar(aes(ymin = lower, ymax = upper,
+        colour = Estimate, group = Estimate), width = width)
+    
   return(p)
-  
   
 }
