@@ -865,7 +865,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 #' @param trace logical indicating if progress is shown in the console
 #' @param ... arguments passed to other methods
 #' 
-#' @return A \code{\link[base]{data.frame}} of daily integrated metabolism estimates.  
+#' @return The original \code{\link{swmpr}} object is returned that includes a metabolism attribute as a \code{\link[base]{data.frame}} of daily integrated metabolism estimates.  See the examples for retrieval.  
 #' \describe{
 #'  \item{\code{date}}{The metabolic day for each estimate, defined as the approximate 24 hour period between sunsets on adjacent calendar days.}
 #'  \item{\code{ddo}}{Mean hourly rate of change for DO, mmol/m3/hr}
@@ -888,7 +888,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 #' @details 
 #' Input data must be combined water quality and weather datasets.  This is typically done using the \code{\link{comb}} function after creating separate swmpr objects.
 #' 
-#' The open-water method is used to infer net ecosystem metabolism using a mass balance equation that describes the change in dissolved oxygen (DO) over time as a function of photosynthetic rate, minus respiration rate, corrected for air-sea gas exchange. The air-sea gas exchange is estimated as the difference between the DO saturation concentration and observed DO concentration, multiplied by a volumetric reaeration coefficient (see the appendix in Thebault et al. 2008).  The diffusion-corrected DO flux estimates are averaged during day and night for each 24 hour period in the time series, where flux is an hourly rate of DO change. DO flux is averaged during night hours for respiration and averaged during day hours for net production. Respiration rates are assumed constant during day and night such that total daily rates are calculated as hourly respiration multiplied by 24. The metabolic day is considered the approximate 24 hour period between sunsets on two adjacent calendar days.  Respiration is subtracted from daily net production estimates to yield gross production.  
+#' The open-water method is a common approach to quantify net ecosystem metabolism using a mass balance equation that describes the change in dissolved oxygen over time from the balance between photosynthetic and respiration rates, corrected for air-sea gas diffusion at the surface. The air-sea gas exchange is estimated as the difference between the DO saturation concentration and observed DO concentration, multiplied by a volumetric reaeration coefficient (see the appendix in Thebault et al. 2008).  The diffusion-corrected DO flux estimates are averaged during day and night for each 24 hour period in the time series, where flux is an hourly rate of DO change. DO flux is averaged during night hours for respiration and averaged during day hours for net production. Respiration rates are assumed constant during day and night such that total daily rates are calculated as hourly respiration multiplied by 24. The metabolic day is considered the approximate 24 hour period between sunsets on two adjacent calendar days.  Respiration is subtracted from daily net production estimates to yield gross production.  
 #' 
 #' Volumetric rates for gross production and total respiration are based on total depth of the water column, which is assumed to be mixed.  Water column depth is based on mean value for the depth variable across the time series in the \code{\link{swmpr}} object and is floored at 1 meter for very shallow stations.  Additionally, the volumetric reaeration coefficient requires an estimate of the anemometer height of the weather station, which is set as 10 meters by default.  The metadata should be consulted for exact height.  The value can be changed manually using a \code{height} argument, which is passed to \code{\link{calcKL}}.
 #' 
@@ -924,9 +924,11 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 #' 
 #' ## change height (m) of weather station anemometer
 #' res <- ecometab(dat, trace = TRUE, height = 5)
+#' res <- attr(res, 'metabolism')
 #' 
 #' ## output units in grams of oxygen
 #' res <- ecometab(dat, trace = TRUE, units = 'grams')
+#' res <- attr(res, 'metabolism')
 ecometab <- function(swmpr_in, ...) UseMethod('ecometab')
 
 #' @rdname ecometab
@@ -1099,8 +1101,11 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, units = 'mmol', trace = F
     
   }
   
+  # append to metabolism attribute
+  attr(swmpr_in, 'metabolism') <- out
+  
   if(trace) tictoc::toc()
   
-  return(out)
+  return(swmpr_in)
   
 }

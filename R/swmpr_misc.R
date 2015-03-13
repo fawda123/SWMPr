@@ -11,7 +11,7 @@
 #' @return Returns a swmpr object to be used with S3 methods
 #' 
 #' @details 
-#' This function is a simple wrapper to \code{\link[base]{structure}} that is used internally within other functions to create a swmpr object.  The function does not have to be used explicitly.  Attributes of a swmpr object include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, and \code{stamp_class}. 
+#' This function is a simple wrapper to \code{\link[base]{structure}} that is used internally within other functions to create a swmpr object.  The function does not have to be used explicitly.  Attributes of a swmpr object include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, \code{stamp_class}, and \code{metabolism} (if present). 
 #' 
 swmpr <- function(stat_in, meta_in){
     
@@ -43,7 +43,8 @@ swmpr <- function(stat_in, meta_in){
     qaqc_cols = qaqc_cols,
     date_rng = range(stat_in$datetimestamp),
     timezone = timezone, 
-    stamp_class = class(stat_in$datetimestamp)
+    stamp_class = class(stat_in$datetimestamp),
+    metabolism = NULL
     )
   
 }
