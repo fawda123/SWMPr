@@ -476,7 +476,7 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
 ######
 #' Identify metabolic days in a swmpr time series
 #'
-#' Identify metabolic days in a swmpr time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.
+#' Identify metabolic days in a swmpr time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.  The function calls the \code{\link[maptools]{sunriset}} function from the maptools package, which uses algorithms from the National Oceanic and Atmospheric Administration (\url{http://www.esrl.noaa.gov/gmd/grad/solcalc/}).
 #' 
 #' @param dat_in data.frame
 #' @param stat_in chr vector of station name including data type
@@ -488,7 +488,7 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
 #' @details This function is only used within \code{\link{ecometab}} and should not be called explicitly.
 #' 
 #' @seealso 
-#' \code{\link{ecometab}}
+#' \code{\link{ecometab}}, \code{\link[maptools]{sunriset}}
 #' 
 metab_day <- function(dat_in, stat_in){
   
@@ -572,6 +572,8 @@ metab_day <- function(dat_in, stat_in){
 #' This function is used within the \code{\link{ecometab}} function and should not be used explicitly.
 #' 
 #' @references
+#' Ro KS, Hunt PG. 2006. A new unified equation for wind-driven surficial oxygen transfer into stationary water bodies. Transactions of the American Society of Agricultural and Biological Engineers. 49(5):1615-1622.
+#' 
 #' Thebault J, Schraga TS, Cloern JE, Dunlavey EG. 2008. Primary production and carrying capacity of former salt ponds after reconnection to San Francisco Bay. Wetlands. 28(3):841-851.
 #' 
 #' @seealso 

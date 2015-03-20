@@ -26,6 +26,8 @@ Calculate oxygen mass transfer coefficient using equations in Thiebault et al. 2
 This function is used within the \code{\link{ecometab}} function and should not be used explicitly.
 }
 \references{
+Ro KS, Hunt PG. 2006. A new unified equation for wind-driven surficial oxygen transfer into stationary water bodies. Transactions of the American Society of Agricultural and Biological Engineers. 49(5):1615-1622.
+
 Thebault J, Schraga TS, Cloern JE, Dunlavey EG. 2008. Primary production and carrying capacity of former salt ponds after reconnection to San Francisco Bay. Wetlands. 28(3):841-851.
 }
 \seealso{

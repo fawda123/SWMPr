@@ -12,12 +12,12 @@ metab_day(dat_in, stat_in)
 \item{stat_in}{chr vector of station name including data type}
 }
 \description{
-Identify metabolic days in a swmpr time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.
+Identify metabolic days in a swmpr time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.  The function calls the \code{\link[maptools]{sunriset}} function from the maptools package, which uses algorithms from the National Oceanic and Atmospheric Administration (\url{http://www.esrl.noaa.gov/gmd/grad/solcalc/}).
 }
 \details{
 This function is only used within \code{\link{ecometab}} and should not be called explicitly.
 }
 \seealso{
-\code{\link{ecometab}}
+\code{\link{ecometab}}, \code{\link[maptools]{sunriset}}
 }
 

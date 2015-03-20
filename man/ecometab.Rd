@@ -11,44 +11,44 @@ ecometab(swmpr_in, ...)
   trace = FALSE, ...)
 }
 \arguments{
-\item{swmpr_in}{Input swmpr object which must include time series of dissolved oxygen,}
+\item{swmpr_in}{Input swmpr object which must include time series of dissolved oxygen (mg L-1)}
 
 \item{...}{arguments passed to other methods}
 
-\item{depth_val}{numeric value for station depth if time series is not available}
+\item{depth_val}{numeric value for station depth (m) if time series is not available}
 
-\item{metab_units}{chr indicating units of output for oxygen, either as mmol or grams}
+\item{metab_units}{chr indicating desired units of output for oxygen, either as mmol or grams}
 
 \item{trace}{logical indicating if progress is shown in the console}
 }
 \value{
 The original \code{\link{swmpr}} object is returned that includes a metabolism attribute as a \code{\link[base]{data.frame}} of daily integrated metabolism estimates.  See the examples for retrieval.
 \describe{
- \item{\code{date}}{The metabolic day for each estimate, defined as the approximate 24 hour period between sunsets on adjacent calendar days.}
- \item{\code{DOF_d}}{Mean DO flux during day hours, mmol/m2/hr}
- \item{\code{D_d}}{Mean air-sea gas exchange of DO during day hours, mmol/m2/hr}
- \item{\code{DOF_n}}{Mean DO flux during night hours, mmol/m2/hr}
- \item{\code{D_n}}{Mean air-sea gas exchange of DO during night hours, mmol/m2/hr}
- \item{\code{Pg}}{Gross production, O2 mmol/m2/d, calculated as ((DOF_d - D_d) - (DOF_n - D_n)) * day hours}
- \item{\code{Rt}}{Total respiration, O2 mmol/m2/d, calculated as (DOF_n - D_n) * 24}
- \item{\code{NEM}}{Net ecosytem metabolism, O2 mmol/m2/d, calculated as Pg + Rt}
+ \item{\code{date}}{The metabolic day, defined as the 24 hour period starting at sunrise (calculated using \code{\link{metab_day}})}
+ \item{\code{DOF_d}}{Mean DO flux during day hours, mmol m-2 hr-1. Day hours are calculated using the \code{\link{metab_day}} function.}
+ \item{\code{D_d}}{Mean air-sea gas exchange of DO during day hours, mmol m-2 hr-1}
+ \item{\code{DOF_n}}{Mean DO flux during night hours, mmol m-2 hr-1}
+ \item{\code{D_n}}{Mean air-sea gas exchange of DO during night hours, mmol m-2 hr-1}
+ \item{\code{Pg}}{Gross production, mmol m-2 d-1, calculated as ((DOF_d - D_d) - (DOF_n - D_n)) * day hours}
+ \item{\code{Rt}}{Total respiration, mmol m-2 d-1, calculated as (DOF_n - D_n) * 24}
+ \item{\code{NEM}}{Net ecosytem metabolism, mmol m-2 d-1, calculated as Pg + Rt}
 }
 }
 \description{
 Estimate ecosystem metabolism using the Odum open-water method.  Estimates of daily integrated gross production, total respiration, and net ecosystem metabolism are returned.
 }
 \details{
-Input data must be combined water quality and weather datasets.  This is typically done using the \code{\link{comb}} function after creating separate swmpr objects.
+Input data include both water quality and weather time series, which are typically collected with independent instrument systems.  This requires merging of the time series datasets using the \code{\link{comb}} function after creating separate swmpr objects.
 
-The open-water method is a common approach to quantify net ecosystem metabolism using a mass balance equation that describes the change in dissolved oxygen over time from the balance between photosynthetic and respiration rates, corrected for air-sea gas diffusion at the surface. The air-sea gas exchange is estimated as the difference between the DO saturation concentration and observed DO concentration, multiplied by a volumetric reaeration coefficient (see the appendix in Thebault et al. 2008).  The diffusion-corrected DO flux estimates are averaged during day and night for each 24 hour period in the time series, where flux is an hourly rate of DO change. DO flux is averaged during night hours for respiration and averaged during day hours for net production. Respiration rates are assumed constant during day and night such that total daily rates are calculated as hourly respiration multiplied by 24. The metabolic day is considered the 24 hour period between sunsets on two adjacent calendar days.  Respiration is subtracted from daily net production estimates to yield gross production.
+The open-water method is a common approach to quantify net ecosystem metabolism using a mass balance equation that describes the change in dissolved oxygen over time from the balance between photosynthetic and respiration processes, corrected using an empirically constrained air-sea gas diffusion model (see Ro and Hunt 2006, Thebault et al. 2008).  The diffusion-corrected DO flux estimates are averaged separately over each day and night of the time series. The nighttime average DO flux is used to estimate respiration rates, while the daytime DO flux is used to estimate net primary production. To generate daily integrated rates, respiration rates are assumed constant such that hourly night time DO flux rates are multiplied by 24. Similarly, the daytime DO flux rates are multiplied by the number of daylight hours, which varies with location and time of year, to yield net daytime primary production. Respiration rates are subtracted from daily net production estimates to yield gross production rates.  The metabolic day is considered the 24 hour period between sunsets on two adjacent calendar days.
 
-Aereal rates for gross production and total respiration are based on volumetric rates corrected for total depth of the water column, which is assumed to be mixed.  Water column depth is based on mean value for the depth variable across the time series in the \code{\link{swmpr}} object and is floored at 1 meter for very shallow stations.  Additionally, the volumetric reaeration coefficient requires an estimate of the anemometer height of the weather station, which is set as 10 meters by default.  The metadata should be consulted for exact height.  The value can be changed manually using a \code{height} argument, which is passed to \code{\link{calckl}}.
+Aereal rates for gross production and total respiration are based on volumetric rates normalized to the depth of the water column at the sampling location, which is assumed to be well-mixed, such that the DO sensor is reflecting the integrated processes in the entire water column (including the benthos).  Water column depth is calculated as the mean value of the depth variable across the time series in the \code{\link{swmpr}} object.  Depth values are floored at one meter for very shallow stations and 0.5 meters is also added to reflect the practice of placing sensors slightly off of the bottom.  Additionally, the air-sea gas exchange model is calibrated with wind data either collected at, or adjusted to, wind speed at 10 m above the surface. The metadata should be consulted for exact height.  The value can be changed manually using a \code{height} argument, which is passed to \code{\link{calckl}}.
 
-Metabolism estimates are not returned for dates with less than three hourly records during either day or night periods. Missing values for air temperature, barometric pressure, and wind speed are replaced with the climatological means for the period of record.  Climatological means are based on hourly average values by month.
+A minimum of three records are required for both day and night periods to calculate daily metabolism estimates.  Occasional missing values for air temperature, barometric pressure, and wind speed are replaced with the climatological means (hourly means by month) for the period of record using adjacent data within the same month as the missing data.
 
-All estimates are in mmol of oxygen but can be converted to grams by setting \code{metab_units = 'grams'} (i.e., 1mmol O2 = 32 mg O2, 1000 mg = 1g, multiply all estimates by 32/1000).
+All DO calculations within the function are done using molar units (e.g., mmol O2 m-3).  The output can be returned as mass units by setting \code{metab_units = 'grams'} (i.e., 1mol = 32 g O2, which multiplies all estimates by 32 g mol-1/1000 mg/g).  Input data must be in standard mass units for DO (mg L-1).
 
-The specific approach for estimating metabolism with the open-water method is described in more detail in Caffrey et al. 2013.
+The specific approach for estimating metabolism with the open-water method is described in Caffrey et al. 2013 and references cited therein.
 }
 \examples{
 ## import water quality and weather data
@@ -76,9 +76,11 @@ Caffrey JM, Murrell MC, Amacker KS, Harper J, Phipps S, Woodrey M. 2013. Seasona
 
 Odum HT. 1956. Primary production in flowing waters. Limnology and Oceanography. 1(2):102-117.
 
+Ro KS, Hunt PG. 2006. A new unified equation for wind-driven surficial oxygen transfer into stationary water bodies. Transactions of the American Society of Agricultural and Biological Engineers. 49(5):1615-1622.
+
 Thebault J, Schraga TS, Cloern JE, Dunlavey EG. 2008. Primary production and carrying capacity of former salt ponds after reconnection to San Francisco Bay. Wetlands. 28(3):841-851.
 }
 \seealso{
-\code{\link{comb}}, \code{\link{plot_metab}}
+\code{\link{calckl}} for estimating the oxygen mass transfer coefficient used with the air-sea gas exchange model, \code{\link{comb}} for combining \code{swmpr} objects, \code{\link{metab_day}} for identifying the metabolic day for each observation in the time series, and \code{\link{plot_metab}} for plotting the results
 }
 
