@@ -746,7 +746,7 @@ hist.swmpr <- function(x, subset = NULL, select, operator = NULL, ...) {
 #' dat <- qaqc(apacpnut)
 #' 
 #' ## plot
-#' plot_summary(dat, param = 'chla_n')
+#' plot_summary(dat, param = 'chla_n', years = c(2007, 2013))
 #' 
 plot_summary <- function(swmpr_in, ...) UseMethod('plot_summary') 
 
@@ -849,6 +849,8 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
   # universal plot setting
   my_theme <- theme(axis.text = element_text(size = 8))
   
+  # browser()
+  
   # plot 1 - means and obs
   cols <- colorRampPalette(c('lightblue', 'lightgreen'))(nrow(mo_agg))
   cols <- cols[rank(mo_agg[, param])]
@@ -890,13 +892,18 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
   # monthly means by year
   to_plo <- dat_plo[, names(dat_plo) %in% c('month', 'year', param)]
   form_in <- as.formula(paste(param, '~ .'))
-  to_plo <- aggregate(form_in, to_plo, function(x) mean(x, na.rm = T))
+  to_plo <- aggregate(form_in, to_plo, function(x) mean(x, na.rm = T),
+    na.action = na.pass)
   
   to_plo$month <- factor(to_plo$month, labels = mo_labs, levels = mo_levs)
   names(to_plo)[names(to_plo) %in% param] <- 'V1'
   midpt <- mean(to_plo$V1, na.rm = T)
-  p4 <- ggplot(to_plo, aes(x = year, y = month, fill = V1)) +
+  p4 <- ggplot(subset(to_plo, !is.na(V1)), 
+      aes(x = year, y = month, fill = V1)) +
     geom_tile() +
+    geom_tile(data = subset(to_plo, is.na(V1)), 
+      aes(x = year, y = month), fill = NA
+      )  +
     scale_fill_gradient2(name = ylab,
       low = 'lightblue', mid = 'lightgreen', high = 'tomato', midpoint = midpt) +
     theme_classic() +
@@ -912,8 +919,12 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
   names(to_plo)[names(to_plo) %in% param] <- 'trend'
   to_plo$anom <- with(to_plo, V1 - trend)
   rngs <- max(abs(range(to_plo$anom, na.rm = T)))
-  p5 <- ggplot(to_plo, aes(x = year, y = month, fill = anom)) +
+  p5 <- ggplot(subset(to_plo, !is.na(anom)), 
+      aes(x = year, y = month, fill = anom)) +
     geom_tile() +
+    geom_tile(data = subset(to_plo, is.na(anom)), 
+      aes(x = year, y = month), fill = NA
+      ) +
     scale_fill_gradient2(name = ylab,
       low = 'lightblue', mid = 'lightgreen', high = 'tomato', midpoint = 0,
       limits = c(-1 * rngs, rngs)) +
@@ -982,7 +993,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 #' 
 #' The open-water method is a common approach to quantify net ecosystem metabolism using a mass balance equation that describes the change in dissolved oxygen over time from the balance between photosynthetic and respiration processes, corrected using an empirically constrained air-sea gas diffusion model (see Ro and Hunt 2006, Thebault et al. 2008).  The diffusion-corrected DO flux estimates are averaged separately over each day and night of the time series. The nighttime average DO flux is used to estimate respiration rates, while the daytime DO flux is used to estimate net primary production. To generate daily integrated rates, respiration rates are assumed constant such that hourly night time DO flux rates are multiplied by 24. Similarly, the daytime DO flux rates are multiplied by the number of daylight hours, which varies with location and time of year, to yield net daytime primary production. Respiration rates are subtracted from daily net production estimates to yield gross production rates.  The metabolic day is considered the 24 hour period between sunsets on two adjacent calendar days.
 #' 
-#' Aereal rates for gross production and total respiration are based on volumetric rates normalized to the depth of the water column at the sampling location, which is assumed to be well-mixed, such that the DO sensor is reflecting the integrated processes in the entire water column (including the benthos).  Water column depth is calculated as the mean value of the depth variable across the time series in the \code{\link{swmpr}} object.  Depth values are floored at one meter for very shallow stations and 0.5 meters is also added to reflect the practice of placing sensors slightly off of the bottom.  Additionally, the air-sea gas exchange model is calibrated with wind data either collected at, or adjusted to, wind speed at 10 m above the surface. The metadata should be consulted for exact height.  The value can be changed manually using a \code{height} argument, which is passed to \code{\link{calckl}}.
+#' Areal rates for gross production and total respiration are based on volumetric rates normalized to the depth of the water column at the sampling location, which is assumed to be well-mixed, such that the DO sensor is reflecting the integrated processes in the entire water column (including the benthos).  Water column depth is calculated as the mean value of the depth variable across the time series in the \code{\link{swmpr}} object.  Depth values are floored at one meter for very shallow stations and 0.5 meters is also added to reflect the practice of placing sensors slightly off of the bottom.  Additionally, the air-sea gas exchange model is calibrated with wind data either collected at, or adjusted to, wind speed at 10 m above the surface. The metadata should be consulted for exact height.  The value can be changed manually using a \code{height} argument, which is passed to \code{\link{calckl}}.
 #' 
 #' A minimum of three records are required for both day and night periods to calculate daily metabolism estimates.  Occasional missing values for air temperature, barometric pressure, and wind speed are replaced with the climatological means (hourly means by month) for the period of record using adjacent data within the same month as the missing data.
 #' 
