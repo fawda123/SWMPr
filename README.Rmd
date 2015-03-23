@@ -22,7 +22,7 @@ All data obtained from the CDMO should be [cited](http://cdmo.baruch.sc.edu/data
 
 To cite this package:
 
-*Beck MW. 2015. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 1.8.1. https://github.com/fawda123/SWMPr*
+*Beck MW. 2015. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 1.9.0. https://github.com/fawda123/SWMPr*
 
 #Installing the package
 
@@ -69,7 +69,26 @@ single_param('hudscwq', 'do_mgl')
 
 ```
 
-For larger requests, it's easier to obtain data outside of R using the CDMO query system and then importing within R using the `import_local` function.  Data can be retrieved from the CDMO several ways.  The `import_local` function is designed for data from the [zip downloads](http://cdmo.baruch.sc.edu/aqs/zips.cfm) feature in the advanced query section of the CDMO. The function may also work using data from the [data export system](http://cdmo.baruch.sc.edu/get/export.cfm), but this feature has not been extensively tested (expect bugs).  The [zip downloads](http://cdmo.baruch.sc.edu/aqs/zips.cfm) feature is an easy way to obtain data from multiple stations in one request.  The downloaded data will be in a compressed folder that includes multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.).  It is recommended that all stations at a site and the complete date ranges are requested to avoid repeated requests to CDMO.  The `import_local` function can be used after the folder is decompressed.
+SWMP data can also be imported from an independent server using the `import_remote` function.  Retrieval time is much faster because the files are in binary format for quick import. However, the data are only available up to December 2014 and may not be regularly updated. Always use the CDMO for current data. The data have also been pre-processed using the `qaqc` and `setstep` functions.  The files are available [here](https://s3.amazonaws.com/swmpalldata/). Files can be obtained using the function or by copying the URL to a web browser with the station name appended to the address, including the .RData file extension. For example, [https://s3.amazonaws.com/swmpalldata/acebbnut.RData](https://s3.amazonaws.com/swmpalldata/acebbnut.RData).  The following shows how to view the available files and use of the function to import a nutrient data file.
+
+```{r eval = F}
+## see the available files on the server
+library(XML)
+library(httr)
+files_s3 <- GET('https://s3.amazonaws.com/swmpalldata/')$content
+files_s3 <- rawToChar(files_s3)
+files_s3 <- htmlTreeParse(files_s3, useInternalNodes = TRUE)
+files_s3 <- xpathSApply(files_s3, '//contents//key', xmlValue)
+
+## import a file
+dat <- import_remote('acebbnut')
+
+head(dat)
+
+attributes(dat)
+```
+
+For larger custom requests, it's easier to obtain data outside of R using the CDMO query system and then importing within R using the `import_local` function.  Data can be retrieved from the CDMO several ways.  The `import_local` function is designed for data from the [zip downloads](http://cdmo.baruch.sc.edu/aqs/zips.cfm) feature in the advanced query section of the CDMO. The function may also work using data from the [data export system](http://cdmo.baruch.sc.edu/get/export.cfm), but this feature has not been extensively tested (expect bugs).  The [zip downloads](http://cdmo.baruch.sc.edu/aqs/zips.cfm) feature is an easy way to obtain data from multiple stations in one request.  The downloaded data will be in a compressed folder that includes multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.).  It is recommended that all stations at a site and the complete date ranges are requested to avoid repeated requests to CDMO.  The `import_local` function can be used after the folder is decompressed.
 
 Occasionally, duplicate time stamps are present in the raw data.  The function handles duplicate entries differently depending on the data type (water quality,  weather, or nutrients).  For water quality and nutrient data, duplicate time stamps are simply removed.  Note that nutrient data often contain replicate samples with similar but not duplicated time stamps within a few minutes of each other.  Replicates with unique time stamps are not removed but can be further processed using `rem_reps`.  Weather data prior to 2007 may contain duplicate time stamps at frequencies for 60 (hourly) and 144 (daily) averages, in addition to 15 minute frequencies.  Duplicate values that correspond to the smallest value in the frequency column (15 minutes) are retained.  
 
@@ -385,6 +404,8 @@ See help documentation for more details on each function (e.g., `?all_params`).
 `all_params_dtrng` Retrieve records of all parameters within a given date range for a station.  Optional argument for a single parameter.  Maximum of 1000 records. Wrapper to `exportAllParamsDateRangeXMLNew`.
 
 `import_local` Import files from a local path.  The files must be in a specific format, specifically those returned from the CDMO using the [zip downloads](http://cdmo.baruch.sc.edu/aqs/zips.cfm) option for a reserve.
+
+`import_remote` Import SWMP site data from a remote independent server.  These files have been downloaded from CDMO, processed using functions in this package, and uploaded to an Amazon server for quicker import into R.  
 
 `single_param` Retrieve up to 100 records for a single parameter starting with the most recent at a given station.  Wrapper to `exportSingleParamXMLNew` function on web services. 
 

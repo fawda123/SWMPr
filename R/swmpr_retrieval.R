@@ -416,9 +416,9 @@ import_local <- function(path, station_code, trace = FALSE){
 #' @return Returns a swmpr object.  
 #' 
 #' @details 
-#' This function allows quick retrieval of .RData files for all data at a single SwMP site.  It differs from the other data retrieval functions in that the raw data are downloaded from an independent remote server.  Retrieval time is much faster because the files are in binary format for quick import.  However, the data are only available up to December 2014 and may not be regularly updated.  Always use the CDMO for current data.  The data have also been pre-processed using the \code{\link{qaqc}} and setstep functions.
+#' This function allows quick retrieval of .RData files for all data at a single SwMP site.  It differs from the other data retrieval functions in that the raw data are downloaded from an independent remote server.  Retrieval time is much faster because the files are in binary format for quick import.  However, the data are only available up to December 2014 and may not be regularly updated.  Always use the CDMO for current data.  The data have also been pre-processed using the \code{\link{qaqc}} and \code{\link{setstep}} functions.
 #' 
-#' The files are available here: \url{https://s3.amazonaws.com/swmpalldata/}.  Files can be obtained using the function or by copying the URL to a web browser with the station name appended to the address, including the .RData file extenssion.  For example, \url{https://s3.amazonaws.com/swmpalldata/acebbnut.RData}.
+#' The files are available here: \url{https://s3.amazonaws.com/swmpalldata/}.  Files can be obtained using the function or by copying the URL to a web browser with the station name appended to the address, including the .RData file extension.  For example, \url{https://s3.amazonaws.com/swmpalldata/acebbnut.RData}.
 #' 
 #' @seealso \code{\link{import_local}}
 #' 
@@ -428,11 +428,11 @@ import_local <- function(path, station_code, trace = FALSE){
 #' library(httr)
 #' files_s3 <- GET('https://s3.amazonaws.com/swmpalldata/')$content
 #' files_s3 <- rawToChar(files_s3)
-#' files_s3 <- htmlTreeParse(files_s3, useInternalNodes = T)
+#' files_s3 <- htmlTreeParse(files_s3, useInternalNodes = TRUE)
 #' files_s3 <- xpathSApply(files_s3, '//contents//key', xmlValue)
 #'
 #' ## import a file
-#' dat <- import_remote('acebbnut')
+#' dat <- import_remote('rkbmbwq')
 #' 
 #' head(dat)
 #' 
