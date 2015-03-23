@@ -1068,6 +1068,13 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', tra
     'wspd', 'bp')
   dat <- dat[,names(dat) %in% to_keep]
   
+  # all vals as numeric
+  dat[, 2:ncol(dat)] <- apply(
+      dat[, 2:ncol(dat), drop = FALSE],
+      2,
+      function(x) suppressWarnings(as.numeric(x))
+      )
+  
   #convert do from mg/L to mmol/m3
   dat$do <- dat[, 'do_mgl'] / 32 * 1000
   
@@ -1077,7 +1084,7 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', tra
   # take diff of each column, divide by 2, add original value
   datetimestamp <- diff(dat$datetimestamp)/2 + dat$datetimestamp[-c(nrow(dat))]
   dat <- apply(
-    dat[,2:ncol(dat)],
+    dat[,2:ncol(dat), drop = FALSE],
     2,
     function(x) diff(x)/2 + x[1:(length(x) -1)]
     )

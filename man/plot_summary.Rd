@@ -33,7 +33,7 @@ data(apacpnut)
 dat <- qaqc(apacpnut)
 
 ## plot
-plot_summary(dat, param = 'chla_n')
+plot_summary(dat, param = 'chla_n', years = c(2007, 2013))
 }
 \seealso{
 \code{\link[ggplot2]{ggplot}}
