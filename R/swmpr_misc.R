@@ -361,6 +361,9 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
 #' }
 #' 
 #' @source \url{https://s3.amazonaws.com/swmpexdata/zip_ex.zip}
+#' 
+#' @examples 
+#' data(apacpnut)
 "apacpnut"
 
 ######
@@ -398,6 +401,9 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
 #' }
 #' 
 #' @source \url{https://s3.amazonaws.com/swmpexdata/zip_ex.zip}
+#'
+#' @examples 
+#' data(apacpwq)
 "apacpwq"
 
 ######
@@ -435,6 +441,9 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
 #' }
 #' 
 #' @source \url{https://s3.amazonaws.com/swmpexdata/zip_ex.zip}
+#' 
+#' @examples 
+#' data(apadbwq)
 "apadbwq"
 
 ######
@@ -470,8 +479,10 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
 #' }
 #' 
 #' @source \url{https://s3.amazonaws.com/swmpexdata/zip_ex.zip}
+#'
+#' @examples 
+#' data(apaebmet)
 "apaebmet"
-
 
 ######
 #' Identify metabolic days in a swmpr time series
