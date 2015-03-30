@@ -5,19 +5,17 @@ Marcus W. Beck, beck.marcus@epa.gov
 
 #Overview 
 
-SWMPr is an R package that contains functions for retrieving, organizing, and analyzing estuary monitoring data from the System Wide Monitoring Program ([SWMP](http://nerrs.noaa.gov/RCDefault.aspx?ID=18)).  SWMP was implemented by the National Estuarine Research Reserve System ([NERRS](http://nerrs.noaa.gov/)) in 1995 to provide continuous monitoring data at over 300 stations in 28 estuaries across the United States.  SWMP data are maintained online by the Centralized Data Management Office (CDMO). This R package provides several functions to retrieve, organize, and analyze SWMP data from the CDMO.  Information on the CDMO web services are available [here](http://cdmo.baruch.sc.edu/webservices.cfm).  Data can be downloaded directly from the CDMO using functions in this package, although it is easier to first download data outside of R and then use the `import_local` function.  Your computer's IP address must be registered by CDMO staff for direct downloads in R.  Detailed methods for importing SWMP data in R are described below.  
-
-All data obtained from the CDMO should be [cited](http://cdmo.baruch.sc.edu/data/citation.cfm) using the format:
+SWMPr is an R package that contains functions for retrieving, organizing, and analyzing estuary monitoring data from the System Wide Monitoring Program ([SWMP](http://nerrs.noaa.gov/RCDefault.aspx?ID=18)).  SWMP was implemented by the National Estuarine Research Reserve System ([NERRS](http://nerrs.noaa.gov/)) in 1995 to provide continuous monitoring data at over 300 stations in 28 estuaries across the United States.  SWMP data are maintained online by the Centralized Data Management Office (CDMO). This R package provides several functions to retrieve, organize, and analyze SWMP data from the CDMO. All data obtained from the CDMO should be [cited](http://cdmo.baruch.sc.edu/data/citation.cfm) using the format:
 
 *National Estuarine Research Reserve System (NERRS). 2012. System-wide Monitoring Program. Data accessed from the NOAA NERRS Centralized Data Management Office website: http://cdmo.baruch.sc.edu/; accessed 12 October 2012.*
 
 To cite this package:
 
-*Beck MW. 2015. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 1.9.0. https://github.com/fawda123/SWMPr*
+*Beck MW. 2015. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 1.9.1. https://github.com/fawda123/SWMPr*
 
 #Installing the package
 
-This package is currently under development and has not been extensively tested.  The development version can be installed from Github:
+This package is currently under development and can be installed from Github:
 
 
 ```r
@@ -277,20 +275,19 @@ Time series can be smoothed to better characterize a signal independent of noise
 
 
 ```r
-# import data
+# import data, qaqc and subset
 data(apadbwq)
-swmp1 <- apadbwq
+dat <- qaqc(apadbwq)
+dat <- subset(dat, select = 'do_mgl', 
+  subset = c('2012-07-09 00:00', '2012-07-24 00:00')
+  )
 
-# qaqc and subset imported data
-dat <- qaqc(swmp1)
-dat <- subset(dat, subset = c('2012-07-09 00:00', '2012-07-24 00:00'))
+# smooth
+dat_smooth <- smoother(dat, window = 50, params = 'do_mgl')
 
-# filter
-test <- smoother(dat, window = 50, params = 'do_mgl')
-
-# plot to see the difference
-plot(do_mgl ~ datetimestamp, data = dat, type = 'l')
-lines(test, select = 'do_mgl', col = 'red', lwd = 2)
+# plot raw and smoothed
+plot(dat)
+lines(dat_smooth, col = 'red', lwd = 2)
 ```
 
 ![plot of chunk unnamed-chunk-16](README_files/figure-html/unnamed-chunk-16.png) 
@@ -299,29 +296,25 @@ A common issue with any statistical analysis is the treatment of missing values.
 
 
 ```r
-# get data
+# get data, qaqc and subset
 data(apadbwq)
-swmp1 <- apadbwq
-
-# qaqc and subset imported data
-dat <- qaqc(swmp1)
-dat <- subset(dat, subset = c('2013-01-22 00:00', '2013-01-26 00:00'))
+dat <- qaqc(apadbwq)
+dat <- subset(dat, select = 'do_mgl', 
+  subset = c('2013-01-22 00:00', '2013-01-26 00:00'))
 
 # interpolate, maxgap of 10 records
-test <- na.approx(dat, params = 'do_mgl', maxgap = 10)
+fill1 <- na.approx(dat, params = 'do_mgl', maxgap = 10)
 
 # interpolate maxgap of 30 records
-test2 <- na.approx(dat, params = 'do_mgl', maxgap = 30)
+fill2 <- na.approx(dat, params = 'do_mgl', maxgap = 30)
 
 # plot for comparison
 par(mfrow = c(3, 1))
-plot(do_mgl ~ datetimestamp, dat, main = 'Raw', type = 'l')
-plot(do_mgl ~ datetimestamp, test, col = 'red', 
-  main = 'Interpolation - maximum gap of 10 records', type = 'l')
-lines(dat, select = 'do_mgl')
-plot(do_mgl ~ datetimestamp, test2, col = 'red', 
-  main = 'Interpolation - maximum gap of 30 records', type = 'l')
-lines(dat, select = 'do_mgl')
+plot(dat, main = 'Raw')
+plot(fill1, col = 'red', main = 'Interpolation - maximum gap of 10 records')
+lines(dat)
+plot(fill2, col = 'red', main = 'Interpolation - maximum gap of 30 records')
+lines(dat)
 ```
 
 ![plot of chunk unnamed-chunk-17](README_files/figure-html/unnamed-chunk-17.png) 

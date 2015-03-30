@@ -14,19 +14,17 @@ output:
 
 #Overview 
 
-SWMPr is an R package that contains functions for retrieving, organizing, and analyzing estuary monitoring data from the System Wide Monitoring Program ([SWMP](http://nerrs.noaa.gov/RCDefault.aspx?ID=18)).  SWMP was implemented by the National Estuarine Research Reserve System ([NERRS](http://nerrs.noaa.gov/)) in 1995 to provide continuous monitoring data at over 300 stations in 28 estuaries across the United States.  SWMP data are maintained online by the Centralized Data Management Office (CDMO). This R package provides several functions to retrieve, organize, and analyze SWMP data from the CDMO.  Information on the CDMO web services are available [here](http://cdmo.baruch.sc.edu/webservices.cfm).  Data can be downloaded directly from the CDMO using functions in this package, although it is easier to first download data outside of R and then use the `import_local` function.  Your computer's IP address must be registered by CDMO staff for direct downloads in R.  Detailed methods for importing SWMP data in R are described below.  
-
-All data obtained from the CDMO should be [cited](http://cdmo.baruch.sc.edu/data/citation.cfm) using the format:
+SWMPr is an R package that contains functions for retrieving, organizing, and analyzing estuary monitoring data from the System Wide Monitoring Program ([SWMP](http://nerrs.noaa.gov/RCDefault.aspx?ID=18)).  SWMP was implemented by the National Estuarine Research Reserve System ([NERRS](http://nerrs.noaa.gov/)) in 1995 to provide continuous monitoring data at over 300 stations in 28 estuaries across the United States.  SWMP data are maintained online by the Centralized Data Management Office (CDMO). This R package provides several functions to retrieve, organize, and analyze SWMP data from the CDMO. All data obtained from the CDMO should be [cited](http://cdmo.baruch.sc.edu/data/citation.cfm) using the format:
 
 *National Estuarine Research Reserve System (NERRS). 2012. System-wide Monitoring Program. Data accessed from the NOAA NERRS Centralized Data Management Office website: http://cdmo.baruch.sc.edu/; accessed 12 October 2012.*
 
 To cite this package:
 
-*Beck MW. 2015. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 1.9.0. https://github.com/fawda123/SWMPr*
+*Beck MW. 2015. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 1.9.1. https://github.com/fawda123/SWMPr*
 
 #Installing the package
 
-This package is currently under development and has not been extensively tested.  The development version can be installed from Github:
+This package is currently under development and can be installed from Github:
 
 ```{r eval = F, message = F}
 install.packages('devtools')
@@ -253,49 +251,43 @@ aggregate(swmpr_in, FUN = fun_in, 'quarters', params = c('do_mgl'))
 Time series can be smoothed to better characterize a signal independent of noise.  Although there are many approaches to smoothing, a moving window average is intuitive and commonly used.  The `smoother` function can be used to smooth parameters in a swmpr object using a specified window size.  This method is a simple wrapper to `filter`.  The `window` argument specifies the number of observations included in the moving average.  The `sides` argument specifies how the average is calculated for each observation (see the documentation for `filter`).  A value of 1 will filter observations within the window that are previous to the current observation, whereas a value of 2 will filter all observations within the window centered at zero lag from the current observation. As before, the `params` argument specifies which parameters to smooth.
 
 ```{r eval = T, fig.height = 3, cache = T}
-# import data
+# import data, qaqc and subset
 data(apadbwq)
-swmp1 <- apadbwq
+dat <- qaqc(apadbwq)
+dat <- subset(dat, select = 'do_mgl', 
+  subset = c('2012-07-09 00:00', '2012-07-24 00:00')
+  )
 
-# qaqc and subset imported data
-dat <- qaqc(swmp1)
-dat <- subset(dat, subset = c('2012-07-09 00:00', '2012-07-24 00:00'))
+# smooth
+dat_smooth <- smoother(dat, window = 50, params = 'do_mgl')
 
-# filter
-test <- smoother(dat, window = 50, params = 'do_mgl')
-
-# plot to see the difference
-plot(do_mgl ~ datetimestamp, data = dat, type = 'l')
-lines(test, select = 'do_mgl', col = 'red', lwd = 2)
-
+# plot raw and smoothed
+plot(dat)
+lines(dat_smooth, col = 'red', lwd = 2)
 ```
 
 A common issue with any statistical analysis is the treatment of missing values.  Missing data can be excluded from the analysis, included but treated as true zeroes, or interpolated based on similar values.  In either case, an analyst should have a strong rationale for the chosen method.  A common approach used to handle missing data in time series analysis is linear interpolation.  A simple curve fitting method is used to create a continuous set of records between observations separated by missing data.  A challenge with linear interpolation is an appropriate gap size for fitting missing observations.  The ability of the interpolated data to approximate actual trends is a function of the gap size.  Interpolation between larger gaps are less likely to resemble patterns of an actual parameter, whereas interpolation between smaller gaps are more likely to resemble actual patterns.  An appropriate gap size limit depends on the unique characteristics of specific datasets or parameters.  The `na.approx` function can be used to interpolate gaps in a swmpr object.  A required argument for the function is `maxgap` which defines the maximum gap size  for interpolation.
 
 ```{r eval = T, fig.height = 6, cache = T}
-# get data
+# get data, qaqc and subset
 data(apadbwq)
-swmp1 <- apadbwq
-
-# qaqc and subset imported data
-dat <- qaqc(swmp1)
-dat <- subset(dat, subset = c('2013-01-22 00:00', '2013-01-26 00:00'))
+dat <- qaqc(apadbwq)
+dat <- subset(dat, select = 'do_mgl', 
+  subset = c('2013-01-22 00:00', '2013-01-26 00:00'))
 
 # interpolate, maxgap of 10 records
-test <- na.approx(dat, params = 'do_mgl', maxgap = 10)
+fill1 <- na.approx(dat, params = 'do_mgl', maxgap = 10)
 
 # interpolate maxgap of 30 records
-test2 <- na.approx(dat, params = 'do_mgl', maxgap = 30)
+fill2 <- na.approx(dat, params = 'do_mgl', maxgap = 30)
 
 # plot for comparison
 par(mfrow = c(3, 1))
-plot(do_mgl ~ datetimestamp, dat, main = 'Raw', type = 'l')
-plot(do_mgl ~ datetimestamp, test, col = 'red', 
-  main = 'Interpolation - maximum gap of 10 records', type = 'l')
-lines(dat, select = 'do_mgl')
-plot(do_mgl ~ datetimestamp, test2, col = 'red', 
-  main = 'Interpolation - maximum gap of 30 records', type = 'l')
-lines(dat, select = 'do_mgl')
+plot(dat, main = 'Raw')
+plot(fill1, col = 'red', main = 'Interpolation - maximum gap of 10 records')
+lines(dat)
+plot(fill2, col = 'red', main = 'Interpolation - maximum gap of 30 records')
+lines(dat)
 ```
 
 The `decomp` function is a simple wrapper to `decompose` that separates a time series into additive or multiplicative components describing a trend, cyclical variation (e.g., daily or seasonal), and the remainder.  The additive decomposition assumes that the cyclical component of the time series is stationary (i.e., the variance is constant), whereas a multiplicative decomposition accounts for non-stationarity.  By default, a moving average with a symmetric window is used to filter the seasonal component.  Alternatively, a vector of filter coefficients in reverse time order can be supplied (see the help documentation for `decompose`).  
