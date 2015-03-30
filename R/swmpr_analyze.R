@@ -639,7 +639,7 @@ plot.swmpr <- function(x, type = 'l', ...) {
   if(attr(swmpr_in, 'qaqc_cols'))
     swmpr_in <- qaqc(swmpr_in, qaqc_keep = NULL)
   
-  if(ncol(swmpr_in) > 2) stop('Specify the parameter to plot')
+  if(ncol(swmpr_in) > 2) stop('Only one parameter can be plotted, use subset first')
   
   parameters <- attr(swmpr_in, 'parameters')
 
