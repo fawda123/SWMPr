@@ -4,16 +4,10 @@
 \alias{hist.swmpr}
 \title{Plot swmpr using a histogram}
 \usage{
-\method{hist}{swmpr}(x, subset = NULL, select, operator = NULL, ...)
+\method{hist}{swmpr}(x, ...)
 }
 \arguments{
 \item{x}{input swmpr object}
-
-\item{subset}{chr string of form 'YYYY-mm-dd HH:MM' to subset a date range.  Input can be one (requires \code{operator} or two values (a range), passed to \code{\link{subset}}.}
-
-\item{select}{chr string of parameters to keep, passed to \code{\link{subset}}.}
-
-\item{operator}{chr string specifiying binary operator (e.g., \code{'>'}, \code{'<='}) if subset is one date value, passed to \code{\link{subset}}.}
 
 \item{...}{other arguments passed to \code{\link[graphics]{hist}}}
 }
@@ -21,17 +15,20 @@
 Plot a histogram showing the distribution of a swmpr parameter
 }
 \details{
-The swmpr method for histograms is a convenience function for the default histogram function.  Conventional histogram methods also work well since swmpr objects are also data frames.  See the examples for use with different methods.
+The swmpr method for histograms is a convenience function for the default histogram function.  Conventional histogram methods also work well since swmpr objects are also data frames.  The input data must contain only one parameter.
 }
 \examples{
 ## get data
 data(apadbwq)
-dat <- apadbwq
+dat <- subset(apadbwq, select = 'do_mgl')
 
-## plot using swmpr method, note default line plot
-hist(dat, select = 'do_mgl')
+## histogram using swmpr method
+hist(dat)
 
-## plot using defualt method
+## change axis labels, plot title
+hist(dat, xlab = 'Dissolved oxygen', main = 'Histogram of DO')
+
+## plot using default method
 hist(dat$do_mgl)
 }
 \seealso{

@@ -7,20 +7,14 @@
 \usage{
 \method{plot}{swmpr}(x, type = "l", ...)
 
-\method{lines}{swmpr}(x, subset = NULL, select, operator = NULL, ...)
+\method{lines}{swmpr}(x, ...)
 }
 \arguments{
 \item{x}{input swmpr object}
 
 \item{type}{chr string for type of plot, default \code{'l'}.  See \code{\link[graphics]{plot}}.}
 
-\item{...}{other arguments passed to \code{par}, \code{plot.default}, \code{lines}, \code{points}}
-
-\item{subset}{chr string of form 'YYYY-mm-dd HH:MM' to subset a date range.  Input can be one (requires \code{operator} or two values (a range).  Passed to \code{\link{subset.swmpr}}.}
-
-\item{select}{chr string of parameters to keep. Passed to \code{\link{subset.swmpr}}.}
-
-\item{operator}{chr string specifiying binary operator (e.g., \code{'>'}, \code{'<='}) if subset is one date value. Passed to \code{\link{subset.swmpr}}.}
+\item{...}{other arguments passed to \code{par}, \code{plot.default}}
 }
 \description{
 Plot a time series of parameters in a swmpr object
@@ -34,7 +28,8 @@ data(apadbwq)
 swmp1 <- apadbwq
 
 ## subset
-dat <- subset(swmp1, select = 'do_mgl', subset = c('2013-07-01 00:00', '2013-07-31 00:00'))
+dat <- subset(swmp1, select = 'do_mgl',
+ subset = c('2013-07-01 00:00', '2013-07-31 00:00'))
 
 ## plot using swmpr method, note default line plot
 plot(dat)
@@ -43,8 +38,8 @@ plot(dat)
 plot(do_mgl ~ datetimestamp, dat)
 
 ## plot using defualt, add lines
-plot(dat$datetimestamp, dat$do_mgl)
-lines(dat, select = 'do_mgl', col = 'red')
+plot(dat, type = 'n')
+lines(dat, col = 'red')
 }
 \seealso{
 \code{\link[graphics]{plot}}

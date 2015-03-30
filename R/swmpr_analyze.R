@@ -311,34 +311,24 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL, ...){
 #' @return Returns a swmpr object. QAQC columns are removed if included with input object.
 #' 
 #' @examples
-#' ## import data
 #' data(apadbwq)
-#' swmp1 <- apadbwq
+#' dat <- qaqc(apadbwq)
+#' dat <- subset(dat, select = 'do_mgl', 
+#'  subset = c('2013-01-22 00:00', '2013-01-26 00:00'))
 #' 
-#' ## qaqc and subset imported data
-#' dat <- qaqc(swmp1)
-#' dat <- subset(dat, subset = c('2013-01-22 00:00', '2013-01-26 00:00'))
+#' # interpolate, maxgap of 10 records
+#' fill1 <- na.approx(dat, params = 'do_mgl', maxgap = 10)
 #' 
-#' ## interpolate, maxgap of 10 records
-#' test <- na.approx(dat, params = 'do_mgl', maxgap = 10)
+#' # interpolate maxgap of 30 records
+#' fill2 <- na.approx(dat, params = 'do_mgl', maxgap = 30)
 #' 
-#' ## interpolate maxgap of 30 records
-#' test2 <- na.approx(dat, params = 'do_mgl', maxgap = 30)
-#' 
-#' ## plot for comparison
-#' par(mfrow = c(3,1))
-#' 
-#' plot(do_mgl ~ datetimestamp, dat, main = 'Raw', type = 'l')
-#' 
-#' plot(do_mgl ~ datetimestamp, test, col = 'red', 
-#'  main = 'Inteprolation - maximum gap of 10 records', 
-#'  type = 'l')
-#' lines(dat, select = 'do_mgl')
-#' 
-#' plot(do_mgl ~ datetimestamp, test2, col = 'red', 
-#'  main = 'Interpolation - maximum gap of 30 records', 
-#'  type = 'l')
-#' lines(dat, select = 'do_mgl')
+#' # plot for comparison
+#' par(mfrow = c(3, 1))
+#' plot(dat, main = 'Raw')
+#' plot(fill1, col = 'red', main = 'Interpolation - maximum gap of 10 records')
+#' lines(dat)
+#' plot(fill2, col = 'red', main = 'Interpolation - maximum gap of 30 records')
+#' lines(dat)
 na.approx.swmpr <- function(object, params = NULL, maxgap, ...){
   
   swmpr_in <- object
@@ -388,7 +378,7 @@ na.approx.swmpr <- function(object, params = NULL, maxgap, ...){
 
 #' Simple trend decomposition of swmpr data
 #' 
-#' Decompose swmpr data into trend, cyclical (e.g., daily, seaonal), and random components using \code{\link[stats]{decompose}} and \code{\link[stats]{ts}}
+#' Decompose swmpr data into trend, cyclical (e.g., daily, annual), and random components using \code{\link[stats]{decompose}} and \code{\link[stats]{ts}}
 #' 
 #' @param swmpr_in input swmpr object
 #' @param ... arguments passed to \code{decompose}, \code{ts}, and other methods
@@ -396,9 +386,9 @@ na.approx.swmpr <- function(object, params = NULL, maxgap, ...){
 #' @export decomp
 #' 
 #' @details
-#' This function is a simple wrapper to the \code{\link[stats]{decompose}} function.  The \code{decompose} function separates a time series into additive or multiplicative components describing a trend, cyclical variation (e.g., daily or seasonal), and the remainder.  The additive decomposition assumes that the cyclical component of the time series is stationary (i.e., the variance is constant), whereas a multiplicative decomposition accounts for non-stationarity.  By default, a moving average with a symmetric window is used to filter the seasonal component.  Alternatively, a vector of filter coefficients in reverse time order can be supplied (see \code{\link[stats]{decompose}}).  
+#' This function is a simple wrapper to the \code{\link[stats]{decompose}} function.  The \code{decompose} function separates a time series into additive or multiplicative components describing a trend, cyclical variation (e.g., daily or annual), and the remainder.  The additive decomposition assumes that the cyclical component of the time series is stationary (i.e., the variance is constant), whereas a multiplicative decomposition accounts for non-stationarity.  By default, a moving average with a symmetric window is used to filter the cyclical component.  Alternatively, a vector of filter coefficients in reverse time order can be supplied (see \code{\link[stats]{decompose}}).  
 #' 
-#' The \code{decompose} function requires a ts object with a specified frequency.  The \code{decomp} function converts the input swmpr vector to a ts object prior to \code{decompose}.  This requires an explicit input defining the frequency in the time series required to complete a full period of the parameter.  For example, the frequency of a parameter with diurnal periodicity would be 96 if the time step is 15 minutes (4 * 24).  The frequency of a parameter with seasonal periodicity would be 35040 (4 * 24 * 365).  For simplicity, chr strings of \code{'daily'} or \code{'seasonal'} can be supplied in place of numeric values.  A starting value of the time series must be supplied in the latter case.  Use of the \code{\link{setstep}} function is required to standardize the time step prior to decomposition.  
+#' The \code{decompose} function requires a ts object with a specified frequency.  The \code{decomp} function converts the input swmpr vector to a ts object prior to \code{decompose}.  This requires an explicit input defining the frequency in the time series required to complete a full period of the parameter.  For example, the frequency of a parameter with diurnal periodicity would be 96 if the time step is 15 minutes (4 * 24).  The frequency of a parameter with annual periodicity would be 35040 (4 * 24 * 365).  For simplicity, chr strings of \code{'daily'} or \code{'annual'} can be supplied in place of numeric values.  A starting value of the time series must be supplied in the latter case.  Use of the \code{\link{setstep}} function is required to standardize the time step prior to decomposition.  
 #' 
 #' Note that the \code{decompose} function is a relatively simple approach and alternative methods should be investigated if a more sophisticated decomposition is desired.
 #'  
@@ -445,7 +435,7 @@ decomp <- function(swmpr_in, ...) UseMethod('decomp')
 #' 
 #' @param param chr string of swmpr parameter to decompose
 #' @param type chr string of \code{'additive'} or \code{'multiplicative'} indicating the type of decomposition, default \code{'additive'}.
-#' @param frequency chr string or numeric vector indicating the periodic component of the input parameter.  Only \code{'daily'} or \code{'seasonal'} are accepted as chr strings.  Otherwise a numeric vector specifies the number of observations required for a full cycle of the input parameter.  Defaults to \code{'daily'} for a diurnal parameter.
+#' @param frequency chr string or numeric vector indicating the periodic component of the input parameter.  Only \code{'daily'} or \code{'annual'} are accepted as chr strings.  Otherwise a numeric vector specifies the number of observations required for a full cycle of the input parameter.  Defaults to \code{'daily'} for a diurnal parameter.
 #' @param start numeric vector indicating the starting value for the time series given the frequency.  Only required if \code{frequency} is numeric. See \code{\link[stats]{ts}}.
 #' 
 #' @export decomp.swmpr
@@ -465,8 +455,8 @@ decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily'
     stop('Params argument must name input columns')
   
   # stop if frequency or start are incorrect
-  if(!is.numeric(frequency) & !any(frequency %in% c('daily', 'seasonal'))){
-    stop("Chr string input for frequency must be 'daily' or 'seasonal'")
+  if(!is.numeric(frequency) & !any(frequency %in% c('daily', 'annual'))){
+    stop("Chr string input for frequency must be 'daily' or 'annual'")
   } else {
     if(!is.null(start))
       stop('Start argument required if frequency is numeric')
@@ -487,7 +477,7 @@ decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily'
     frequency  <- 24 * 60 / chk_step
     start <- 1 + (hour + min / 60) * 60 / chk_step
   }
-  if(frequency == 'seasonal'){
+  if(frequency == 'annual'){
     frequency <- 365 * 24 * 60 / chk_step 
     start <- (day + hour / 24 + min / 60 / 24) * 24 * 60 / chk_step
   }
@@ -605,7 +595,7 @@ decomp_cj.swmpr <- function(swmpr_in, param, vals_out = FALSE, ...){
 #' 
 #' @param x input swmpr object
 #' @param type chr string for type of plot, default \code{'l'}.  See \code{\link[graphics]{plot}}.
-#' @param ... other arguments passed to \code{par}, \code{plot.default}, \code{lines}, \code{points}
+#' @param ... other arguments passed to \code{par}, \code{plot.default}
 #' 
 #' @export plot.swmpr
 #' 
@@ -621,7 +611,8 @@ decomp_cj.swmpr <- function(swmpr_in, param, vals_out = FALSE, ...){
 #' swmp1 <- apadbwq
 #' 
 #' ## subset
-#' dat <- subset(swmp1, select = 'do_mgl', subset = c('2013-07-01 00:00', '2013-07-31 00:00'))
+#' dat <- subset(swmp1, select = 'do_mgl', 
+#'  subset = c('2013-07-01 00:00', '2013-07-31 00:00'))
 #'
 #' ## plot using swmpr method, note default line plot
 #' plot(dat)
@@ -630,8 +621,8 @@ decomp_cj.swmpr <- function(swmpr_in, param, vals_out = FALSE, ...){
 #' plot(do_mgl ~ datetimestamp, dat)
 #' 
 #' ## plot using defualt, add lines
-#' plot(dat$datetimestamp, dat$do_mgl)
-#' lines(dat, select = 'do_mgl', col = 'red')
+#' plot(dat, type = 'n')
+#' lines(dat, col = 'red')
 plot.swmpr <- function(x, type = 'l', ...) {
   
   swmpr_in <- x
@@ -653,22 +644,21 @@ plot.swmpr <- function(x, type = 'l', ...) {
 #' 
 #' @export lines.swmpr
 #' 
-#' @param subset chr string of form 'YYYY-mm-dd HH:MM' to subset a date range.  Input can be one (requires \code{operator} or two values (a range).  Passed to \code{\link{subset.swmpr}}.
-#' @param select chr string of parameters to keep. Passed to \code{\link{subset.swmpr}}.
-#' @param operator chr string specifiying binary operator (e.g., \code{'>'}, \code{'<='}) if subset is one date value. Passed to \code{\link{subset.swmpr}}.
-#' 
 #' @method lines swmpr
-lines.swmpr <- function(x, subset = NULL, select, operator = NULL, ...) {
+lines.swmpr <- function(x, ...) {
     
   swmpr_in <- x
   
-  to_plo <- subset(swmpr_in, subset, select, operator)
-  parameters <- attr(to_plo, 'parameters')
+  if(attr(swmpr_in, 'qaqc_cols'))
+    swmpr_in <- qaqc(swmpr_in, qaqc_keep = NULL)
+  
+  if(ncol(swmpr_in) > 2) stop('Only one parameter can be plotted, use subset first')
+  
+  parameters <- attr(swmpr_in, 'parameters')
 
-  to_plo <- swmpr_in
   form_in <- formula(substitute(i ~ datetimestamp, 
     list(i = as.name(parameters))))
-  lines(form_in, data = to_plo, ...)
+  lines(form_in, data = swmpr_in, ...)
      
 }
 
@@ -677,12 +667,9 @@ lines.swmpr <- function(x, subset = NULL, select, operator = NULL, ...) {
 #' Plot a histogram showing the distribution of a swmpr parameter
 #' 
 #' @param x input swmpr object
-#' @param subset chr string of form 'YYYY-mm-dd HH:MM' to subset a date range.  Input can be one (requires \code{operator} or two values (a range), passed to \code{\link{subset}}.
-#' @param select chr string of parameters to keep, passed to \code{\link{subset}}.
-#' @param operator chr string specifiying binary operator (e.g., \code{'>'}, \code{'<='}) if subset is one date value, passed to \code{\link{subset}}.
 #' @param ... other arguments passed to \code{\link[graphics]{hist}}
 #' 
-#' @details The swmpr method for histograms is a convenience function for the default histogram function.  Conventional histogram methods also work well since swmpr objects are also data frames.  See the examples for use with different methods.  
+#' @details The swmpr method for histograms is a convenience function for the default histogram function.  Conventional histogram methods also work well since swmpr objects are also data frames.  The input data must contain only one parameter.
 #' 
 #' @export hist.swmpr
 #' 
@@ -693,31 +680,28 @@ lines.swmpr <- function(x, subset = NULL, select, operator = NULL, ...) {
 #' @examples
 #' ## get data
 #' data(apadbwq)
-#' dat <- apadbwq
+#' dat <- subset(apadbwq, select = 'do_mgl')
 #'
-#' ## plot using swmpr method, note default line plot
-#' hist(dat, select = 'do_mgl')
+#' ## histogram using swmpr method
+#' hist(dat)
 #' 
-#' ## plot using defualt method
+#' ## change axis labels, plot title
+#' hist(dat, xlab = 'Dissolved oxygen', main = 'Histogram of DO')
+#' 
+#' ## plot using default method
 #' hist(dat$do_mgl)
-hist.swmpr <- function(x, subset = NULL, select, operator = NULL, ...) {
-  
-  if(length(select) > 1) stop('Only one parameter can be plotted')
+hist.swmpr <- function(x, ...) {
   
   swmpr_in <- x
   
-  to_plo <- subset(swmpr_in, subset, select, operator)
-  parameters <- attr(to_plo, 'parameters')
-
-  to_plo <- swmpr_in
+  if(attr(swmpr_in, 'qaqc_cols'))
+    swmpr_in <- qaqc(swmpr_in, qaqc_keep = NULL)
   
-  # for correct default of xlab, main
-  assign(select, to_plo[, select])
+  if(ncol(swmpr_in) > 2) stop('Only one parameter can be plotted, use subset first')
 
-  eval(substitute(
-    hist(i, ...), 
-    list(i = as.name(select))
-    ))
+  param <- attr(swmpr_in, 'parameters')
+
+  hist(swmpr_in[, param], ...)
   
 }
 
