@@ -1,7 +1,9 @@
 # SWMPr: An R package for the National Estuarine Research Reserve System
 Marcus W. Beck, beck.marcus@epa.gov  
 
-[![Travis-CI Build Status](https://travis-ci.org/fawda123/SWMPr.png?branch=master)](https://travis-ci.org/fawda123/SWMPr)
+Linux: [![Travis-CI Build Status](https://travis-ci.org/fawda123/SWMPr.png?branch=master)](https://travis-ci.org/fawda123/SWMPr)
+
+Windows: [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/fawda123/SWMPr?branch=master)](https://ci.appveyor.com/project/fawda123/SWMPr)
 
 #Overview 
 
