@@ -150,7 +150,7 @@ aggregate.swmpr <- function(x, by, FUN = function(x) mean(x, na.rm = TRUE), para
 #' dat <- comb(wq, met)
 #' 
 #' ## estimate metabolism
-#' res <- ecometab(dat, trace = TRUE)
+#' res <- ecometab(dat)
 #' 
 #' ## aggregate metabolism
 #' aggregate_metab(res, by = 'weeks')
@@ -1008,14 +1008,14 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 #' dat <- comb(wq, met)
 #' 
 #' ## estimate metabolism
-#' res <- ecometab(dat, trace = TRUE)
+#' res <- ecometab(dat)
 #' 
 #' ## change height (m) of weather station anemometer
-#' res <- ecometab(dat, trace = TRUE, height = 5)
+#' res <- ecometab(dat, height = 5)
 #' res <- attr(res, 'metabolism')
 #' 
 #' ## output units in grams of oxygen
-#' res <- ecometab(dat, trace = TRUE, metab_units = 'grams')
+#' res <- ecometab(dat, metab_units = 'grams')
 #' res <- attr(res, 'metabolism')
 ecometab <- function(swmpr_in, ...) UseMethod('ecometab')
 
@@ -1239,7 +1239,7 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', tra
 #' dat <- comb(wq, met)
 #' 
 #' ## estimate metabolism
-#' res <- ecometab(dat, trace = TRUE)
+#' res <- ecometab(dat)
 #' 
 #' ## plot
 #' plot_metab(res)
