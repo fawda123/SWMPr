@@ -190,11 +190,12 @@ aggregate_metab.swmpr <- function(swmpr_in, by = 'weeks', na.action = na.pass, a
   }
 
   # long-form
-  to_agg <- tidyr::gather(to_agg, Estimate, Value, -date)
+  to_agg <- reshape2::melt(to_agg, measure.vars = c('Pg', 'Rt', 'NEM'))
+  names(to_agg) <- c('date', 'Estimate', 'Value')
   to_agg$Estimate <- as.character(to_agg$Estimate)
   
   # aggregate
-  sum_fun <- function(x, alpha_in = alpha, out){
+  sum_fun <- function(x, alpha_in = alpha){
       x <- na.omit(x)
       means <- mean(x)
       margs <- suppressWarnings(
@@ -202,15 +203,15 @@ aggregate_metab.swmpr <- function(swmpr_in, by = 'weeks', na.action = na.pass, a
       )
       upper <- means + margs
       lower <- means - margs
-      return(get(out))
-    }
-  aggs <- dplyr::group_by(to_agg, date, Estimate)
-  aggs <- dplyr::summarize(aggs,
-    means = sum_fun(Value, out = 'means'),
-    lower = sum_fun(Value, out = 'lower'),
-    upper = sum_fun(Value, out = 'upper')
-  )
     
+      return(c(means, upper, lower))
+    }
+  aggs <- stats::aggregate(Value ~ date + Estimate, to_agg, 
+    FUN = function(x) sum_fun(x, alpha_in = alpha))
+  aggs_vals <- data.frame(aggs[, 'Value'])
+  names(aggs_vals) <- c('means', 'lower', 'upper')
+  aggs <- data.frame(aggs[, c('date', 'Estimate')], aggs_vals)
+
   # return output
   return(aggs)
   
@@ -580,7 +581,9 @@ decomp_cj.swmpr <- function(swmpr_in, param, vals_out = FALSE, ...){
   # otherwise, ggplot
   to_plo <- out
   to_plo <- reshape2::melt(to_plo, id.var = 'Time')
-  plo <- ggplot(to_plo, aes(x = Time, y = value, group = variable)) +
+  plo <- ggplot(to_plo, 
+      aes_string(x = 'Time', y = 'value', group = 'variable')
+    ) +
     geom_line() +
     facet_wrap(~variable, ncol = 1, scales = 'free_y') + 
     theme_bw()
@@ -863,7 +866,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
   to_plo <- dat_plo
   to_plo$month <- factor(to_plo$month, levels = rev(mo_levs), labels = rev(mo_labs))
   p3 <- ggplot(to_plo, aes_string(x = param)) + 
-    geom_histogram(aes(y = ..density..), colour = 'lightblue', binwidth = diff(range(to_plo[, param], na.rm = T))/30) + 
+    geom_histogram(aes_string(y = '..density..'), colour = 'lightblue', binwidth = diff(range(to_plo[, param], na.rm = T))/30) + 
     facet_grid(month ~ .) + 
     xlab(ylab) +
     theme_bw(base_family = 'Times') + 
@@ -882,10 +885,10 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
   to_plo$month <- factor(to_plo$month, labels = mo_labs, levels = mo_levs)
   names(to_plo)[names(to_plo) %in% param] <- 'V1'
   midpt <- mean(to_plo$V1, na.rm = T)
-  p4 <- ggplot(subset(to_plo, !is.na(V1)), 
-      aes(x = year, y = month, fill = V1)) +
+  p4 <- ggplot(subset(to_plo, !is.na(to_plo$V1)), 
+      aes_string(x = 'year', y = 'month', fill = 'V1')) +
     geom_tile() +
-    geom_tile(data = subset(to_plo, is.na(V1)), 
+    geom_tile(data = subset(to_plo, is.na(to_plo$V1)), 
       aes(x = year, y = month), fill = NA
       )  +
     scale_fill_gradient2(name = ylab,
@@ -903,10 +906,10 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
   names(to_plo)[names(to_plo) %in% param] <- 'trend'
   to_plo$anom <- with(to_plo, V1 - trend)
   rngs <- max(abs(range(to_plo$anom, na.rm = T)))
-  p5 <- ggplot(subset(to_plo, !is.na(anom)), 
-      aes(x = year, y = month, fill = anom)) +
+  p5 <- ggplot(subset(to_plo, !is.na(to_plo$anom)), 
+      aes_string(x = 'year', y = 'month', fill = 'anom')) +
     geom_tile() +
-    geom_tile(data = subset(to_plo, is.na(anom)), 
+    geom_tile(data = subset(to_plo, is.na(to_plo$anom)), 
       aes(x = year, y = month), fill = NA
       ) +
     scale_fill_gradient2(name = ylab,
@@ -922,7 +925,8 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
   # annual anomalies
   yr_avg <- mean(yr_agg[, param], na.rm = T)
   yr_agg$anom <- yr_agg[, param] - yr_avg
-  p6 <- ggplot(yr_agg, aes(x = year, y = anom, group = 1, fill = anom)) +
+  p6 <- ggplot(yr_agg, 
+      aes_string(x = 'year', y = 'anom', group = '1', fill = 'anom')) +
     geom_bar(stat = 'identity') +
     scale_fill_gradient2(name = ylab,
       low = 'lightblue', mid = 'lightgreen', high = 'tomato', midpoint = 0
@@ -1083,9 +1087,14 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', tra
   months <- as.character(format(dat$datetimestamp, '%m'))
   hours <- as.character(format(dat$datetimestamp, '%H'))
   clim_means <-dplyr:: mutate(dat, months = months, hours = hours) 
-  clim_means <- dplyr::select(clim_means, months, hours, atemp, wspd, bp)
-  clim_means <- dplyr::group_by(clim_means, months, hours)
-  clim_means <- dplyr::summarise_each(clim_means, dplyr::funs(mean(., na.rm = T)))
+  clim_means <- clim_means[, c('months', 'hours', 'atemp', 'wspd', 'bp')]
+  clim_means <- reshape2::melt(clim_means, 
+    measure.vars = c('atemp', 'wspd', 'bp')
+    )
+  clim_means <- dplyr::group_by(clim_means, 'months', 'hours', 'variable')
+  clim_means <- aggregate(value ~ months + hours + variable, clim_means, 
+    FUN = mean, na.rm = T)
+  clim_means <- tidyr::spread(clim_means, 'variable', 'value')
   
   # merge with original data
   to_join <- data.frame(datetimestamp = dat$datetimestamp, months, 
@@ -1118,10 +1127,10 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', tra
   dosat <- with(dat, do_mgl/(oxySol(temp * (1000 + sigt)/1000, sal)))
   
   #station depth, defaults to mean depth value, floored at 1 in case not on bottom
-  #uses 'depth.val' if provided
+  #uses 'depth_val' if provided
   if(is.null(depth_val))
     H <- rep(0.5 + mean(pmax(1, dat$depth), na.rm = T), nrow(dat))
-  else H <- rep(depth.val, nrow(dat))
+  else H <- rep(depth_val, nrow(dat))
   
   #use metab_day to add columns indicating light/day, date, and hours of sunlight
   dat <- metab_day(dat, stat)
@@ -1269,13 +1278,14 @@ plot_metab.swmpr <- function(swmpr_in, by = 'months', alpha = 0.05, width = 10, 
   to_plo <- aggregate_metab(swmpr_in, by = by, alpha = alpha)
   
   ## base plot
-  p <- ggplot(to_plo, aes(x = date, y = means, group = Estimate)) +
+  p <- ggplot(to_plo, aes_string(x = 'date', y = 'means', group = 'Estimate')) +
     geom_line()
   
   # add bars if not days and alpha not null
   if(by != 'days' & !is.null(alpha))
     p <- p +
-      geom_errorbar(aes(ymin = lower, ymax = upper, group = Estimate), 
+      geom_errorbar(
+        aes_string(ymin = 'lower', ymax = 'upper', group = 'Estimate'), 
       width = width) 
   
   # return blank
@@ -1288,16 +1298,16 @@ plot_metab.swmpr <- function(swmpr_in, by = 'months', alpha = 0.05, width = 10, 
     ylabs <- expression(paste('g ', O [2], ' ', m^-2, d^-1))
   
   p <- p + 
-    geom_line(aes(colour = Estimate)) +
-    geom_point(aes(colour = Estimate)) +
+    geom_line(aes_string(colour = 'Estimate')) +
+    geom_point(aes_string(colour = 'Estimate')) +
     theme_bw() +
     theme(axis.title.x = element_blank()) +
     scale_y_continuous(ylabs)
   
   if(by != 'days' & !is.null(alpha))
     p <- p + 
-      geom_errorbar(aes(ymin = lower, ymax = upper,
-        colour = Estimate, group = Estimate), width = width)
+      geom_errorbar(aes_string(ymin = 'lower', ymax = 'upper',
+        colour = 'Estimate', group = 'Estimate'), width = width)
     
   return(p)
   

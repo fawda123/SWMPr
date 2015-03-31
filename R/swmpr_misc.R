@@ -297,7 +297,8 @@ param_names <- function(param_type = c('nut', 'wq', 'met')){
 map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black', map_type = 'terrain'){
   
   # subset stat_locs by reserve
-  stats <- stat_locs[grepl(paste0('^', nerr_site_id), stat_locs$station_code), ]
+  dat_locs <- get('stat_locs')
+  stats <- dat_locs[grepl(paste0('^', nerr_site_id), dat_locs$station_code), ]
   
   # base map
   mapImageData <- ggmap::get_map(
@@ -312,8 +313,8 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
   p <- ggmap::ggmap(mapImageData,
     extent = "panel"
       ) + 
-    geom_text(data = stats, aes(x = longitude, y = latitude, 
-      label= station_code), size = text_sz, colour = text_col
+    geom_text(data = stats, aes_string(x = 'longitude', y = 'latitude', 
+      label= 'station_code'), size = text_sz, colour = text_col
       ) +
     ylab('Latitude') +
     xlab('Longitude')
@@ -503,7 +504,9 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
 #' 
 metab_day <- function(dat_in, stat_in){
   
-  stat_meta <- stat_locs[grep(gsub('wq$', '', stat_in), stat_locs$station_code),]
+  # station locations
+  dat_locs <- get('stat_locs')
+  stat_meta <- dat_locs[grep(gsub('wq$', '', stat_in), dat_locs$station_code),]
   
   # all times are standard - no DST!
   gmt_tab <- data.frame(

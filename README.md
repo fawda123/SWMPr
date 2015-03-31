@@ -13,7 +13,7 @@ SWMPr is an R package that contains functions for retrieving, organizing, and an
 
 To cite this package:
 
-*Beck MW. 2015. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 1.9.1. https://github.com/fawda123/SWMPr*
+*Beck MW. 2015. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 1.9.2. https://github.com/fawda123/SWMPr*
 
 #Installing the package
 

@@ -211,7 +211,7 @@ qaqcchk.swmpr <- function(swmpr_in){
   # format output as data.frame
   out <- melt(out)
   names(out) <- c('flag', 'count', 'variable')
-  out <- tidyr::spread(out, variable, count)
+  out <- tidyr::spread(out, 'variable', 'count')
   out[is.na(out)] <- 0
   
   # return output
