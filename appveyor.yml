@@ -14,7 +14,7 @@ install:
 
 build_script:
   - travis-tool.sh install_deps
-  - travis_tool.sh install_r Rcpp
+  - travis-tool.sh install_r Rcpp
 
 test_script:
   - travis-tool.sh run_tests
