@@ -45,7 +45,7 @@ met <- qaqc(apaebmet)
 dat <- comb(wq, met)
 
 ## estimate metabolism
-res <- ecometab(dat, trace = TRUE)
+res <- ecometab(dat)
 
 ## plot
 plot_metab(res)

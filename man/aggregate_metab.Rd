@@ -41,7 +41,7 @@ met <- qaqc(apaebmet)
 dat <- comb(wq, met)
 
 ## estimate metabolism
-res <- ecometab(dat, trace = TRUE)
+res <- ecometab(dat)
 
 ## aggregate metabolism
 aggregate_metab(res, by = 'weeks')

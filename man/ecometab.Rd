@@ -61,14 +61,14 @@ met <- qaqc(apaebmet)
 dat <- comb(wq, met)
 
 ## estimate metabolism
-res <- ecometab(dat, trace = TRUE)
+res <- ecometab(dat)
 
 ## change height (m) of weather station anemometer
-res <- ecometab(dat, trace = TRUE, height = 5)
+res <- ecometab(dat, height = 5)
 res <- attr(res, 'metabolism')
 
 ## output units in grams of oxygen
-res <- ecometab(dat, trace = TRUE, metab_units = 'grams')
+res <- ecometab(dat, metab_units = 'grams')
 res <- attr(res, 'metabolism')
 }
 \references{
