@@ -20,12 +20,6 @@
 #' data(apadbwq)
 #' dat <- apadbwq
 #' 
-#' ## qaqc screen for a swmpr object, retain only '0'
-#' qaqc(dat)
-#'
-#' ## retain all data regardless of flag
-#' qaqc(dat, qaqc_keep = NULL)
-#' 
 #' ## retain only '0' and '-1' flags
 #' qaqc(dat, qaqc_keep = c(0, -1))
 #' 
@@ -327,23 +321,13 @@ rem_reps.swmpr <- function(swmpr_in, FUN = function(x) mean(x, na.rm = TRUE), ..
 #' ## get data
 #' data(apaebmet)
 #' dat <- apaebmet
-#' 
-#' ## select two parameters from dat
-#' subset(dat, select = c('rh', 'bp'))
 #'
 #' ## subset records greater than or equal to a date
 #' subset(dat, subset = '2013-01-01 0:00', operator = '>=')
-#'
-#' ## subset records within a date range
-#' subset(dat, subset = c('2012-07-01 6:00', '2012-08-01 18:15'))
-#'
+#' 
 #' ## subset records within a date range, select two parameters
 #' subset(dat, subset = c('2012-07-01 6:00', '2012-08-01 18:15'),
 #'    select = c('atemp', 'totsorad'))
-#'
-#' ## remove rows/columns that do not contain data
-#' subset(dat, rem_rows = TRUE, rem_cols = TRUE)
-#' 
 subset.swmpr <- function(x, subset = NULL, select = NULL, 
   operator = NULL, rem_rows = FALSE, rem_cols = FALSE, ...){
   
@@ -573,23 +557,14 @@ setstep.swmpr <- function(swmpr_in, timestep = 15, differ= timestep/2, ...){
 #' 
 #' @examples
 #' 
-#' ## get nuts, wq, and met data as separate objects for the same station
-#' ## note that most sites usually have one weather station
-#' data(apacpnut)
+#' ## get wq and met data as separate objects for the same station
 #' data(apacpwq)
 #' data(apaebmet)
 #' swmp1 <- apacpnut
-#' swmp2 <- apacpwq
-#' swmp3 <- apaebmet
+#' swmp2 <- apaebmet
 #' 
-#' ## combine nuts and wq data by union
-#' comb(swmp1, swmp2, method = 'union')
-#' 
-#' ## combine nuts and wq data by intersect
-#' comb(swmp1, swmp3, method = 'intersect')
-#' 
-#' ## combine nuts, wq, and met data by nuts time series, two hour time step
-#' comb(swmp1, swmp2, swmp3, timestep = 120, method = 'apacpnut')
+#' ## combine nuts and wq data by union, set timestep to 120 minutes
+#' comb(swmp1, swmp2, timestep = 120, method = 'union')
 comb <- function(...) UseMethod('comb')
 
 #' @rdname comb

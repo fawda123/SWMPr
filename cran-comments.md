@@ -1,3 +1,5 @@
+This is a resubmission to address processing time issues with some of the examples.  I have reduced examples for the functions `comb`, `ecometab`, `subset.swmpr`, and `import_remote`.
+
 ## Test environments
 * ubuntu 12.04 (on travis-ci), R 3.1.3
 * local Windows 7 install, R 3.1.3 

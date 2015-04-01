@@ -55,17 +55,8 @@ The specific approach for estimating metabolism with the open-water method is de
 data(apadbwq)
 data(apaebmet)
 
-## qaqc, combine
-wq <- qaqc(apadbwq)
-met <- qaqc(apaebmet)
-dat <- comb(wq, met)
-
-## estimate metabolism
-res <- ecometab(dat)
-
-## change height (m) of weather station anemometer
-res <- ecometab(dat, height = 5)
-res <- attr(res, 'metabolism')
+## combine
+dat <- comb(apadbwq, apaebmet)
 
 ## output units in grams of oxygen
 res <- ecometab(dat, metab_units = 'grams')

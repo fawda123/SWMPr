@@ -31,23 +31,14 @@ The \code{comb} function is used to combine multiple swmpr objects into a single
 The function requires one or more swmpr objects as input as separate, undefined arguments. The remaining arguments must be called explicitly since an arbitrary number of objects can be used as input. In general, the function combines data by creating a master time series that is used to iteratively merge all swmpr objects. The time series for merging depends on the value passed to the \code{method} argument. Passing \code{'union'} to \code{method} will create a time series that is continuous starting from the earliest date and the latest date for all input objects. Passing \code{'intersect'} to \code{method} will create a time series that is continuous from the set of dates that are shared between all input objects. Finally, a seven or eight character station name passed to \code{method} will merge all input objects based on a continuous time series for the given station. The specified station must be present in the input data. Currently, combining data types from different stations is not possible, excluding weather data which are typically at a single, dedicated station.
 }
 \examples{
-## get nuts, wq, and met data as separate objects for the same station
-## note that most sites usually have one weather station
-data(apacpnut)
+## get wq and met data as separate objects for the same station
 data(apacpwq)
 data(apaebmet)
 swmp1 <- apacpnut
-swmp2 <- apacpwq
-swmp3 <- apaebmet
+swmp2 <- apaebmet
 
-## combine nuts and wq data by union
-comb(swmp1, swmp2, method = 'union')
-
-## combine nuts and wq data by intersect
-comb(swmp1, swmp3, method = 'intersect')
-
-## combine nuts, wq, and met data by nuts time series, two hour time step
-comb(swmp1, swmp2, swmp3, timestep = 120, method = 'apacpnut')
+## combine nuts and wq data by union, set timestep to 120 minutes
+comb(swmp1, swmp2, timestep = 120, method = 'union')
 }
 \seealso{
 \code{\link{setstep}}

@@ -21,14 +21,6 @@ This function allows quick retrieval of .RData files for all data at a single Sw
 The files are available here: \url{https://s3.amazonaws.com/swmpalldata/}.  Files can be obtained using the function or by copying the URL to a web browser with the station name appended to the address, including the .RData file extension.  For example, \url{https://s3.amazonaws.com/swmpalldata/acebbnut.RData}.
 }
 \examples{
-## see the available files on the server
-library(XML)
-library(httr)
-files_s3 <- GET('https://s3.amazonaws.com/swmpalldata/')$content
-files_s3 <- rawToChar(files_s3)
-files_s3 <- htmlTreeParse(files_s3, useInternalNodes = TRUE)
-files_s3 <- xpathSApply(files_s3, '//contents//key', xmlValue)
-
 ## import a file
 dat <- import_remote('rkbmbwq')
 

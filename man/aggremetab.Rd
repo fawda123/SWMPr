@@ -43,10 +43,7 @@ dat <- comb(wq, met)
 ## estimate metabolism
 res <- ecometab(dat)
 
-## aggregate metabolism
-aggremetab(res, by = 'weeks')
-
-## change aggregatin period and alpha
+## change aggregation period and alpha
 aggremetab(res, by = 'months', alpha = 0.1)
 }
 \seealso{

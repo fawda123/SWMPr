@@ -32,12 +32,6 @@ The qaqc function is a simple screen to retain values from the data with specifi
 data(apadbwq)
 dat <- apadbwq
 
-## qaqc screen for a swmpr object, retain only '0'
-qaqc(dat)
-
-## retain all data regardless of flag
-qaqc(dat, qaqc_keep = NULL)
-
 ## retain only '0' and '-1' flags
 qaqc(dat, qaqc_keep = c(0, -1))
 }

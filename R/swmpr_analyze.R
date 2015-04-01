@@ -156,10 +156,7 @@ aggreswmp.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = TRUE
 #' ## estimate metabolism
 #' res <- ecometab(dat)
 #' 
-#' ## aggregate metabolism
-#' aggremetab(res, by = 'weeks')
-#' 
-#' ## change aggregatin period and alpha
+#' ## change aggregation period and alpha
 #' aggremetab(res, by = 'months', alpha = 0.1)
 aggremetab <- function(swmpr_in, ...) UseMethod('aggremetab')
 
@@ -1010,17 +1007,8 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 #' data(apadbwq)
 #' data(apaebmet)
 #' 
-#' ## qaqc, combine
-#' wq <- qaqc(apadbwq)
-#' met <- qaqc(apaebmet)
-#' dat <- comb(wq, met)
-#' 
-#' ## estimate metabolism
-#' res <- ecometab(dat)
-#' 
-#' ## change height (m) of weather station anemometer
-#' res <- ecometab(dat, height = 5)
-#' res <- attr(res, 'metabolism')
+#' ## combine
+#' dat <- comb(apadbwq, apaebmet)
 #' 
 #' ## output units in grams of oxygen
 #' res <- ecometab(dat, metab_units = 'grams')

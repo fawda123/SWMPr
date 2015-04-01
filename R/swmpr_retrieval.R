@@ -423,14 +423,6 @@ import_local <- function(path, station_code, trace = FALSE){
 #' @seealso \code{\link{import_local}}
 #' 
 #' @examples
-#' ## see the available files on the server
-#' library(XML)
-#' library(httr)
-#' files_s3 <- GET('https://s3.amazonaws.com/swmpalldata/')$content
-#' files_s3 <- rawToChar(files_s3)
-#' files_s3 <- htmlTreeParse(files_s3, useInternalNodes = TRUE)
-#' files_s3 <- xpathSApply(files_s3, '//contents//key', xmlValue)
-#'
 #' ## import a file
 #' dat <- import_remote('rkbmbwq')
 #' 
