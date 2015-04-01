@@ -12,7 +12,7 @@
 #' 
 #' @import data.table
 #' 
-#' @export aggregate.swmpr
+#' @export
 #' 
 #' @method aggregate swmpr
 #' 
@@ -235,7 +235,7 @@ smoother <- function(swmpr_in, ...) UseMethod('smoother')
 #' @param sides numeric vector defining method of averaging, passed to \code{filter}
 #' @param params is chr string of swmpr parameters to smooth, default all
 #' 
-#' @export smoother.swmpr
+#' @export
 #' 
 #' @details The \code{smoother} function can be used to smooth parameters in a swmpr object using a specified window size. This method is a simple wrapper to \code{\link[stats]{filter}}. The window argument specifies the number of observations included in the moving average. The sides argument specifies how the average is calculated for each observation (see the documentation for \code{\link[stats]{filter}}). A value of 1 will filter observations within the window that are previous to the current observation, whereas a value of 2 will filter all observations within the window centered at zero lag from the current observation. The params argument specifies which parameters to smooth.
 #' 
@@ -301,7 +301,7 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL, ...){
 #' 
 #' @import zoo
 #'
-#' @export na.approx.swmpr
+#' @export
 #' 
 #' @method na.approx swmpr
 #' 
@@ -439,7 +439,7 @@ decomp <- function(swmpr_in, ...) UseMethod('decomp')
 #' @param frequency chr string or numeric vector indicating the periodic component of the input parameter.  Only \code{'daily'} or \code{'annual'} are accepted as chr strings.  Otherwise a numeric vector specifies the number of observations required for a full cycle of the input parameter.  Defaults to \code{'daily'} for a diurnal parameter.
 #' @param start numeric vector indicating the starting value for the time series given the frequency.  Only required if \code{frequency} is numeric. See \code{\link[stats]{ts}}.
 #' 
-#' @export decomp.swmpr
+#' @export
 #' 
 #' @method decomp swmpr
 decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily', start = NULL, ...){
@@ -544,7 +544,7 @@ decomp_cj <- function(swmpr_in, ...) UseMethod('decomp_cj')
 
 #' @rdname decomp_cj
 #' 
-#' @export decomp_cj.swmpr
+#' @export
 #' 
 #' @method decomp_cj swmpr
 decomp_cj.swmpr <- function(swmpr_in, param, vals_out = FALSE, ...){
@@ -600,7 +600,7 @@ decomp_cj.swmpr <- function(swmpr_in, param, vals_out = FALSE, ...){
 #' @param type chr string for type of plot, default \code{'l'}.  See \code{\link[graphics]{plot}}.
 #' @param ... other arguments passed to \code{par}, \code{plot.default}
 #' 
-#' @export plot.swmpr
+#' @export
 #' 
 #' @details The swmpr method for plotting is a convenience function for plotting a univariate time series.  Conventional plotting methods also work well since swmpr objects are also data frames.  See the examples for use with different methods.  
 #' 
@@ -645,7 +645,7 @@ plot.swmpr <- function(x, type = 'l', ...) {
 
 #' @rdname plot.swmpr
 #' 
-#' @export lines.swmpr
+#' @export
 #' 
 #' @method lines swmpr
 lines.swmpr <- function(x, ...) {
@@ -674,7 +674,7 @@ lines.swmpr <- function(x, ...) {
 #' 
 #' @details The swmpr method for histograms is a convenience function for the default histogram function.  Conventional histogram methods also work well since swmpr objects are also data frames.  The input data must contain only one parameter.
 #' 
-#' @export hist.swmpr
+#' @export
 #' 
 #' @method hist swmpr
 #' 
@@ -739,7 +739,7 @@ plot_summary <- function(swmpr_in, ...) UseMethod('plot_summary')
 
 #' @rdname plot_summary
 #' 
-#' @export plot_summary.swmpr
+#' @export
 #' 
 #' @method plot_summary swmpr
 plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){

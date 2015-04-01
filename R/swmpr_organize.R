@@ -36,7 +36,7 @@ qaqc <- function(swmpr_in, ...) UseMethod('qaqc')
 #' @param qaqc_keep numeric vector of qaqc flags to keep, default \code{0}
 #' @param trace logical for progress output on console, default \code{FALSE}
 #' 
-#' @export qaqc.swmpr
+#' @export
 #' 
 #' @method qaqc swmpr
 qaqc.swmpr <- function(swmpr_in, 
@@ -189,7 +189,7 @@ qaqcchk <- function(swmpr_in) UseMethod('qaqcchk')
 
 #' @rdname qaqcchk
 #' 
-#' @export qaqcchk.swmpr
+#' @export
 #' 
 #' @method qaqcchk swmpr
 qaqcchk.swmpr <- function(swmpr_in){
@@ -252,7 +252,7 @@ rem_reps <- function(swmpr_in, ...) UseMethod('rem_reps')
 
 #' @rdname rem_reps
 #' 
-#' @export rem_reps.swmpr
+#' @export
 #' 
 #' @method rem_reps swmpr
 rem_reps.swmpr <- function(swmpr_in, FUN = function(x) mean(x, na.rm = TRUE), ...){
@@ -312,7 +312,7 @@ rem_reps.swmpr <- function(swmpr_in, FUN = function(x) mean(x, na.rm = TRUE), ..
 #' @param rem_cols is logical indicating if cols with no data are removed, default \code{FALSE}
 #' @param ... arguments passed to other methods
 #' 
-#' @export subset.swmpr
+#' @export
 #' 
 #' @method subset swmpr
 #' 
