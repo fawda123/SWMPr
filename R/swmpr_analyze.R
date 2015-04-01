@@ -2,7 +2,7 @@
 #' 
 #' Aggregate swmpr data by specified time period and method
 #' 
-#' @param x input swmpr object
+#' @param swmpr_in input swmpr object
 #' @param by chr string of time period for aggregation one of \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'weeks'}, \code{'days'}, or \code{'hours'}
 #' @param FUN aggregation function, default \code{mean} with \code{na.rm = TRUE}
 #' @param params names of parameters to aggregate, default all
@@ -14,9 +14,7 @@
 #' 
 #' @export
 #' 
-#' @method aggregate swmpr
-#' 
-#' @details The \code{aggregate} function summarizes or condenses parameter data for a swmpr object by set periods of observation and a user-supplied function. It is most useful for aggregating noisy data to evaluate trends on longer time scales, or to simply reduce the size of a dataset. Data can be aggregated by \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'weeks'}, \code{'days'}, or \code{'hours'} for the supplied function, which defaults to the \code{\link[base]{mean}}. A swmpr object is returned for the aggregated data, although the datetimestamp vector will be converted to a date object if the aggregation period is a day or longer. Days are assigned to the date vector if the aggregation period is a week or longer based on the round method for \code{\link[data.table]{IDate}} objects. This approach was used to facilitate plotting using predefined methods for Date and POSIX objects.
+#' @details The function aggregates parameter data for a swmpr object by set periods of observation and a user-supplied function. It is most useful for aggregating noisy data to evaluate trends on longer time scales, or to simply reduce the size of a dataset. Data can be aggregated by \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'weeks'}, \code{'days'}, or \code{'hours'} for the supplied function, which defaults to the \code{\link[base]{mean}}. A swmpr object is returned for the aggregated data, although the datetimestamp vector will be converted to a date object if the aggregation period is a day or longer. Days are assigned to the date vector if the aggregation period is a week or longer based on the round method for \code{\link[data.table]{IDate}} objects. This approach was used to facilitate plotting using predefined methods for Date and POSIX objects.
 #' 
 #' The method of treating NA values for the user-supplied function should be noted since this may greatly affect the quantity of data that are returned (see the examples). Finally, the default argument for \code{na.action} is set to \code{na.pass} for swmpr objects to preserve the time series of the input data.
 #' 
@@ -31,16 +29,22 @@
 #' swmpr_in <- subset(qaqc(dat), rem_cols = TRUE)
 #'
 #' ## get mean DO by quarters
-#' aggregate(swmpr_in, 'quarters', params = c('do_mgl'))
+#' aggreswmp(swmpr_in, 'quarters', params = c('do_mgl'))
 #'
 #' ## get variance of DO by years, remove NA when calculating variance
 #' ## omit NA data in output
 #' fun_in <- function(x)  var(x, na.rm = TRUE)
-#' aggregate(swmpr_in, FUN = fun_in, 'years') 
-aggregate.swmpr <- function(x, by, FUN = function(x) mean(x, na.rm = TRUE), params = NULL, aggs_out = FALSE, na.action = na.pass, ...){
+#' aggreswmp(swmpr_in, FUN = fun_in, 'years') 
+aggreswmp <- function(swmpr_in, ...) UseMethod('aggreswmp')
+
+#' @rdname aggreswmp
+#'
+#' @export
+#'
+#' @method aggreswmp swmpr
+aggreswmp.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = TRUE), params = NULL, aggs_out = FALSE, na.action = na.pass, ...){
   
   # data
-  swmpr_in <- x
   to_agg <- swmpr_in
 
   # attributes
@@ -137,7 +141,7 @@ aggregate.swmpr <- function(x, by, FUN = function(x) mean(x, na.rm = TRUE), para
 #' 
 #' @return Returns an aggregated metabolism \code{\link[base]{data.frame}} if the \code{metabolism} attribute of the swmpr object is not \code{NULL}.
 #' 
-#' @seealso \code{\link[stats]{aggregate}}, \code{\link{aggregate.swmpr}}, \code{\link{ecometab}}, \code{\link{plot_metab}}
+#' @seealso \code{\link[stats]{aggregate}}, \code{\link{aggreswmp}}, \code{\link{ecometab}}, \code{\link{plot_metab}}
 #' 
 #' @examples
 #' ## import water quality and weather data
@@ -153,18 +157,18 @@ aggregate.swmpr <- function(x, by, FUN = function(x) mean(x, na.rm = TRUE), para
 #' res <- ecometab(dat)
 #' 
 #' ## aggregate metabolism
-#' aggregate_metab(res, by = 'weeks')
+#' aggremetab(res, by = 'weeks')
 #' 
 #' ## change aggregatin period and alpha
-#' aggregate_metab(res, by = 'months', alpha = 0.1)
-aggregate_metab <- function(swmpr_in, ...) UseMethod('aggregate_metab')
+#' aggremetab(res, by = 'months', alpha = 0.1)
+aggremetab <- function(swmpr_in, ...) UseMethod('aggremetab')
 
-#' @rdname aggregate_metab
+#' @rdname aggremetab
 #'
 #' @export
 #'
-#' @method aggregate_metab swmpr
-aggregate_metab.swmpr <- function(swmpr_in, by = 'weeks', na.action = na.pass, alpha = 0.05, ...){
+#' @method aggremetab swmpr
+aggremetab.swmpr <- function(swmpr_in, by = 'weeks', na.action = na.pass, alpha = 0.05, ...){
   
   # attributes
   timezone <- attr(swmpr_in, 'timezone')
@@ -556,7 +560,7 @@ decomp_cj.swmpr <- function(swmpr_in, param, vals_out = FALSE, ...){
   if(!param %in% parameters) stop('Selected parameter not in data')
   
   # monthly ts
-  dat <- aggregate(dat, by = 'months', params = param)
+  dat <- aggreswmp(dat, by = 'months', params = param)
   dat_rng <- attr(dat, 'date_rng')
   months <- data.frame(datetimestamp = seq.Date(dat_rng[1], dat_rng[2], by = 'months'))
   dat <- merge(months, dat,  by = 'datetimestamp', all.x = T)
@@ -763,18 +767,18 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
   ## aggregate by averages for quicker plots
   # nuts are monthly
   if(grepl('nut$', stat)){
-    dat <- aggregate.swmpr(swmpr_in, by = 'months', params = param)
+    dat <- aggreswmp(swmpr_in, by = 'months', params = param)
   }
   
   # wq is monthly
   if(grepl('wq$', stat)){
-    dat <- aggregate.swmpr(swmpr_in, by = 'days', params = param)
+    dat <- aggreswmp(swmpr_in, by = 'days', params = param)
   }
   
   # met is monthly, except cumprcp which is daily max
   if(grepl('met$', stat)){
-    dat <- aggregate.swmpr(swmpr_in, by = 'days', params = param)
-    cumprcp <- aggregate(swmpr_in, by = 'days', FUN = function(x) max(x, na.rm = T), 
+    dat <- aggreswmp(swmpr_in, by = 'days', params = param)
+    cumprcp <- aggreswmp(swmpr_in, by = 'days', FUN = function(x) max(x, na.rm = T), 
       params = 'cumprcp')
     dat$cumprcp <- cumprcp$cumprcp
   }
@@ -999,7 +1003,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 #' Thebault J, Schraga TS, Cloern JE, Dunlavey EG. 2008. Primary production and carrying capacity of former salt ponds after reconnection to San Francisco Bay. Wetlands. 28(3):841-851.
 #' 
 #' @seealso 
-#' \code{\link{calckl}} for estimating the oxygen mass transfer coefficient used with the air-sea gas exchange model, \code{\link{comb}} for combining \code{swmpr} objects, \code{\link{metab_day}} for identifying the metabolic day for each observation in the time series, and \code{\link{plot_metab}} for plotting the results
+#' \code{\link{calckl}} for estimating the oxygen mass transfer coefficient used with the air-sea gas exchange model, \code{\link{comb}} for combining \code{swmpr} objects, \code{\link{metab_day}} for identifying the metabolic day for each observation in the time series, \code{\link{plot_metab}} for plotting the results, and \code{\link{aggremetab}} for aggregating the metabolism attribute.
 #' 
 #' @examples
 #' ## import water quality and weather data
@@ -1216,7 +1220,7 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', tra
 #' Plot gross production, total respiration, and net ecosystem metabolism for a swmpr object. 
 #'
 #' @param swmpr_in input swmpr object
-#' @param by chr string describing aggregation period, passed to \code{\link{aggregate_metab}}. See details for accepted values.
+#' @param by chr string describing aggregation period, passed to \code{\link{aggremetab}}. See details for accepted values.
 #' @param alpha numeric indicating alpha level for confidence intervals in aggregated data. Use \code{NULL} to remove from the plot.
 #' @param width numeric indicating width of top and bottom segments on error bars
 #' @param pretty logical indicating use of predefined plot aesthetics
@@ -1235,7 +1239,7 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', tra
 #' A \code{\link[ggplot2]{ggplot}} object which can be further modified.
 #' 
 #' @seealso 
-#' \code{\link{aggregate_metab}}, \code{\link{ecometab}}
+#' \code{\link{aggremetab}}, \code{\link{ecometab}}
 #' 
 #' @examples
 #' ## import water quality and weather data
@@ -1275,7 +1279,7 @@ plot_metab.swmpr <- function(swmpr_in, by = 'months', alpha = 0.05, width = 10, 
     stop('No metabolism data, use the ecometab function')
   
   # aggregate metab results by time period
-  to_plo <- aggregate_metab(swmpr_in, by = by, alpha = alpha)
+  to_plo <- aggremetab(swmpr_in, by = by, alpha = alpha)
   
   ## base plot
   p <- ggplot(to_plo, aes_string(x = 'date', y = 'means', group = 'Estimate')) +

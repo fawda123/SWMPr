@@ -262,7 +262,7 @@ param_names <- function(param_type = c('nut', 'wq', 'met')){
 #' 
 #' Create a map of all the stations in a reserve
 #' 
-#' @param nerr_site_id chr string of the reserve to map, first three characters used by NERRS
+#' @param nerr_site_id chr string of the reserve to map, first three characters used by NERRS or vector of stations to map using the first five characters
 #' @param zoom numeric value for map zoom, passed to \code{\link[ggmap]{get_map}}
 #' @param text_sz numeric value for text size of station names, passed to \code{\link[ggplot2]{geom_text}}
 #' @param text_col chr string for text color of station names, passed to \code{\link[ggplot2]{geom_text}}
@@ -283,30 +283,30 @@ param_names <- function(param_type = c('nut', 'wq', 'met')){
 #' 
 #' map_reserve('jac')
 #' 
-#' ## satellite map
+#' ## change defaults, map a single site
 #' 
-#' map_reserve('jac', map_type = 'satellite')
-#' 
-#' ## roadmap
-#' 
-#' map_reserve('jac', map_type = 'roadmap')
-#' 
-#' ## hybrid
-#' 
-#' map_reserve('jac', map_type = 'hybrid')
+#' map_reserve('gtmss', zoom = 15, map_type = 'satellite', 
+#'  text_col = 'lightblue')
 map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black', map_type = 'terrain'){
+  
+  # sanity check
+  if(!any(c(3, 5) %in% nchar(nerr_site_id)))
+    stop('nerr_site_id must be three or five characters')
   
   # subset stat_locs by reserve
   dat_locs <- get('stat_locs')
-  stats <- dat_locs[grepl(paste0('^', nerr_site_id), dat_locs$station_code), ]
+  stats <- paste(paste0('^', nerr_site_id), collapse = '|')
+  stats <- dat_locs[grepl(stats, dat_locs$station_code), ]
   
   # base map
-  mapImageData <- ggmap::get_map(
-    location = c(lon = mean(stats$longitude),lat = mean(stats$latitude)),
-    source = 'google',
-    maptype = map_type,
-    zoom = zoom,
-    messaging = FALSE
+  mapImageData <- suppressMessages(
+    ggmap::get_map(
+      location = c(lon = mean(stats$longitude),lat = mean(stats$latitude)),
+      source = 'google',
+      maptype = map_type,
+      zoom = zoom,
+      messaging = FALSE
+      )
     )
   
   # plot

@@ -81,6 +81,6 @@ Ro KS, Hunt PG. 2006. A new unified equation for wind-driven surficial oxygen tr
 Thebault J, Schraga TS, Cloern JE, Dunlavey EG. 2008. Primary production and carrying capacity of former salt ponds after reconnection to San Francisco Bay. Wetlands. 28(3):841-851.
 }
 \seealso{
-\code{\link{calckl}} for estimating the oxygen mass transfer coefficient used with the air-sea gas exchange model, \code{\link{comb}} for combining \code{swmpr} objects, \code{\link{metab_day}} for identifying the metabolic day for each observation in the time series, and \code{\link{plot_metab}} for plotting the results
+\code{\link{calckl}} for estimating the oxygen mass transfer coefficient used with the air-sea gas exchange model, \code{\link{comb}} for combining \code{swmpr} objects, \code{\link{metab_day}} for identifying the metabolic day for each observation in the time series, \code{\link{plot_metab}} for plotting the results, and \code{\link{aggremetab}} for aggregating the metabolism attribute.
 }
 

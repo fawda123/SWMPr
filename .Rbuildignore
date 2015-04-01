@@ -9,3 +9,4 @@
 ^\.travis\.yml$
 ^\.Rhistory$
 ^appveyor\.yml$
+^cran-comments\.md$

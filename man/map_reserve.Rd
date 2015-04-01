@@ -8,7 +8,7 @@ map_reserve(nerr_site_id, zoom = 11, text_sz = 6, text_col = "black",
   map_type = "terrain")
 }
 \arguments{
-\item{nerr_site_id}{chr string of the reserve to map, first three characters used by NERRS}
+\item{nerr_site_id}{chr string of the reserve to map, first three characters used by NERRS or vector of stations to map using the first five characters}
 
 \item{zoom}{numeric value for map zoom, passed to \code{\link[ggmap]{get_map}}}
 
@@ -32,17 +32,10 @@ This function is a simple wrapper to functions in the ggmap package which return
 
 map_reserve('jac')
 
-## satellite map
+## change defaults, map a single site
 
-map_reserve('jac', map_type = 'satellite')
-
-## roadmap
-
-map_reserve('jac', map_type = 'roadmap')
-
-## hybrid
-
-map_reserve('jac', map_type = 'hybrid')
+map_reserve('gtmss', zoom = 15, map_type = 'satellite',
+ text_col = 'lightblue')
 }
 \seealso{
 \code{\link[ggmap]{get_map}}, \code{\link[ggmap]{ggmap}}, \code{\link[ggplot2]{ggplot}}

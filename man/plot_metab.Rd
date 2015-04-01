@@ -15,7 +15,7 @@ plot_metab(swmpr_in, ...)
 
 \item{...}{arguments passed to or from other methods}
 
-\item{by}{chr string describing aggregation period, passed to \code{\link{aggregate_metab}}. See details for accepted values.}
+\item{by}{chr string describing aggregation period, passed to \code{\link{aggremetab}}. See details for accepted values.}
 
 \item{alpha}{numeric indicating alpha level for confidence intervals in aggregated data. Use \code{NULL} to remove from the plot.}
 
@@ -57,6 +57,6 @@ plot_metab(res, by = 'quarters', alpha = 0.1, widths = 0)
 plot_metab(res, by = 'days', pretty = FALSE)
 }
 \seealso{
-\code{\link{aggregate_metab}}, \code{\link{ecometab}}
+\code{\link{aggremetab}}, \code{\link{ecometab}}
 }
 

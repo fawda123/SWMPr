@@ -7,7 +7,7 @@ Windows: [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/g
 
 #Overview 
 
-SWMPr is an R package that contains functions for retrieving, organizing, and analyzing estuary monitoring data from the System Wide Monitoring Program ([SWMP](http://nerrs.noaa.gov/RCDefault.aspx?ID=18)).  SWMP was implemented by the National Estuarine Research Reserve System ([NERRS](http://nerrs.noaa.gov/)) in 1995 to provide continuous monitoring data at over 300 stations in 28 estuaries across the United States.  SWMP data are maintained online by the Centralized Data Management Office (CDMO). This R package provides several functions to retrieve, organize, and analyze SWMP data from the CDMO. All data obtained from the CDMO should be [cited](http://cdmo.baruch.sc.edu/data/citation.cfm) using the format:
+SWMPr is an R package for retrieving, organizing, and analyzing estuary monitoring data from the System Wide Monitoring Program ([SWMP](http://nerrs.noaa.gov/RCDefault.aspx?ID=18)).  SWMP was implemented by the National Estuarine Research Reserve System ([NERRS](http://nerrs.noaa.gov/)) in 1995 to provide continuous monitoring data at over 300 stations in 28 estuaries across the United States.  SWMP data are maintained online by the Centralized Data Management Office (CDMO). This R package provides several functions to retrieve, organize, and analyze SWMP data from the CDMO. All data obtained from the CDMO should be [cited](http://cdmo.baruch.sc.edu/data/citation.cfm) using the format:
 
 *National Estuarine Research Reserve System (NERRS). 2012. System-wide Monitoring Program. Data accessed from the NOAA NERRS Centralized Data Management Office website: http://cdmo.baruch.sc.edu/; accessed 12 October 2012.*
 
@@ -254,9 +254,9 @@ comb(swmp1, swmp3, method = 'intersect')
 comb(swmp1, swmp2, swmp3, timestep = 120, method = 'apacpnut')
 ```
 
-The analysis functions range from general purpose tools for time series analysis to more specific functions for working with continuous monitoring data in estuaries.  The latter category includes a limited number of functions that were developed by myself or others.  The general purpose tools are swmpr methods that were developed for existing generic functions in the R base installation or relevant packages.  These functions include swmpr methods for `aggregate`, `filter`, and `approx` to deal with missing or noisy data and more general functions for exploratory data analaysis, such as `plot`, `summary`, and `hist` methods.  Decomposition functions (`decomp` and `decomp_cj`) are provided as relatively simple approaches for decomposing time series into additive or multiplicative components. The analysis functions may or may not return a swmpr object depending on whether further processing with swmpr methods is possible from the output.    
+The analysis functions range from general purpose tools for time series analysis to more specific functions for working with continuous monitoring data in estuaries.  The latter category includes a limited number of functions that were developed by myself or others.  The general purpose tools are swmpr methods that were developed for existing generic functions in the R base installation or relevant packages.  These functions include swmpr methods for `aggreswmp`, `filter`, and `approx` to deal with missing or noisy data and more general functions for exploratory data analaysis, such as `plot`, `summary`, and `hist` methods.  Decomposition functions (`decomp` and `decomp_cj`) are provided as relatively simple approaches for decomposing time series into additive or multiplicative components. The analysis functions may or may not return a swmpr object depending on whether further processing with swmpr methods is possible from the output.    
 
-The `aggregate` function aggregates parameter data for a swmpr object by set periods of observation.  This function is most useful for aggregating noisy data to evaluate trends on longer time scales, or to simply reduce the size of a dataset.  Data can be aggregated by years, quarters, months, weeks, days, or hours for a user-defined function, which defaults to the mean.  A swmpr object is returned for the aggregated data, although the datetimestamp vector will be converted to a date object if the aggregation period is a day or longer.  Days are assigned to the date vector if the aggregation period is a week or longer based on the `round` method for IDate objects ([data.table](http://cran.r-project.org/web/packages/data.table/index.html) package).  This approach was used to facilitate plotting using predefined methods for Date and POSIX objects.  Additionally, the method of treating NA values for the aggregation function should be noted since this may greatly affect the quantity of data that are returned (see the example below).  Finally, the default argument for `na.action` is set to `na.pass` for swmpr objects to preserve the time series of the input data.
+The `aggreswmp` function aggregates parameter data for a swmpr object by set periods of observation.  This function is most useful for aggregating noisy data to evaluate trends on longer time scales, or to simply reduce the size of a dataset.  Data can be aggregated by years, quarters, months, weeks, days, or hours for a user-defined function, which defaults to the mean.  A swmpr object is returned for the aggregated data, although the datetimestamp vector will be converted to a date object if the aggregation period is a day or longer.  Days are assigned to the date vector if the aggregation period is a week or longer based on the `round` method for IDate objects ([data.table](http://cran.r-project.org/web/packages/data.table/index.html) package).  This approach was used to facilitate plotting using predefined methods for Date and POSIX objects.  Additionally, the method of treating NA values for the aggregation function should be noted since this may greatly affect the quantity of data that are returned (see the example below).  Finally, the default argument for `na.action` is set to `na.pass` for swmpr objects to preserve the time series of the input data.
 
 
 ```r
@@ -266,11 +266,11 @@ dat <- qaqc(dat)
 swmpr_in <- subset(dat, rem_cols = T)
 
 # get mean DO by quarters
-aggregate(swmpr_in, 'quarters', params = c('do_mgl'))
+aggreswmp(swmpr_in, 'quarters', params = c('do_mgl'))
 
 # get mean DO by quarters, remove NA when calculating means
 fun_in <- function(x) mean(x, na.rm = T)
-aggregate(swmpr_in, FUN = fun_in, 'quarters', params = c('do_mgl'))
+aggreswmp(swmpr_in, FUN = fun_in, 'quarters', params = c('do_mgl'))
 ```
 
 Time series can be smoothed to better characterize a signal independent of noise.  Although there are many approaches to smoothing, a moving window average is intuitive and commonly used.  The `smoother` function can be used to smooth parameters in a swmpr object using a specified window size.  This method is a simple wrapper to `filter`.  The `window` argument specifies the number of observations included in the moving average.  The `sides` argument specifies how the average is calculated for each observation (see the documentation for `filter`).  A value of 1 will filter observations within the window that are previous to the current observation, whereas a value of 2 will filter all observations within the window centered at zero lag from the current observation. As before, the `params` argument specifies which parameters to smooth.
@@ -474,9 +474,9 @@ See help documentation for more details on each function (e.g., `?all_params`).
 
 ##Analyze
 
-`aggregate.swmpr` Aggregate swmpr objects for different time periods - years, quarters, months,  weeks, days, or hours.  Aggregation function is user-supplied but defaults to mean. 
+`aggreswmp.swmpr` Aggregate swmpr objects for different time periods - years, quarters, months,  weeks, days, or hours.  Aggregation function is user-supplied but defaults to mean. 
 
-`aggregate_metab` Aggregate metabolism data from a swmpr object.  This is primarly used within `plot_metab` but may be useful for simple summaries of raw daily data.
+`aggremetab.swmpr` Aggregate metabolism data from a swmpr object.  This is primarly used within `plot_metab` but may be useful for simple summaries of raw daily data.
 
 `ecometab.swmpr` Estimate ecosystem metabolism for a combined water quality and weatehr dataset using the open-water method.
 
