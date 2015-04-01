@@ -16,11 +16,7 @@ Windows: [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/g
 
 #Overview 
 
-SWMPr is an R package for retrieving, organizing, and analyzing estuary monitoring data from the System Wide Monitoring Program ([SWMP](http://nerrs.noaa.gov/RCDefault.aspx?ID=18)).  SWMP was implemented by the National Estuarine Research Reserve System ([NERRS](http://nerrs.noaa.gov/)) in 1995 to provide continuous monitoring data at over 300 stations in 28 estuaries across the United States.  SWMP data are maintained online by the Centralized Data Management Office (CDMO). This R package provides several functions to retrieve, organize, and analyze SWMP data from the CDMO. All data obtained from the CDMO should be [cited](http://cdmo.baruch.sc.edu/data/citation.cfm) using the format:
-
-*National Estuarine Research Reserve System (NERRS). 2012. System-wide Monitoring Program. Data accessed from the NOAA NERRS Centralized Data Management Office website: http://cdmo.baruch.sc.edu/; accessed 12 October 2012.*
-
-To cite this package:
+The System Wide Monitoring Program ([SWMP](http://nerrs.noaa.gov/RCDefault.aspx?ID=18)) was implemented by the National Estuarine Research Reserve System ([NERRS](http://nerrs.noaa.gov/)) in 1995 to provide continuous monitoring data at over 300 continuous monitoring stations in 28 estuaries across the United States.  SWMPr (pronounced "swamper") is an R package for retrieving, organizing, and analyzing estuary monitoring data from SWMP. Please cite as follows:
 
 *Beck MW. 2015. SWMPr: An R package for the National Estuarine Research Reserve System.  Version 1.9.2. https://github.com/fawda123/SWMPr*
 
@@ -37,11 +33,7 @@ library(SWMPr)
 
 #Using the package
 
-Please see the [sister repository](https://github.com/fawda123/swmpr_manu) for a [draft manuscript](https://github.com/fawda123/swmpr_manu/blob/master/swmpr_manu.pdf) that describes package use in detail.  A brief description of the available functions is provided below.
-
-#Function list
-
-See help documentation for more details on each function (e.g., `?all_params`).
+Please see the [sister repository](https://github.com/fawda123/swmpr_manu) for a [draft manuscript](https://github.com/fawda123/swmpr_manu/blob/master/swmpr_manu.pdf) that describes package use in detail.  A brief description of the available functions is provided below. See help documentation for more details on each function (e.g., `?all_params`).
 
 ##Retrieve
 

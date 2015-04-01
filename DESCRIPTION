@@ -3,8 +3,8 @@ Type: Package
 Title: Retrieving, Organizing, and Analyzing Estuary Monitoring Data
 Version: 1.9.2
 Date: 2015-4-1
-Author: Marcus Beck
-Maintainer: Marcus Beck <mbafs2012@gmail.com>
+Author: Marcus W. Beck [aut, cre]
+Maintainer: Marcus W. Beck <mbafs2012@gmail.com>
 Description: Tools for retrieving, organizing, and analyzing environmental
     data from the System Wide Monitoring Program of the National Estuarine 
     Research Reserve System.  These tools address common challenges 
