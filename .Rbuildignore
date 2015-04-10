@@ -10,3 +10,4 @@
 ^\.Rhistory$
 ^appveyor\.yml$
 ^cran-comments\.md$
+^swmpr_logo.png

@@ -1,5 +1,7 @@
-# SWMPr: An R package for the National Estuarine Research Reserve System
-Marcus W. Beck, beck.marcus@epa.gov  
+
+![](swmpr_logo.png)
+
+#### *Marcus W. Beck, beck.marcus@epa.gov*
 
 Linux: [![Travis-CI Build Status](https://travis-ci.org/fawda123/SWMPr.png?branch=master)](https://travis-ci.org/fawda123/SWMPr)
 
