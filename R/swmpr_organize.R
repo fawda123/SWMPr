@@ -447,7 +447,7 @@ subset.swmpr <- function(x, subset = NULL, select = NULL,
 #' Create a continuous time vector at set time step for a swmpr object
 #' 
 #' @param swmpr_in input swmpr object
-#' @param timestep numeric value of time step to use in minutes
+#' @param timestep numeric value of time step to use in minutes.  Alternatively, a chr string indicating \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'days'}, or \code{'hours'} can also be used. A character input assumes 365 days in a year and 31 days in a month.
 #' @param differ numeric value defining buffer for merging time stamps to standardized time series
 #' @param ... arguments passed to or from other methods
 #' 
@@ -489,10 +489,32 @@ setstep.swmpr <- function(swmpr_in, timestep = 15, differ= timestep/2, ...){
   # swmpr data and attributes
   dat <- swmpr_in
   attrs <- attributes(swmpr_in)
+
+  # convert timestep to numeric if chr input
+  if(is.character(timestep)){
+    
+    # lookup values
+    chr_stp <- c('years', 'quarters', 'months', 'weeks', 'days', 'hours')
+    mul_fac <- c(525600, 131400, 44640, 10080, 1440, 60)
+    
+    # stop if chr_stp is wrong
+    if(!timestep %in% chr_stp){
+      
+      stop(paste(
+        'Character input for timestep must be one of of the following:', 
+        paste(chr_stp, collapse = ', ')
+      ))
+      
+    }
+  
+    # otherwise lookup
+    timestep <- mul_fac[which(timestep == chr_stp)] 
+      
+  }
   
   # sanity check
   if(timestep/2 < differ) 
-    stop('Value for differ must be less than one half of timestep')
+    stop('Value for differ must be less than or equal to one half of timestep')
   if('Date' %in% attrs$stamp_class) 
     stop('Cannot use setstep with date class')
   
