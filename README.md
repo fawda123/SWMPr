@@ -7,7 +7,7 @@ Linux: [![Travis-CI Build Status](https://travis-ci.org/fawda123/SWMPr.png?branc
 
 Windows: [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/fawda123/SWMPr?branch=master)](https://ci.appveyor.com/project/fawda123/SWMPr)
 
-[![Downloads from the RStudio CRAN mirror](http://cranlogs.r-pkg.org/badges/SWMPr)](http://cran.rstudio.com/package=SWMPr)
+[![Downloads from the RStudio CRAN mirror](http://cranlogs.r-pkg.org/badges/grand-total/SWMPr)](http://cran.rstudio.com/package=SWMPr)
 
 #Overview 
 
