@@ -7,6 +7,8 @@ Linux: [![Travis-CI Build Status](https://travis-ci.org/fawda123/SWMPr.png?branc
 
 Windows: [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/fawda123/SWMPr?branch=master)](https://ci.appveyor.com/project/fawda123/SWMPr)
 
+[![Downloads from the RStudio CRAN mirror](http://cranlogs.r-pkg.org/badges/SWMPr)](http://cran.rstudio.com/package=SWMPr)
+
 #Overview 
 
 The System Wide Monitoring Program ([SWMP](http://nerrs.noaa.gov/RCDefault.aspx?ID=18)) was implemented by the National Estuarine Research Reserve System ([NERRS](http://nerrs.noaa.gov/)) in 1995 to provide continuous monitoring data at over 300 continuous monitoring stations in 28 estuaries across the United States.  SWMPr (pronounced "swamper") is an R package for retrieving, organizing, and analyzing estuary monitoring data from SWMP. Please cite the package as follows:
@@ -52,7 +54,7 @@ Please see the [sister repository](https://github.com/fawda123/swmpr_manu) for a
 <tr><td><code>qaqcchk.swmpr</code></td><td> View a summary of the number of observations in a swmpr object that are assigned to different QAQC flags used by CDMO. The output is used to inform further processing but is not used explicitly.</td></tr>
 <tr><td><code>rem_reps.swmpr</code></td><td> Remove replicate nutrient data that occur on the same day. The default is to average replicates.</td></tr>
 <tr><td><code>setstep.swmpr</code></td><td> Format data from a swmpr object to a continuous time series at a given timestep. The function is used in <code>comb.swmpr</code> and can also be used with individual stations.</td></tr>
-<tr><td><code>subset.swmpr</code></td><td> Subset by dates and/or columns for a swmpr object. This is a method passed to the generic `subset function provided in the base package.</td></tr>
+<tr><td><code>subset.swmpr</code></td><td> Subset by dates and/or columns for a swmpr object. This is a method passed to the generic `subset’ function provided in the base package.</td></tr>
 </table>
 <h3>Analyze</h3>
 <table>
@@ -74,7 +76,7 @@ Please see the [sister repository](https://github.com/fawda123/swmpr_manu) for a
 <tr><td><code>calcKL</code></td><td> Estimate the reaeration coefficient for air-sea gas exchange. This is only used within the <code>ecometab</code> function.</td></tr>
 <tr><td><code>map_reserve</code></td><td> Create a map of all stations in a reserve using the ggmap package.</td></tr>
 <tr><td><code>metab_day</code></td><td> Identify the metabolic day for each approximate 24 period in an hourly time series. This is only used within the <code>ecometab</code> function.</td></tr>
-<tr><td><code>param_names</code></td><td> Returns column names as a list for the parameter type(s) (nutrients, weather, or water quality). Includes QAQC columns with f_ prefix. Used internally in other functions.</td></tr>
+<tr><td><code>param_names</code></td><td> Returns column names as a list for the parameter type(s) (nutrients, weather, or water quality). Includes QAQC columns with ‘f_’ prefix. Used internally in other functions.</td></tr>
 <tr><td><code>parser</code></td><td> Parses html returned from CDMO web services, used internally in retrieval functions.</td></tr>
 <tr><td><code>site_codes</code></td><td> Metadata for all stations, wrapper to <code>exportStationCodesXMLNew</code> function on web services.</td></tr>
 <tr><td><code>site_codes_ind</code></td><td> Metadata for all stations at a single site, wrapper to <code>NERRFilterStationCodesXMLNew</code> function on web services.</td></tr>

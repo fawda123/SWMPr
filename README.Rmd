@@ -16,6 +16,8 @@ Linux: [![Travis-CI Build Status](https://travis-ci.org/fawda123/SWMPr.png?branc
 
 Windows: [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/fawda123/SWMPr?branch=master)](https://ci.appveyor.com/project/fawda123/SWMPr)
 
+[![Downloads from the RStudio CRAN mirror](http://cranlogs.r-pkg.org/badges/SWMPr)](http://cran.rstudio.com/package=SWMPr)
+
 #Overview 
 
 The System Wide Monitoring Program ([SWMP](http://nerrs.noaa.gov/RCDefault.aspx?ID=18)) was implemented by the National Estuarine Research Reserve System ([NERRS](http://nerrs.noaa.gov/)) in 1995 to provide continuous monitoring data at over 300 continuous monitoring stations in 28 estuaries across the United States.  SWMPr (pronounced "swamper") is an R package for retrieving, organizing, and analyzing estuary monitoring data from SWMP. Please cite the package as follows:
