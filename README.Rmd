@@ -49,7 +49,7 @@ Please see the [sister repository](https://github.com/fawda123/swmpr_manu) for a
 <h3>Retrieve</h3>
 <table>
 <tr><td><code>all_params</code></td><td>Retrieve up to 100 records starting with the most recent at a given station, all parameters. Wrapper to <code>exportAllParamsXMLNew</code> function on web services.</td></tr>
-<tr><td><code>all_params_dtrng</code></td><td> Retrieve records of all parameters within a given date range for a station. Optional argument for a single parameter. Maximum of 1000 records. Wrapper to <code>exportAllParamsDateRangeXMLNew</code>.</td></tr>
+<tr><td><code>all_params_dtrng</code></td><td> Retrieve records of all parameters within a given date range for a station. Optional argument for a single parameter. Wrapper to <code>exportAllParamsDateRangeXMLNew</code>.</td></tr>
 <tr><td><code>import_local</code></td><td> Import files from a local path. The files must be in a specific format, specifically those returned from the CDMO using the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> option for a reserve.</td></tr>
 <tr><td><code>import_remote</code></td><td> Import SWMP site data from a remote independent server. These files have been downloaded from CDMO, processed using functions in this package, and uploaded to an Amazon server for quicker import into R.</td></tr>
 <tr><td><code>single_param</code></td><td> Retrieve up to 100 records for a single parameter starting with the most recent at a given station. Wrapper to <code>exportSingleParamXMLNew</code> function on web services.</td></tr>
