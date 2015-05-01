@@ -4,12 +4,16 @@
 \alias{all_params}
 \title{Import current station records from the CDMO}
 \usage{
-all_params(station_code, Max = 100)
+all_params(station_code, Max = 100, param = NULL, trace = TRUE)
 }
 \arguments{
 \item{station_code}{chr string of station, 7 or 8 characters}
 
-\item{Max}{numeric value for number of records to obtain from the current date, maximum of 100}
+\item{Max}{numeric value for number of records to obtain from the current date}
+
+\item{param}{chr string for a single parameter to return, defaults to all parameters for a station type.}
+
+\item{trace}{logical indicating if import progress is printed in console}
 }
 \value{
 Returns a swmpr object, all available parameters including QAQC columns
@@ -18,7 +22,7 @@ Returns a swmpr object, all available parameters including QAQC columns
 Import current station records from the CDMO starting with the most current date
 }
 \details{
-This function retrieves data from the CDMO through the web services URL.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{http://cdmo.baruch.sc.edu/webservices.cfm}.  Function is the CDMO equivalent of \code{exportAllParamsXMLNew}.
+This function retrieves data from the CDMO through the web services URL.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{http://cdmo.baruch.sc.edu/webservices.cfm}.  Function is the CDMO equivalent of \code{exportAllParamsXMLNew} but actually uses \code{\link{all_params_dtrng}}, which is a direct call to \code{exportAllParamsDateRangeXMLNew}.
 }
 \examples{
 \dontrun{

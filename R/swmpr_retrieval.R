@@ -3,8 +3,10 @@
 #' 
 #' Import current station records from the CDMO starting with the most current date
 #' 
-#' @param  station_code chr string of station, 7 or 8 characters
-#' @param  Max numeric value for number of records to obtain from the current date, maximum of 100
+#' @param station_code chr string of station, 7 or 8 characters
+#' @param Max numeric value for number of records to obtain from the current date
+#' @param param chr string for a single parameter to return, defaults to all parameters for a station type.
+#' @param trace logical indicating if import progress is printed in console
 #' 
 #' @export
 #' 
@@ -15,7 +17,7 @@
 #' @return  Returns a swmpr object, all available parameters including QAQC columns
 #' 
 #' @details 
-#' This function retrieves data from the CDMO through the web services URL.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{http://cdmo.baruch.sc.edu/webservices.cfm}.  Function is the CDMO equivalent of \code{exportAllParamsXMLNew}.
+#' This function retrieves data from the CDMO through the web services URL.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{http://cdmo.baruch.sc.edu/webservices.cfm}.  Function is the CDMO equivalent of \code{exportAllParamsXMLNew} but actually uses \code{\link{all_params_dtrng}}, which is a direct call to \code{exportAllParamsDateRangeXMLNew}.
 #' 
 #' @examples
 #' 
@@ -25,21 +27,18 @@
 #' all_params('hudscwq')
 #' 
 #' }
-all_params <- function(station_code, Max = 100){
-  
-  # sanity check
-  if(Max > 100) warning('Maximum of 100 records')
-  
-  # access CDMO web services
+all_params <- function(station_code, Max = 100, param = NULL, trace = TRUE){
+
+  # url
   serv <- "http://cdmo.baruch.sc.edu/webservices2/requests.cfc?wsdl"
-    
-  # get from current date
+  
+  # get from most recent record
   dat <- try({
     httr::GET(serv, 
       query = list(
         method = 'exportAllParamsXMLNew',
         station_code = station_code, 
-        recs = Max
+        recs = 1
       )
     )
   }, silent = TRUE)
@@ -47,33 +46,18 @@ all_params <- function(station_code, Max = 100){
   # stop if retrieval error
   if('try-error' %in% class(dat))
     stop('Error retrieving data, check metadata for station availability.')
-  
-  # parse reply from server 
-  out <- parser(dat)
-  
-  # type of parameter requested - wq, nut, or met
-  parm <- substring(station_code, 6)
-  nms <- param_names(parm)[[parm]]
-  
-  # format datetimetamp if output is not empty
-  if(ncol(out) != 0 & nrow(out) != 0){
-    
-    # format datetimestamp and sort
-    out[, 'datetimestamp'] <- time_vec(out[, 'datetimestamp'], station_code)
-    out <- out[order(out$datetimestamp), ]
-    out <- data.frame(
-      datetimestamp = out$datetimestamp,
-      out[, tolower(names(out)) %in% nms, drop = FALSE], 
-      row.names = 1:nrow(out)
-      )
-    names(out) <- tolower(names(out))
-    
-    }
 
-  # convert to swmpr class
-  out <- swmpr(out, station_code)
+  # parse reply from server 
+  dat <- parser(dat)
   
-  # return output
+  # starting date as character
+  dtrng <- dat$datetimestamp
+  dtrng <- strsplit(as.character(dtrng), ' ')[[length(dtrng)]][1]
+  dtrng <- c('01/01/1970', dtrng)
+    
+  # pass to all_params_dtrng
+  out <- all_params_dtrng(station_code, dtrng, param = param, trace = trace, Max = Max)
+
   return(out)
   
 }
@@ -87,6 +71,7 @@ all_params <- function(station_code, Max = 100){
 #' @param dtrng two element chr string, each of format MM/DD/YYYY
 #' @param param chr string for a single parameter to return, defaults to all parameters for a station type.
 #' @param trace logical indicating if import progress is printed in console
+#' @param Max numeric indicating maximum number of records to return
 #' 
 #' @export
 #' 
@@ -110,7 +95,7 @@ all_params <- function(station_code, Max = 100){
 #'    param = 'do_mgl')
 #' 
 #' }
-all_params_dtrng <- function(station_code, dtrng, param = NULL, trace = TRUE){
+all_params_dtrng <- function(station_code, dtrng, param = NULL, trace = TRUE, Max = NULL){
   
   ##
   # access CDMO web services
@@ -192,7 +177,15 @@ all_params_dtrng <- function(station_code, dtrng, param = NULL, trace = TRUE){
 
     # append to output
     out_all <- rbind(out_all, out)
-        
+    out_all <- unique(out_all[order(out_all$datetimestamp), ])
+
+    if(!is.null(Max)){
+      if(nrow(out_all) >= Max){  
+        out_all <- out_all[(1 + nrow(out_all) - Max):nrow(out_all), ]
+        break
+      }
+    }
+    
     # new date ranges
     dtrng[2] <- as.character(as.Date(end_obs))
     dtrng[2] <- paste0(substr(dtrng[2], 6, nchar(dtrng[2])), '/', substr(dtrng[2], 1, 4))
@@ -202,8 +195,8 @@ all_params_dtrng <- function(station_code, dtrng, param = NULL, trace = TRUE){
   
   # sort by date, then remove duplicates (there will be overlaps)
   # data columns as numeric
-  out <- unique(out_all[order(out_all$datetimestamp), ])
   parms <- nms[!grepl('^f_', nms)]
+  out <- out_all
   out[, names(out) %in% parms] <- apply(out[, names(out) %in% parms, drop = FALSE], 2, as.numeric)
   row.names(out) <- 1:nrow(out)
   

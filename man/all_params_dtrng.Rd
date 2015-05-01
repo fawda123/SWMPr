@@ -4,7 +4,8 @@
 \alias{all_params_dtrng}
 \title{Get CDMO records within a date range}
 \usage{
-all_params_dtrng(station_code, dtrng, param = NULL, trace = TRUE)
+all_params_dtrng(station_code, dtrng, param = NULL, trace = TRUE,
+  Max = NULL)
 }
 \arguments{
 \item{station_code}{chr string of station, 7 or 8 characters}
@@ -14,6 +15,8 @@ all_params_dtrng(station_code, dtrng, param = NULL, trace = TRUE)
 \item{param}{chr string for a single parameter to return, defaults to all parameters for a station type.}
 
 \item{trace}{logical indicating if import progress is printed in console}
+
+\item{Max}{numeric indicating maximum number of records to return}
 }
 \value{
 Returns a swmpr object, all parameters for a station type (nutrients, water quality, or meteorological) or a single parameter if specified.  QAQC columns are not provided for single parameters.
