@@ -219,9 +219,10 @@ all_params_dtrng <- function(station_code, dtrng, param = NULL, trace = TRUE, Ma
 #' 
 #' Get stations records from the CDMO for a single parameter starting with the most current date
 #' 
-#' @param  station_code chr string of station, 7 or 8 characters
-#' @param  Max numeric value for number of records to obtain from the current date, maximum of 500
-#' @param  param chr string for a single parameter to return.
+#' @param station_code chr string of station, 7 or 8 characters
+#' @param Max numeric value for number of records to obtain from the current date
+#' @param param chr string for a single parameter to return.
+#' @param trace logical indicating if import progress is printed in console
 #' 
 #' @import XML
 #' 
@@ -242,11 +243,8 @@ all_params_dtrng <- function(station_code, dtrng, param = NULL, trace = TRUE, Ma
 #' single_param('hudscwq', 'do_mgl')
 #' 
 #' }
-single_param <- function(station_code, param, Max = 500){
-  
-  # sanity check
-  if(Max > 500) warning('Maximum of 500 records')
-  
+single_param <- function(station_code, param, Max = 100, trace = TRUE){
+
   ##
   # access CDMO web services
   
@@ -261,7 +259,7 @@ single_param <- function(station_code, param, Max = 500){
         method = 'exportSingleParamXMLNew',
         station_code = station_code,
         param = param,
-        recs = Max
+        recs = 1
       )
     )
   }, silent = TRUE)
@@ -270,27 +268,22 @@ single_param <- function(station_code, param, Max = 500){
   if('try-error' %in% class(dat))
     stop('Error retrieving data, check metadata for station availability.')
   
-
   # parse reply from server 
-  out <- parser(dat)
+  dat <- parser(dat)
   
   # sometimes data request is good, but empty data frame returned
-  if(nrow(out) == 0)
+  if(nrow(dat) == 0)
     stop('Empty data frame, check metadata for station availability')
   
-  # type of parameter requested - wq, nut, or met, NOT the param argument
-  parm <- substring(station_code, 6)
-  nms <- param_names(parm)[[parm]]
-  
-  # format datetimestamp, sort, get relevant columns as data frame
-  out[, 'datetimestamp'] <- time_vec(out[, 'datetimestamp'], station_code)
-  out <- out[order(out$datetimestamp), ]
-  out <- data.frame(
-    datetimestamp = out$datetimestamp,
-    out[, tolower(names(out)) %in% nms, drop = FALSE],
-    row.names = 1:nrow(out)
-    )
-  names(out) <- tolower(names(out))
+  # starting date as character
+  dtrng <- dat$datetimestamp
+  dtrng <- strsplit(as.character(dtrng), ' ')[[length(dtrng)]][1]
+  dtrng <- c('01/01/1970', dtrng)
+    
+  # pass to all_params_dtrng
+  out <- all_params_dtrng(station_code, dtrng, param = param, trace = trace, Max = Max)
+
+  return(out)
   
   # convert to swmpr class
   out <- swmpr(out, station_code)

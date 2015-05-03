@@ -4,14 +4,16 @@
 \alias{single_param}
 \title{Get CDMO records for a single parameter}
 \usage{
-single_param(station_code, param, Max = 500)
+single_param(station_code, param, Max = 100, trace = TRUE)
 }
 \arguments{
 \item{station_code}{chr string of station, 7 or 8 characters}
 
 \item{param}{chr string for a single parameter to return.}
 
-\item{Max}{numeric value for number of records to obtain from the current date, maximum of 500}
+\item{Max}{numeric value for number of records to obtain from the current date}
+
+\item{trace}{logical indicating if import progress is printed in console}
 }
 \value{
 Returns a swmpr object with one parameter.  QAQC columns are not provided.
