@@ -7,7 +7,7 @@
 import_local(path, station_code, trace = FALSE)
 }
 \arguments{
-\item{path}{chr string of full path to .csv files with raw data}
+\item{path}{chr string of full path to .csv files with raw data, can be a zipped or unzipped directory}
 
 \item{station_code}{chr string of station to import, typically 7 or 8 characters but may include full name with year, excluding file extension}
 
@@ -20,7 +20,7 @@ Returns a swmpr object with all parameters and QAQC columns for the station.  Th
 Import local data that were obtained from the CDMO through the zip downloads feature
 }
 \details{
-The function is designed to import local data that were downloaded from the CDMO outside of R. This approach works best for larger data requests, specifically those from the zip downloads feature in the advanced query section of the CDMO. The function may also work using data from the data export system, but this feature has not been extensively tested (expect bugs). The downloaded data will be in a compressed folder that includes multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.). The import_local function can be used after the folder is decompressed.  An example dataset is available online to illustrate the format of the data provided through the zip downloads feature.  See the link below to access these data.  All example datasets included with the package were derived from these raw data.
+The function is designed to import local data that were downloaded from the CDMO outside of R. This approach works best for larger data requests, specifically those from the zip downloads feature in the advanced query section of the CDMO. The function may also work using data from the data export system, but this feature has not been extensively tested. The downloaded data will be in a compressed folder that includes multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.). The import_local function can be used to import files directly from the compressed folder or after the folder is decompressed.  In the former case, the requested files are extracted to a temporary directory and then deleted after they are loaded into the current session.  An example dataset is available online to illustrate the format of the data provided through the zip downloads feature.  See the link below to access these data.  All example datasets included with the package were derived from these raw data.
 
 Occasionally, duplicate time stamps are present in the raw data.  The function handles duplicate entries differently depending on the data type (water quality,  weather, or nutrients).  For water quality and nutrient data, duplicate time stamps are simply removed.  Note that nutrient data often contain replicate samples with similar but not duplicated time stamps within a few minutes of each other.  Replicates with unique time stamps are not removed but can be further processed using \code{\link{rem_reps}}.  Weather data prior to 2007 may contain duplicate time stamps at frequencies for 60 (hourly) and 144 (daily) averages, in addition to 15 minute frequencies.  Duplicate values that correspond to the smallest value in the frequency column (15 minutes) are retained.
 
@@ -30,7 +30,7 @@ Example dataset: \url{https://s3.amazonaws.com/swmpexdata/zip_ex.zip}
 }
 \examples{
 \dontrun{
-## this is the path for csv example files
+## this is the path for csv example files, decompressed
 path <- 'C:/this/is/my/data/path'
 
 ## import, do not include file extension
