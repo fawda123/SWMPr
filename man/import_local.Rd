@@ -2,7 +2,6 @@
 % Please edit documentation in R/swmpr_retrieval.R
 \name{import_local}
 \alias{import_local}
-\alias{retrieve}
 \title{Import local CDMO data}
 \usage{
 import_local(path, station_code, trace = FALSE)
@@ -40,5 +39,8 @@ import_local(path, 'apaebmet')
 }
 \seealso{
 \code{\link{all_params}}, \code{\link{all_params_dtrng}}, \code{\link{rem_reps}}, \code{\link{single_param}}
+}
+\concept{
+retrieve
 }
 

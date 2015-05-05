@@ -2,7 +2,6 @@
 % Please edit documentation in R/swmpr_retrieval.R
 \name{import_remote}
 \alias{import_remote}
-\alias{retrieve}
 \title{Import SWMP data from Amazon web services}
 \usage{
 import_remote(station_code)
@@ -31,5 +30,8 @@ attributes(dat)
 }
 \seealso{
 \code{\link{import_local}}
+}
+\concept{
+retrieve
 }
 

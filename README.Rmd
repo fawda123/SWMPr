@@ -72,6 +72,7 @@ Please see the [sister repository](https://github.com/fawda123/swmpr_manu) for a
 <tr><td><code>decomp_cj.swmpr</code></td><td> Decompose a swmpr time series into grandmean, annual, seasonal, and events components. This is a simple wrapper to <code>decompTs</code> in the wq package. Only monthly decomposition is possible.</td></tr>
 <tr><td><code>hist.swmpr</code></td><td> Plot a histogram for a swmpr object.</td></tr>
 <tr><td><code>lines.swmpr</code></td><td> Add lines to an existing swmpr plot.</td></tr>
+<tr><td><code>map_reserve</code></td><td> Create a map of all stations in a reserve using the ggmap package.</td></tr>
 <tr><td><code>na.approx.swmpr</code></td><td> Linearly interpolate missing data (<code>NA</code> values) in a swmpr object. The maximum gap size that is interpolated is defined as a maximum number of records with missing data.</td></tr>
 <tr><td><code>plot.swmpr</code></td><td> Plot a univariate time series for a swmpr object. The parameter name must be specified.</td></tr>
 <tr><td><code>plot_metab</code></td><td> Plot ecosystem metabolism estimates after running <code>ecometab</code> on a swmpr object.</td></tr>
@@ -81,7 +82,6 @@ Please see the [sister repository](https://github.com/fawda123/swmpr_manu) for a
 <h3>Miscellaneous</h3>
 <table>
 <tr><td><code>calcKL</code></td><td> Estimate the reaeration coefficient for air-sea gas exchange. This is only used within the <code>ecometab</code> function.</td></tr>
-<tr><td><code>map_reserve</code></td><td> Create a map of all stations in a reserve using the ggmap package.</td></tr>
 <tr><td><code>metab_day</code></td><td> Identify the metabolic day for each approximate 24 period in an hourly time series. This is only used within the <code>ecometab</code> function.</td></tr>
 <tr><td><code>param_names</code></td><td> Returns column names as a list for the parameter type(s) (nutrients, weather, or water quality). Includes QAQC columns with ‘f_’ prefix. Used internally in other functions.</td></tr>
 <tr><td><code>parser</code></td><td> Parses html returned from CDMO web services, used internally in retrieval functions.</td></tr>

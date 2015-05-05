@@ -3,7 +3,6 @@
 \name{aggreswmp}
 \alias{aggreswmp}
 \alias{aggreswmp.swmpr}
-\alias{analyze}
 \title{Aggregate swmpr data}
 \usage{
 aggreswmp(swmpr_in, ...)
@@ -53,5 +52,10 @@ aggreswmp(swmpr_in, FUN = fun_in, 'years')
 }
 \seealso{
 \code{\link[stats]{aggregate}}
+}
+\concept{
+analyze
+
+analyze
 }
 

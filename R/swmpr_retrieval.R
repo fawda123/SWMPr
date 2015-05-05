@@ -14,7 +14,7 @@
 #' 
 #' @seealso \code{\link{all_params_dtrng}}, \code{\link{single_param}}
 #' 
-#' @aliases retrieve
+#' @concept retrieve
 #' 
 #' @return  Returns a swmpr object, all available parameters including QAQC columns
 #' 
@@ -77,7 +77,7 @@ all_params <- function(station_code, Max = 100, param = NULL, trace = TRUE){
 #' 
 #' @export
 #' 
-#' @aliases retrieve
+#' @concept retrieve
 #' 
 #' @return Returns a swmpr object, all parameters for a station type (nutrients, water quality, or meteorological) or a single parameter if specified.  QAQC columns are not provided for single parameters.
 #' 
@@ -230,7 +230,7 @@ all_params_dtrng <- function(station_code, dtrng, param = NULL, trace = TRUE, Ma
 #' 
 #' @import XML
 #' 
-#' @aliases retrieve
+#' @concept retrieve
 #' 
 #' @export
 #' 
@@ -308,7 +308,7 @@ single_param <- function(station_code, param, Max = 100, trace = TRUE){
 #' @param  station_code chr string of station to import, typically 7 or 8 characters but may include full name with year, excluding file extension
 #' @param  trace logical indicating if progress is sent to console, default \code{FALSE}
 #' 
-#' @aliases retrieve
+#' @concept retrieve
 #' 
 #' @export
 #' 
@@ -488,7 +488,7 @@ import_local <- function(path, station_code, trace = FALSE){
 #' 
 #' @export
 #' 
-#' @aliases retrieve
+#' @concept retrieve
 #' 
 #' @return Returns a swmpr object.  
 #' 

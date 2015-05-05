@@ -3,7 +3,6 @@
 \name{aggremetab}
 \alias{aggremetab}
 \alias{aggremetab.swmpr}
-\alias{analyze}
 \title{Aggregate metabolism data}
 \usage{
 aggremetab(swmpr_in, ...)
@@ -49,5 +48,8 @@ aggremetab(res, by = 'months', alpha = 0.1)
 }
 \seealso{
 \code{\link[stats]{aggregate}}, \code{\link{aggreswmp}}, \code{\link{ecometab}}, \code{\link{plot_metab}}
+}
+\concept{
+analyze
 }
 

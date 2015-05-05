@@ -3,7 +3,6 @@
 \name{comb}
 \alias{comb}
 \alias{comb.swmpr}
-\alias{organize}
 \title{Combine swmpr data}
 \usage{
 comb(...)
@@ -43,5 +42,10 @@ comb(swmp1, swmp2, timestep = 120, method = 'union')
 }
 \seealso{
 \code{\link{setstep}}
+}
+\concept{
+organize
+
+organize
 }
 

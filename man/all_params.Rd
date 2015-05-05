@@ -2,7 +2,6 @@
 % Please edit documentation in R/swmpr_retrieval.R
 \name{all_params}
 \alias{all_params}
-\alias{retrieve}
 \title{Import current station records from the CDMO}
 \usage{
 all_params(station_code, Max = 100, param = NULL, trace = TRUE)
@@ -35,5 +34,8 @@ all_params('hudscwq')
 }
 \seealso{
 \code{\link{all_params_dtrng}}, \code{\link{single_param}}
+}
+\concept{
+retrieve
 }
 

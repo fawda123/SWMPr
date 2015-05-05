@@ -2,7 +2,6 @@
 % Please edit documentation in R/swmpr_retrieval.R
 \name{all_params_dtrng}
 \alias{all_params_dtrng}
-\alias{retrieve}
 \title{Get CDMO records within a date range}
 \usage{
 all_params_dtrng(station_code, dtrng, param = NULL, trace = TRUE,
@@ -43,5 +42,8 @@ all_params_dtrng('apaebwq', c('01/01/2013', '02/01/2013'),
 }
 \seealso{
 \code{\link{all_params}}, \code{\link{single_param}}
+}
+\concept{
+retrieve
 }
 
