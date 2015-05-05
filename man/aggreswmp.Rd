@@ -23,7 +23,7 @@ aggreswmp(swmpr_in, ...)
 
 \item{aggs_out}{logical indicating if \code{\link[base]{data.frame}} is returned of raw data with datetimestamp formatted as aggregation period, default \code{FALSE}}
 
-\item{na.action}{function for treating missing data, default \code{na.pass}}
+\item{na.action}{function for treating missing data, default \code{na.pass}.  See the documentation for \code{\link[stats]{aggregate}} for options.}
 }
 \value{
 Returns an aggregated swmpr object. QAQC columns are removed if included with input object.

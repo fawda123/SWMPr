@@ -7,7 +7,7 @@
 #' @param FUN aggregation function, default \code{mean} with \code{na.rm = TRUE}
 #' @param params names of parameters to aggregate, default all
 #' @param aggs_out logical indicating if \code{\link[base]{data.frame}} is returned of raw data with datetimestamp formatted as aggregation period, default \code{FALSE}
-#' @param na.action function for treating missing data, default \code{na.pass}
+#' @param na.action function for treating missing data, default \code{na.pass}.  See the documentation for \code{\link[stats]{aggregate}} for options.
 #' @param ... additional arguments passed to other methods
 #' 
 #' @import data.table
@@ -390,7 +390,7 @@ na.approx.swmpr <- function(object, params = NULL, maxgap, ...){
 #' @details
 #' This function is a simple wrapper to the \code{\link[stats]{decompose}} function.  The \code{decompose} function separates a time series into additive or multiplicative components describing a trend, cyclical variation (e.g., daily or annual), and the remainder.  The additive decomposition assumes that the cyclical component of the time series is stationary (i.e., the variance is constant), whereas a multiplicative decomposition accounts for non-stationarity.  By default, a moving average with a symmetric window is used to filter the cyclical component.  Alternatively, a vector of filter coefficients in reverse time order can be supplied (see \code{\link[stats]{decompose}}).  
 #' 
-#' The \code{decompose} function requires a ts object with a specified frequency.  The \code{decomp} function converts the input swmpr vector to a ts object prior to \code{decompose}.  This requires an explicit input defining the frequency in the time series required to complete a full period of the parameter.  For example, the frequency of a parameter with diurnal periodicity would be 96 if the time step is 15 minutes (4 * 24).  The frequency of a parameter with annual periodicity would be 35040 (4 * 24 * 365).  For simplicity, chr strings of \code{'daily'} or \code{'annual'} can be supplied in place of numeric values.  A starting value of the time series must be supplied in the latter case.  Use of the \code{\link{setstep}} function is required to standardize the time step prior to decomposition.  
+#' The \code{decompose} function requires a ts object with a specified frequency.  The \code{decomp} function converts the input swmpr vector to a ts object prior to \code{decompose}.  This requires an explicit input defining the frequency in the time series required to complete a full period of the parameter.  For example, the frequency of a parameter with diurnal periodicity would be 96 if the time step is 15 minutes (24 hours * 60 minutes / 15 minutes).  The frequency of a parameter with annual periodicity at a 15 minute time step would be 35040 (365 days * 24 hours * 60 minutes / 15 minutes).  For simplicity, chr strings of \code{'daily'} or \code{'annual'} can be supplied in place of numeric values.  A starting value of the time series must be supplied in the latter case.  Use of the \code{\link{setstep}} function is required to standardize the time step prior to decomposition.  
 #' 
 #' Note that the \code{decompose} function is a relatively simple approach and alternative methods should be investigated if a more sophisticated decomposition is desired.
 #'  
@@ -1303,4 +1303,69 @@ plot_metab.swmpr <- function(swmpr_in, by = 'months', alpha = 0.05, width = 10, 
     
   return(p)
   
+}
+
+#' Map a reserve
+#' 
+#' Create a map of all the stations in a reserve
+#' 
+#' @param nerr_site_id chr string of the reserve to map, first three characters used by NERRS or vector of stations to map using the first five characters
+#' @param zoom numeric value for map zoom, passed to \code{\link[ggmap]{get_map}}
+#' @param text_sz numeric value for text size of station names, passed to \code{\link[ggplot2]{geom_text}}
+#' @param text_col chr string for text color of station names, passed to \code{\link[ggplot2]{geom_text}}
+#' @param map_type chr string indicating the type of base map obtained from Google maps, values are \code{terrain} (default), \code{satellite}, \code{roadmap}, or \code{hybrid} 
+#' 
+#' @import ggmap ggplot2
+#' 
+#' @export
+#' 
+#' @details This function is a simple wrapper to functions in the ggmap package which returns a map of all of the stations at a NERRS reserve.  The \code{zoom} argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  A local data file included with the package is used to get the latitude and longitude values of each station.  The files includes only active stations as of January 2015.
+#' 
+#' @return A \code{\link[ggplot2]{ggplot}} object for plotting.
+#' 
+#' @seealso  \code{\link[ggmap]{get_map}}, \code{\link[ggmap]{ggmap}}, \code{\link[ggplot2]{ggplot}}
+#' 
+#' @examples
+#' ## defaults
+#' 
+#' map_reserve('jac')
+#' 
+#' ## change defaults, map a single site
+#' 
+#' map_reserve('gtmss', zoom = 15, map_type = 'satellite', 
+#'  text_col = 'lightblue')
+map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black', map_type = 'terrain'){
+  
+  # sanity check
+  if(!any(c(3, 5) %in% nchar(nerr_site_id)))
+    stop('nerr_site_id must be three or five characters')
+  
+  # subset stat_locs by reserve
+  dat_locs <- get('stat_locs')
+  stats <- paste(paste0('^', nerr_site_id), collapse = '|')
+  stats <- dat_locs[grepl(stats, dat_locs$station_code), ]
+  
+  # base map
+  mapImageData <- suppressMessages(
+    ggmap::get_map(
+      location = c(lon = mean(stats$longitude),lat = mean(stats$latitude)),
+      source = 'google',
+      maptype = map_type,
+      zoom = zoom,
+      messaging = FALSE
+      )
+    )
+  
+  # plot
+  p <- ggmap::ggmap(mapImageData,
+    extent = "panel"
+      ) + 
+    geom_text(data = stats, aes_string(x = 'longitude', y = 'latitude', 
+      label= 'station_code'), size = text_sz, colour = text_col
+      ) +
+    ylab('Latitude') +
+    xlab('Longitude')
+  
+  return(p)
+
 }
