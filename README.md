@@ -46,6 +46,8 @@ Please see the [sister repository](https://github.com/fawda123/swmpr_manu) for a
 <tr><td><code>import_local</code></td><td> Import files from a local path. The files must be in a specific format, specifically those returned from the CDMO using the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> option for a reserve.</td></tr>
 <tr><td><code>import_remote</code></td><td> Import SWMP site data from a remote independent server. These files have been downloaded from CDMO, processed using functions in this package, and uploaded to an Amazon server for quicker import into R.</td></tr>
 <tr><td><code>single_param</code></td><td> Retrieve up to 100 records for a single parameter starting with the most recent at a given station. Wrapper to <code>exportSingleParamXMLNew</code> function on web services.</td></tr>
+<tr><td><code>site_codes</code></td><td> Metadata for all stations, wrapper to <code>exportStationCodesXMLNew</code> function on web services.</td></tr>
+<tr><td><code>site_codes_ind</code></td><td> Metadata for all stations at a single site, wrapper to <code>NERRFilterStationCodesXMLNew</code> function on web services.</td></tr>
 </table>
 <h3>Organize</h3>
 <table>
@@ -78,8 +80,6 @@ Please see the [sister repository](https://github.com/fawda123/swmpr_manu) for a
 <tr><td><code>metab_day</code></td><td> Identify the metabolic day for each approximate 24 period in an hourly time series. This is only used within the <code>ecometab</code> function.</td></tr>
 <tr><td><code>param_names</code></td><td> Returns column names as a list for the parameter type(s) (nutrients, weather, or water quality). Includes QAQC columns with ‘f_’ prefix. Used internally in other functions.</td></tr>
 <tr><td><code>parser</code></td><td> Parses html returned from CDMO web services, used internally in retrieval functions.</td></tr>
-<tr><td><code>site_codes</code></td><td> Metadata for all stations, wrapper to <code>exportStationCodesXMLNew</code> function on web services.</td></tr>
-<tr><td><code>site_codes_ind</code></td><td> Metadata for all stations at a single site, wrapper to <code>NERRFilterStationCodesXMLNew</code> function on web services.</td></tr>
 <tr><td><code>swmpr</code></td><td> Creates object of swmpr class, used internally in retrieval functions.</td></tr>
 <tr><td><code>time_vec</code></td><td> Converts time vectors to POSIX objects with correct time zone for a site/station, used internally in retrieval functions.</td></tr>
 </table>

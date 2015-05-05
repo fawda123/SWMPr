@@ -133,6 +133,22 @@ Import SWMP site data from a remote independent server. These files have been do
 Retrieve up to 100 records for a single parameter starting with the most recent at a given station. Wrapper to <code>exportSingleParamXMLNew</code> function on web services.
 </td>
 </tr>
+<tr>
+<td>
+<code>site_codes</code>
+</td>
+<td>
+Metadata for all stations, wrapper to <code>exportStationCodesXMLNew</code> function on web services.
+</td>
+</tr>
+<tr>
+<td>
+<code>site_codes_ind</code>
+</td>
+<td>
+Metadata for all stations at a single site, wrapper to <code>NERRFilterStationCodesXMLNew</code> function on web services.
+</td>
+</tr>
 </table>
 <h3>
 Organize
@@ -330,22 +346,6 @@ Returns column names as a list for the parameter type(s) (nutrients, weather, or
 </td>
 <td>
 Parses html returned from CDMO web services, used internally in retrieval functions.
-</td>
-</tr>
-<tr>
-<td>
-<code>site_codes</code>
-</td>
-<td>
-Metadata for all stations, wrapper to <code>exportStationCodesXMLNew</code> function on web services.
-</td>
-</tr>
-<tr>
-<td>
-<code>site_codes_ind</code>
-</td>
-<td>
-Metadata for all stations at a single site, wrapper to <code>NERRFilterStationCodesXMLNew</code> function on web services.
 </td>
 </tr>
 <tr>
