@@ -3,6 +3,7 @@
 \name{aggreswmp}
 \alias{aggreswmp}
 \alias{aggreswmp.swmpr}
+\alias{analyze}
 \title{Aggregate swmpr data}
 \usage{
 aggreswmp(swmpr_in, ...)

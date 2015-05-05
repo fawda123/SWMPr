@@ -14,6 +14,8 @@
 #' 
 #' @seealso \code{\link{all_params_dtrng}}, \code{\link{single_param}}
 #' 
+#' @aliases retrieve
+#' 
 #' @return  Returns a swmpr object, all available parameters including QAQC columns
 #' 
 #' @details 
@@ -74,6 +76,8 @@ all_params <- function(station_code, Max = 100, param = NULL, trace = TRUE){
 #' @param Max numeric indicating maximum number of records to return
 #' 
 #' @export
+#' 
+#' @aliases retrieve
 #' 
 #' @return Returns a swmpr object, all parameters for a station type (nutrients, water quality, or meteorological) or a single parameter if specified.  QAQC columns are not provided for single parameters.
 #' 
@@ -226,6 +230,8 @@ all_params_dtrng <- function(station_code, dtrng, param = NULL, trace = TRUE, Ma
 #' 
 #' @import XML
 #' 
+#' @aliases retrieve
+#' 
 #' @export
 #' 
 #' @return Returns a swmpr object with one parameter.  QAQC columns are not provided.
@@ -301,6 +307,8 @@ single_param <- function(station_code, param, Max = 100, trace = TRUE){
 #' @param  path chr string of full path to .csv files with raw data, can be a zipped or unzipped directory
 #' @param  station_code chr string of station to import, typically 7 or 8 characters but may include full name with year, excluding file extension
 #' @param  trace logical indicating if progress is sent to console, default \code{FALSE}
+#' 
+#' @aliases retrieve
 #' 
 #' @export
 #' 
@@ -479,6 +487,8 @@ import_local <- function(path, station_code, trace = FALSE){
 #' @param  station_code chr string of station to import, i.e., 7 or 8 characters indicating the reserve, site, and data type.  Do not include years.
 #' 
 #' @export
+#' 
+#' @aliases retrieve
 #' 
 #' @return Returns a swmpr object.  
 #' 

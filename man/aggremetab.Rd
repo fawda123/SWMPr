@@ -3,6 +3,7 @@
 \name{aggremetab}
 \alias{aggremetab}
 \alias{aggremetab.swmpr}
+\alias{analyze}
 \title{Aggregate metabolism data}
 \usage{
 aggremetab(swmpr_in, ...)

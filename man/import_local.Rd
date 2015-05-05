@@ -2,6 +2,7 @@
 % Please edit documentation in R/swmpr_retrieval.R
 \name{import_local}
 \alias{import_local}
+\alias{retrieve}
 \title{Import local CDMO data}
 \usage{
 import_local(path, station_code, trace = FALSE)

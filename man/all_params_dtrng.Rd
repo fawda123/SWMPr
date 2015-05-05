@@ -2,6 +2,7 @@
 % Please edit documentation in R/swmpr_retrieval.R
 \name{all_params_dtrng}
 \alias{all_params_dtrng}
+\alias{retrieve}
 \title{Get CDMO records within a date range}
 \usage{
 all_params_dtrng(station_code, dtrng, param = NULL, trace = TRUE,

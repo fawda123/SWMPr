@@ -10,6 +10,8 @@
 #' @param na.action function for treating missing data, default \code{na.pass}.  See the documentation for \code{\link[stats]{aggregate}} for options.
 #' @param ... additional arguments passed to other methods
 #' 
+#' @aliases analyze
+#' 
 #' @import data.table
 #' 
 #' @export
@@ -38,7 +40,9 @@
 aggreswmp <- function(swmpr_in, ...) UseMethod('aggreswmp')
 
 #' @rdname aggreswmp
-#'
+#' 
+#' @aliases analyze
+#' 
 #' @export
 #'
 #' @method aggreswmp swmpr
@@ -135,6 +139,8 @@ aggreswmp.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = TRUE
 #' 
 #' @import data.table
 #' 
+#' @aliases analyze
+#' 
 #' @export
 #' 
 #' @details The function summarizes metabolism data by averaging across set periods of observation. Confidence intervals are also returned based on the specified alpha level.  It is used within \code{\link{plot_metab}} function to view summarized metabolism results.  Data can be aggregated by \code{'years'}, \code{'quarters'}, \code{'months'}, or \code{'weeks'} for the supplied function, which defaults to the \code{\link[base]{mean}}. The method of treating NA values for the user-supplied function should be noted since this may greatly affect the quantity of data that are returned.
@@ -224,6 +230,8 @@ aggremetab.swmpr <- function(swmpr_in, by = 'weeks', na.action = na.pass, alpha 
 #' 
 #' @param swmpr_in input swmpr object
 #' @param ... arguments passed to or from other methods
+#'  
+#' @aliases analyze
 #' 
 #' @export smoother
 #' 
@@ -243,6 +251,8 @@ smoother <- function(swmpr_in, ...) UseMethod('smoother')
 #' @seealso \code{\link[stats]{filter}}
 #' 
 #' @method smoother swmpr
+#' 
+#' @aliases analyze
 #' 
 #' @examples
 #' ## import data
@@ -305,6 +315,8 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL, ...){
 #' @export
 #' 
 #' @method na.approx swmpr
+#' 
+#' @aliases analyze
 #' 
 #' @details A common approach for handling missing data in time series analysis is linear interpolation.  A simple curve fitting method is used to create a continuous set of records between observations separated by missing data.  A required argument for the function is \code{maxgap} which defines the maximum gap size  for interpolation. The ability of the interpolated data to approximate actual, unobserved trends is a function of the gap size.  Interpolation between larger gaps are less likely to resemble patterns of an actual parameter, whereas interpolation between smaller gaps may be more likely to resemble actual patterns.  An appropriate gap size limit depends on the unique characteristics of specific datasets or parameters.  
 #' 
@@ -387,6 +399,8 @@ na.approx.swmpr <- function(object, params = NULL, maxgap, ...){
 #' 
 #' @export decomp
 #' 
+#' @aliases analyze
+#' 
 #' @details
 #' This function is a simple wrapper to the \code{\link[stats]{decompose}} function.  The \code{decompose} function separates a time series into additive or multiplicative components describing a trend, cyclical variation (e.g., daily or annual), and the remainder.  The additive decomposition assumes that the cyclical component of the time series is stationary (i.e., the variance is constant), whereas a multiplicative decomposition accounts for non-stationarity.  By default, a moving average with a symmetric window is used to filter the cyclical component.  Alternatively, a vector of filter coefficients in reverse time order can be supplied (see \code{\link[stats]{decompose}}).  
 #' 
@@ -439,6 +453,8 @@ decomp <- function(swmpr_in, ...) UseMethod('decomp')
 #' @param type chr string of \code{'additive'} or \code{'multiplicative'} indicating the type of decomposition, default \code{'additive'}.
 #' @param frequency chr string or numeric vector indicating the periodic component of the input parameter.  Only \code{'daily'} or \code{'annual'} are accepted as chr strings.  Otherwise a numeric vector specifies the number of observations required for a full cycle of the input parameter.  Defaults to \code{'daily'} for a diurnal parameter.
 #' @param start numeric vector indicating the starting value for the time series given the frequency.  Only required if \code{frequency} is numeric. See \code{\link[stats]{ts}}.
+#' 
+#' @aliases analyze
 #' 
 #' @export
 #' 
@@ -502,6 +518,8 @@ decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily'
 #' @param vals_out logical indicating of numeric output is returned, default is \code{FALSE} to return a plot.
 #' @param ... additional arguments passed to other methods, including \code{\link[wq]{decompTs}} 
 #' 
+#' @aliases analyze
+#' 
 #' @return  
 #' A \code{\link[ggplot2]{ggplot}} object if \code{vals_out = TRUE} (default), otherwise a monthly time series matrix of class \code{\link[stats]{ts}}.
 #' 
@@ -546,6 +564,8 @@ decomp_cj <- function(swmpr_in, ...) UseMethod('decomp_cj')
 #' @rdname decomp_cj
 #' 
 #' @export
+#' 
+#' @aliases analyze
 #' 
 #' @method decomp_cj swmpr
 decomp_cj.swmpr <- function(swmpr_in, param, vals_out = FALSE, ...){
@@ -603,6 +623,8 @@ decomp_cj.swmpr <- function(swmpr_in, param, vals_out = FALSE, ...){
 #' 
 #' @export
 #' 
+#' @aliases analyze
+#' 
 #' @details The swmpr method for plotting is a convenience function for plotting a univariate time series.  Conventional plotting methods also work well since swmpr objects are also data frames.  See the examples for use with different methods.  
 #' 
 #' @method plot swmpr
@@ -648,6 +670,8 @@ plot.swmpr <- function(x, type = 'l', ...) {
 #' 
 #' @export
 #' 
+#' @aliases analyze
+#' 
 #' @method lines swmpr
 lines.swmpr <- function(x, ...) {
     
@@ -676,6 +700,8 @@ lines.swmpr <- function(x, ...) {
 #' @details The swmpr method for histograms is a convenience function for the default histogram function.  Conventional histogram methods also work well since swmpr objects are also data frames.  The input data must contain only one parameter.
 #' 
 #' @export
+#' 
+#' @aliases analyze
 #' 
 #' @method hist swmpr
 #' 
@@ -722,6 +748,8 @@ hist.swmpr <- function(x, ...) {
 #' 
 #' @export
 #' 
+#' @aliases analyze
+#' 
 #' @details This function creates several graphics showing seasonal and annual trends for a given swmp parameter.  Plots include monthly distributions, monthly anomalies, and annual anomalies in multiple formats.  Anomalies are defined as the difference between the monthly or annual average from the grand mean.  Monthly anomalies are in relation to the grand mean for the same month across all years.  All data are aggregated for quicker plotting.  Nutrient data are based on monthly averages, wheras weather and water quality data are based on daily averages.  Cumulative precipitation data are based on the daily maximum.  An interactive Shiny widget is available: \url{https://beckmw.shinyapps.io/swmp_summary/}
 #' 
 #' @return A graphics object (Grob) of multiple \code{\link[ggplot2]{ggplot}} objects.
@@ -741,6 +769,8 @@ plot_summary <- function(swmpr_in, ...) UseMethod('plot_summary')
 #' @rdname plot_summary
 #' 
 #' @export
+#' 
+#' @aliases analyze
 #' 
 #' @method plot_summary swmpr
 plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
@@ -975,6 +1005,8 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 #' 
 #' @import oce reshape2 wq
 #' 
+#' @aliases analyze
+#'
 #' @export
 #'
 #' @details 
@@ -1018,6 +1050,8 @@ ecometab <- function(swmpr_in, ...) UseMethod('ecometab')
 #' @rdname ecometab
 #' 
 #' @export
+#' 
+#' @aliases analyze
 #' 
 #' @method ecometab swmpr
 ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', trace = FALSE, ...){
@@ -1216,6 +1250,8 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', tra
 #'
 #' @export
 #' 
+#' @aliases analyze
+#' 
 #' @import ggplot2
 #'
 #' @details 
@@ -1255,6 +1291,8 @@ plot_metab <- function(swmpr_in, ...) UseMethod('plot_metab')
 #' @rdname plot_metab
 #'
 #' @export
+#'
+#' @aliases analyze
 #'
 #' @method plot_metab swmpr
 plot_metab.swmpr <- function(swmpr_in, by = 'months', alpha = 0.05, width = 10, pretty = TRUE, ...){
@@ -1316,6 +1354,8 @@ plot_metab.swmpr <- function(swmpr_in, by = 'months', alpha = 0.05, width = 10, 
 #' @param map_type chr string indicating the type of base map obtained from Google maps, values are \code{terrain} (default), \code{satellite}, \code{roadmap}, or \code{hybrid} 
 #' 
 #' @import ggmap ggplot2
+#' 
+#' @aliases analyze
 #' 
 #' @export
 #' 

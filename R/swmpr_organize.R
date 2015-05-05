@@ -12,6 +12,8 @@
 #' 
 #' @seealso \code{\link{qaqcchk}}
 #' 
+#' @aliases organize
+#' 
 #' @details
 #' The qaqc function is a simple screen to retain values from the data with specified QAQC flags, described online: \url{http://cdmo.baruch.sc.edu/data/qaqc.cfm}. Each parameter in the swmpr data typically has a corresponding QAQC column of the same name with the added prefix 'f_'. Values in the QAQC column specify a flag from -5 to 5. Generally, only data with the '0' QAQC flag should be used, which is the default option for the function. Data that do not satisfy QAQC criteria are converted to \code{NA} values. Additionally, simple filters are used to remove obviously bad values, e.g., wind speed values less than zero or pH values greater than 12. Erroneous data entered as -99 are also removed. Processed data will have QAQC columns removed, in addition to removal of values in the actual parameter columns that do not meet the criteria.
 #' 
@@ -29,6 +31,8 @@ qaqc <- function(swmpr_in, ...) UseMethod('qaqc')
 #' 
 #' @param qaqc_keep numeric vector of qaqc flags to keep, default \code{0}
 #' @param trace logical for progress output on console, default \code{FALSE}
+#' 
+#' @aliases organize
 #' 
 #' @export
 #' 
@@ -164,6 +168,8 @@ qaqc.swmpr <- function(swmpr_in,
 #' 
 #' @import reshape2
 #' 
+#' @aliases organize
+#' 
 #' @seealso \code{\link{qaqc}}
 #' 
 #' @return Returns a \code{\link[base]{data.frame}} with columns for swmpr parameters and row counts indicating the number of observations in each parameter assigned to a flag value.
@@ -184,6 +190,8 @@ qaqcchk <- function(swmpr_in) UseMethod('qaqcchk')
 #' @rdname qaqcchk
 #' 
 #' @export
+#' 
+#' @aliases organize
 #' 
 #' @method qaqcchk swmpr
 qaqcchk.swmpr <- function(swmpr_in){
@@ -224,6 +232,8 @@ qaqcchk.swmpr <- function(swmpr_in){
 #' 
 #' @export
 #' 
+#' @aliases organize
+#' 
 #' @return Returns a swmpr object for nutrient data with no replicates.
 #' 
 #' @seealso \code{\link{qaqc}}
@@ -247,6 +257,8 @@ rem_reps <- function(swmpr_in, ...) UseMethod('rem_reps')
 #' @rdname rem_reps
 #' 
 #' @export
+#' 
+#' @aliases organize
 #' 
 #' @method rem_reps swmpr
 rem_reps.swmpr <- function(swmpr_in, FUN = function(x) mean(x, na.rm = TRUE), ...){
@@ -307,6 +319,8 @@ rem_reps.swmpr <- function(swmpr_in, FUN = function(x) mean(x, na.rm = TRUE), ..
 #' @param ... arguments passed to other methods
 #' 
 #' @export
+#' 
+#' @aliases organize
 #' 
 #' @method subset swmpr
 #' 
@@ -453,6 +467,8 @@ subset.swmpr <- function(x, subset = NULL, select = NULL,
 #' 
 #' @export
 #' 
+#' @aliases organize
+#' 
 #' @import data.table
 #' 
 #' @return Returns a swmpr object for the specified time step
@@ -482,6 +498,8 @@ setstep <- function(swmpr_in, ...) UseMethod('setstep')
 #' @rdname setstep
 #' 
 #' @export
+#' 
+#' @aliases organize
 #' 
 #' @method setstep swmpr
 setstep.swmpr <- function(swmpr_in, timestep = 15, differ= timestep/2, ...){ 
@@ -568,6 +586,8 @@ setstep.swmpr <- function(swmpr_in, timestep = 15, differ= timestep/2, ...){
 #' 
 #' @export 
 #' 
+#' @aliases organize
+#' 
 #' @return Returns a combined swmpr object
 #' 
 #' @seealso \code{\link{setstep}}
@@ -592,6 +612,8 @@ comb <- function(...) UseMethod('comb')
 #' @rdname comb
 #' 
 #' @export
+#' 
+#' @aliases organize
 #' 
 #' @method comb swmpr
 comb.swmpr <- function(..., timestep = 15, differ= timestep/2, method = 'union'){

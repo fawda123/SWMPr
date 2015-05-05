@@ -3,6 +3,7 @@
 \name{comb}
 \alias{comb}
 \alias{comb.swmpr}
+\alias{organize}
 \title{Combine swmpr data}
 \usage{
 comb(...)
