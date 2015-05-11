@@ -304,7 +304,7 @@ single_param <- function(station_code, param, Max = 100, trace = TRUE){
 #' 
 #' Import local data that were obtained from the CDMO through the zip downloads feature
 #' 
-#' @param  path chr string of full path to .csv files with raw data, can be a zipped or unzipped directory
+#' @param  path chr string of full path to .csv files with raw data, can be a zipped or unzipped directory where the former must include the .zip extension
 #' @param  station_code chr string of station to import, typically 7 or 8 characters but may include full name with year, excluding file extension
 #' @param  trace logical indicating if progress is sent to console, default \code{FALSE}
 #' 
@@ -330,6 +330,12 @@ single_param <- function(station_code, param, Max = 100, trace = TRUE){
 #' \dontrun{
 #' ## this is the path for csv example files, decompressed
 #' path <- 'C:/this/is/my/data/path'
+#'
+#' ## import, do not include file extension
+#' import_local(path, 'apaebmet') 
+#' 
+#' ## this is the path for csv example files, zipped folder
+#' path <- 'C:/this/is/my/data/path.zip'
 #'
 #' ## import, do not include file extension
 #' import_local(path, 'apaebmet') 

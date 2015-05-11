@@ -7,7 +7,7 @@
 import_local(path, station_code, trace = FALSE)
 }
 \arguments{
-\item{path}{chr string of full path to .csv files with raw data, can be a zipped or unzipped directory}
+\item{path}{chr string of full path to .csv files with raw data, can be a zipped or unzipped directory where the former must include the .zip extension}
 
 \item{station_code}{chr string of station to import, typically 7 or 8 characters but may include full name with year, excluding file extension}
 
@@ -32,6 +32,12 @@ Example dataset: \url{https://s3.amazonaws.com/swmpexdata/zip_ex.zip}
 \dontrun{
 ## this is the path for csv example files, decompressed
 path <- 'C:/this/is/my/data/path'
+
+## import, do not include file extension
+import_local(path, 'apaebmet')
+
+## this is the path for csv example files, zipped folder
+path <- 'C:/this/is/my/data/path.zip'
 
 ## import, do not include file extension
 import_local(path, 'apaebmet')
