@@ -15,7 +15,7 @@ smoother(swmpr_in, ...)
 
 \item{...}{arguments passed to or from other methods}
 
-\item{window}{numeric vector of ones defining size of smoothing window, passed to \code{filter}}
+\item{window}{numeric vector defining size of the smoothing window, passed to \code{filter}}
 
 \item{sides}{numeric vector defining method of averaging, passed to \code{filter}}
 

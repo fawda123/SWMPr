@@ -240,7 +240,7 @@ smoother <- function(swmpr_in, ...) UseMethod('smoother')
 
 #' @rdname smoother
 #' 
-#' @param window numeric vector of ones defining size of smoothing window, passed to \code{filter} 
+#' @param window numeric vector defining size of the smoothing window, passed to \code{filter} 
 #' @param sides numeric vector defining method of averaging, passed to \code{filter}
 #' @param params is chr string of swmpr parameters to smooth, default all
 #' 
