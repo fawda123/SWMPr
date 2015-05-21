@@ -345,6 +345,9 @@ import_local <- function(path, station_code, trace = FALSE){
   # check if path is zipped
   zips <- grepl('\\.zip$', path)
   
+  # remove file extension is present, lower case
+  station_code <- tolower(gsub('\\.csv$', '', station_code))
+  
   ##
   # find station files in path
   
@@ -473,7 +476,8 @@ import_local <- function(path, station_code, trace = FALSE){
   # names as lower case
   names(out) <- tolower(names(out))
   
-  # convert to swmpr class
+  # remove date from station_code, convert to swmpr class
+  station_code <- gsub('[0-9].*$', '', station_code)
   out <- swmpr(out, station_code)
   
   if(trace) cat('\n\nData imported...')
