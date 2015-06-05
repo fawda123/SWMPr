@@ -805,9 +805,14 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
   # met is monthly, except cumprcp which is daily max
   if(grepl('met$', stat)){
     dat <- aggreswmp(swmpr_in, by = 'days', params = param)
-    cumprcp <- aggreswmp(swmpr_in, by = 'days', FUN = function(x) max(x, na.rm = T), 
-      params = 'cumprcp')
-    dat$cumprcp <- cumprcp$cumprcp
+    
+    # summarize cumprcp as max if present
+    if('cumprcp' %in% attr(swmpr_in, 'parameters')){
+      cumprcp <- aggreswmp(swmpr_in, by = 'days', FUN = function(x) max(x, na.rm = TRUE), 
+        params = 'cumprcp')
+      dat$cumprcp <- cumprcp$cumprcp
+    }
+    
   }
   
   mo_labs <- c('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')
