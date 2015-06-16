@@ -17,19 +17,23 @@
 #' @details
 #' The qaqc function is a simple screen to retain values from the data with specified QAQC flags, described online: \url{http://cdmo.baruch.sc.edu/data/qaqc.cfm}. Each parameter in the swmpr data typically has a corresponding QAQC column of the same name with the added prefix 'f_'. Values in the QAQC column specify a flag from -5 to 5. Generally, only data with the '0' QAQC flag should be used, which is the default option for the function. Data that do not satisfy QAQC criteria are converted to \code{NA} values. Additionally, simple filters are used to remove obviously bad values, e.g., wind speed values less than zero or pH values greater than 12. Erroneous data entered as -99 are also removed. Processed data will have QAQC columns removed, in addition to removal of values in the actual parameter columns that do not meet the criteria.
 #' 
+#' The data are filtered by matching the flag columns with the character string provided by \code{qaqc_keep}.  A single combined string is created by pasting each element together using the '|' operator, then using partial string matching with \code{\link[base]{grepl}} to compare the actual flags in the QAQC columns.  Values that can be passed to the function are those described online: \url{http://cdmo.baruch.sc.edu/data/qaqc.cfm}.
+#' 
 #' @examples
 #' ## get data
 #' data(apadbwq)
 #' dat <- apadbwq
 #' 
 #' ## retain only '0' and '-1' flags
-#' qaqc(dat, qaqc_keep = c(0, -1))
+#' qaqc(dat, qaqc_keep = c('0', '-1'))
 #' 
+#' ## retain observations with the 'CSM' error code
+#' qaqc(dat, qaqc_keep = 'CSM')
 qaqc <- function(swmpr_in, ...) UseMethod('qaqc')
 
 #' @rdname qaqc
 #' 
-#' @param qaqc_keep numeric vector of qaqc flags to keep, default \code{0}
+#' @param qaqc_keep character string of qaqc flags to keep, default \code{'0'}, any number of flag codes can be supplied including three character error codes (see examples)
 #' @param trace logical for progress output on console, default \code{FALSE}
 #' 
 #' @concept organize
@@ -38,13 +42,8 @@ qaqc <- function(swmpr_in, ...) UseMethod('qaqc')
 #' 
 #' @method qaqc swmpr
 qaqc.swmpr <- function(swmpr_in, 
-  qaqc_keep = 0,
+  qaqc_keep = '0',
   trace = FALSE, ...){
-  
-  ##
-  # sanity checks
-  if(!class(qaqc_keep) %in% c('numeric', 'integer', 'NULL'))
-    stop('qaqc_keep argument must be numeric or NULL')
   
   ##
   # swmpr data and attributes
@@ -67,10 +66,6 @@ qaqc.swmpr <- function(swmpr_in,
   #names of qaqc columns
   qaqc_sel <- grep('f_', names(dat), value = TRUE)
   
-  qaqc_rm <- as.numeric(seq(-5,  5))
-  qaqc_rm <- qaqc_rm[!qaqc_rm %in% qaqc_keep]
-  if(length(qaqc_rm) == 0) qaqc_keep <- NULL
-  
   # keep all if qaqc_in is NULL, otherwise process qaqc
   if(is.null(qaqc_keep)){ 
     
@@ -82,7 +77,7 @@ qaqc.swmpr <- function(swmpr_in,
     #matrix of TF values for those that don't pass qaqc
     qaqc_vec <- dat[, names(dat) %in% qaqc_sel, drop = FALSE]
     qaqc_vec <- apply(qaqc_vec, 2, 
-      function(x) grepl(paste(qaqc_rm, collapse = '|'), x)
+      function(x) !grepl(paste(qaqc_keep, collapse = '|'), x)
       )
     #replace T values with NA
     #qaqc is corrected
