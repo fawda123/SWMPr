@@ -1,8 +1,8 @@
 Package: SWMPr
 Type: Package
 Title: Retrieving, Organizing, and Analyzing Estuary Monitoring Data
-Version: 2.0.8
-Date: 2015-06-16
+Version: 2.0.9
+Date: 2015-06-23
 Author: Marcus W. Beck [aut, cre]
 Maintainer: Marcus W. Beck <mbafs2012@gmail.com>
 Description: Tools for retrieving, organizing, and analyzing environmental
@@ -20,6 +20,7 @@ Imports:
     maptools,
     oce,
     dplyr,
+    RColorBrewer,
     reshape2,
     tictoc,
     tidyr,

@@ -986,6 +986,122 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 }
 
 ######
+#' Plot multiple SWMP time series on the same y-axis
+#' 
+#' Plot multiple SWMP time series on the same y-axis, aka overplotting
+#' 
+#' @param swmpr_in input swmpr object
+#' @param select chr string of variable(s) to plot, passed to \code{\link{subset}}.
+#' @param subset chr string of form 'YYYY-mm-dd HH:MM' to subset a date range. Input can be one (requires operator or two values (a range).  Passed to \code{\link{subset}}.
+#' @param operator chr string specifiying binary operator (e.g., '>', '<=') if subset is one date value, passed to \code{\link{subset}}
+#' @param ylabs chr string of labels for y-axes, default taken from \code{select} argument
+#' @param xlab chr string of label for x-axis
+#' @param cols chr string of colors to use for lines
+#' @param lty numeric indicating line types, one value for all or values for each parameter
+#' @param lwd numeric indicating line widths, one value for all or values for each parameter
+#' @param ... additional arguments, currently not used
+#' 
+#' @export
+#' 
+#' @concept analyze
+#' 
+#' @details One to many SWMP parameters can be plotted on the same y-axis to facilitate visual comparison.  This is commonly known as overplotting.  The building blocks of this function include \code{\link[graphics]{plot}}, \code{\link[graphics]{legend}}, \code{\link[graphics]{axis}}, and \code{\link[graphics]{mtext}}. 
+#' 
+#' @return An R plot created using base graphics
+#' 
+#' @seealso \code{\link{subset}}
+#' 
+#' @examples
+#' ## import data
+#' data(apacpwq)
+#' dat <- qaqc(apacpwq)
+#' 
+#' ## plot
+#' overplot(dat)
+#' 
+#' ## a truly heinous plot
+#' overplot(dat, select = c('depth', 'do_mgl', 'ph', 'turb'), 
+#'  subset = c('2013-01-01 0:0', '2013-02-01 0:0'), lwd = 2)
+overplot <- function(swmpr_in, ...) UseMethod('overplot') 
+
+#' @rdname overplot
+#' 
+#' @export
+#' 
+#' @concept analyze
+#' 
+#' @method overplot swmpr
+overplot.swmpr <- function(swmpr_in, select = NULL, subset = NULL, operator = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, ...){
+  
+  # fill missing arguments if not supplied
+  if(is.null(select)) 
+    select <- attr(swmpr_in, 'parameters')[c(1, 2)]
+  if(is.null(cols))
+    cols <- colorRampPalette(gradcols())(length(select))
+  if(is.null(lwd)){
+    lwd <- rep(1, length(select))
+  } else {
+    if(length(lwd == 1)) lwd <- rep(lwd, length(select))
+  }
+  if(is.null(lty)){
+    lty <- seq(1, length(select))
+  } else {
+    if(length(lty == 1)) lty <- rep(lty, length(select))
+  }
+  if(is.null(ylabs))
+    ylabs <- select
+  if(is.null(xlab))
+    xlab <- 'DateTimeStamp'
+  
+  # x dimension extension for multiple yaxix labels
+  xext <- 4 * length(select)
+  par(mar = c(5.1, xext, 4.1, 2.1))
+  
+  toplo <- subset(swmpr_in, select = select, subset = subset, operator = operator)
+  
+  # base plot
+  plot(x = toplo[, 'datetimestamp'], y = toplo[, select[1]], type = 'n', axes = F, ylab = '', xlab = '')
+  
+  # initialize starting locations for y axis and text
+  yline <- 0
+  ytxtline <- 2
+  
+  # extension limits for y axes
+  ylims <- diff(range(c(as.matrix(toplo[, select])), na.rm = TRUE))
+  
+  # plot each line
+  for(parm in seq_along(select)){
+    
+    # add line to existing empty plot
+    par(new = TRUE)
+    yvar <- toplo[, select[parm]]
+    plot(x = toplo[, 'datetimestamp'], y = yvar, type = 'l', axes = F, 
+      ylab = '', xlab = '', lty = lty[parm], lwd = lwd[parm], col = cols[parm])
+    
+    # add y axes and appropriate labels
+    axis(side = 2, at = c(-2 * ylims, 2 * ylims), line = yline, labels = FALSE)
+    axis(side = 2, line = yline)
+    mtext(side = 2, text = ylabs[parm], line = ytxtline)
+    
+    # bump the locations for next line
+    yline <- 3.5 + yline
+    ytxtline <- 3.5 + ytxtline
+    
+  }
+
+  # add x axis and label
+  dtrng <- as.numeric(range(toplo$datetimestamp, na.rm = TRUE))
+  axis.POSIXct(side = 1, x = toplo[, 'datetimestamp'])
+  axis(side = 1, at = c(-200 * dtrng[1], 200 * dtrng[2]), labels = FALSE)
+  mtext(side = 1, xlab, line = 2.5)
+  
+  # add legend in margin
+  legend('top', inset = -0.15, legend = ylabs, col = cols, lty = lty, lwd = lwd, horiz = TRUE, xpd = TRUE, 
+    bty = 'n')
+  
+}
+
+######
 #' Ecosystem metabolism
 #' 
 #' Estimate ecosystem metabolism using the Odum open-water method.  Estimates of daily integrated gross production, total respiration, and net ecosystem metabolism are returned.

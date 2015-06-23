@@ -69,8 +69,10 @@ Please see the [sister repository](https://github.com/fawda123/swmpr_manu) for a
 <tr><td><code>lines.swmpr</code></td><td> Add lines to an existing swmpr plot.</td></tr>
 <tr><td><code>map_reserve</code></td><td> Create a map of all stations in a reserve using the ggmap package.</td></tr>
 <tr><td><code>na.approx.swmpr</code></td><td> Linearly interpolate missing data (<code>NA</code> values) in a swmpr object. The maximum gap size that is interpolated is defined as a maximum number of records with missing data.</td></tr>
+<tr><td><code>overplot</code></td><td> Plot multiple SWMP time series on the same y-axis.</td></tr>
 <tr><td><code>plot.swmpr</code></td><td> Plot a univariate time series for a swmpr object. The parameter name must be specified.</td></tr>
-<tr><td><code>plot_metab</code></td><td> Plot ecosystem metabolism estimates after running <code>ecometab</code> on a swmpr object.</td></tr>
+<tr><td><code>plot_metab
+</code></td><td> Plot ecosystem metabolism estimates after running <code>ecometab</code> on a swmpr object.</td></tr>
 <tr><td><code>plot_summary</code></td><td> Create summary plots of seasonal/annual trends and anomalies for a water quality or weather parameter.</td></tr>
 <tr><td><code>smoother.swmpr</code></td><td> Smooth swmpr objects with a moving window average. Window size and sides can be specified, passed to <code>filter</code>.</td></tr>
 </table>
