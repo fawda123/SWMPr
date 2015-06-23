@@ -7,17 +7,6 @@
 #' @details This is a convenience function for retrieving a color palette.  Palettes from RColorBrewer will use the maximum number of colors.  The default palette is 'Spectral'. 
 #' 
 #' @return A character vector of colors in hexidecimal notation.
-#' 
-#' @examples
-#' 
-#' ## defaults
-#' gradcols()
-#' 
-#' ## another RColorBrewer palette
-#' gradcols('Pastel2')
-#' 
-#' ## a silly example
-#' gradcols(rainbow(7))
 gradcols <- function(col_vec = NULL){
 
   cols <- RColorBrewer::brewer.pal(11, 'Spectral')

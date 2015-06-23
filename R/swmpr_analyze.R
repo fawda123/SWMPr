@@ -990,8 +990,9 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 #' 
 #' Plot multiple SWMP time series on the same y-axis, aka overplotting
 #' 
-#' @param swmpr_in input swmpr object
-#' @param select chr string of variable(s) to plot, passed to \code{\link{subset}}.
+#' @param dat_in input data object
+#' @param date_var chr string of the name for the datetimestamp column, not required for \code{\link{swmpr}} objects 
+#' @param select chr string of variable(s) to plot, passed to \code{\link{subset}}.  This is a required argument for the default method.
 #' @param subset chr string of form 'YYYY-mm-dd HH:MM' to subset a date range. Input can be one (requires operator or two values (a range).  Passed to \code{\link{subset}}.
 #' @param operator chr string specifiying binary operator (e.g., '>', '<=') if subset is one date value, passed to \code{\link{subset}}
 #' @param ylabs chr string of labels for y-axes, default taken from \code{select} argument
@@ -1022,7 +1023,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 #' ## a truly heinous plot
 #' overplot(dat, select = c('depth', 'do_mgl', 'ph', 'turb'), 
 #'  subset = c('2013-01-01 0:0', '2013-02-01 0:0'), lwd = 2)
-overplot <- function(swmpr_in, ...) UseMethod('overplot') 
+overplot <- function(dat_in, ...) UseMethod('overplot') 
 
 #' @rdname overplot
 #' 
@@ -1031,11 +1032,39 @@ overplot <- function(swmpr_in, ...) UseMethod('overplot')
 #' @concept analyze
 #' 
 #' @method overplot swmpr
-overplot.swmpr <- function(swmpr_in, select = NULL, subset = NULL, operator = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, ...){
+overplot.swmpr <- function(dat_in, select = NULL, subset = NULL, operator = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, ...){
+  
+  # get parameters to select if null, remove qaqc cols
+  if(is.null(select)) 
+    select <- attr(dat_in, 'parameters')[c(1, 2)]
+  if(attr(dat_in, 'qaqc_cols'))
+    dat_in <- qaqc(dat_in)
+  
+  # subset based on input, convert to data frame for default method
+  toplo <- subset(dat_in, select = select, subset = subset, operator = operator)
+  toplo <- as.data.frame(toplo)  
+
+  overplot(toplo, date_var = 'datetimestamp', select = select, ylab = ylabs, xlab = xlab, cols = cols, lty = lty, lwd = lwd, ...)
+  
+}
+
+#' @rdname overplot
+#' 
+#' @export
+#' 
+#' @concept analyze
+#' 
+#' @method overplot default
+overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, ...){
+  
+  if(!inherits(dat_in[, date_var], 'POSIXct')) 
+    stop('date_var must be POSIXct class')
+
+  # subset data if needed
+  dat_in <- dat_in[, c(date_var, select)]
   
   # fill missing arguments if not supplied
-  if(is.null(select)) 
-    select <- attr(swmpr_in, 'parameters')[c(1, 2)]
+  if(!is.null(cols) & length(cols) ==1) cols <- rep(cols, length(select))
   if(is.null(cols))
     cols <- colorRampPalette(gradcols())(length(select))
   if(is.null(lwd)){
@@ -1057,10 +1086,10 @@ overplot.swmpr <- function(swmpr_in, select = NULL, subset = NULL, operator = NU
   xext <- 4 * length(select)
   par(mar = c(5.1, xext, 4.1, 2.1))
   
-  toplo <- subset(swmpr_in, select = select, subset = subset, operator = operator)
+  toplo <- dat_in
   
   # base plot
-  plot(x = toplo[, 'datetimestamp'], y = toplo[, select[1]], type = 'n', axes = F, ylab = '', xlab = '')
+  plot(x = toplo[, date_var], y = toplo[, select[1]], type = 'n', axes = F, ylab = '', xlab = '')
   
   # initialize starting locations for y axis and text
   yline <- 0
@@ -1075,7 +1104,7 @@ overplot.swmpr <- function(swmpr_in, select = NULL, subset = NULL, operator = NU
     # add line to existing empty plot
     par(new = TRUE)
     yvar <- toplo[, select[parm]]
-    plot(x = toplo[, 'datetimestamp'], y = yvar, type = 'l', axes = F, 
+    plot(x = toplo[, date_var], y = yvar, type = 'l', axes = F, 
       ylab = '', xlab = '', lty = lty[parm], lwd = lwd[parm], col = cols[parm])
     
     # add y axes and appropriate labels
@@ -1090,8 +1119,8 @@ overplot.swmpr <- function(swmpr_in, select = NULL, subset = NULL, operator = NU
   }
 
   # add x axis and label
-  dtrng <- as.numeric(range(toplo$datetimestamp, na.rm = TRUE))
-  axis.POSIXct(side = 1, x = toplo[, 'datetimestamp'])
+  dtrng <- as.numeric(range(toplo[, date_var], na.rm = TRUE))
+  axis.POSIXct(side = 1, x = toplo[, date_var])
   axis(side = 1, at = c(-200 * dtrng[1], 200 * dtrng[2]), labels = FALSE)
   mtext(side = 1, xlab, line = 2.5)
   

@@ -2,21 +2,25 @@
 % Please edit documentation in R/swmpr_analyze.R
 \name{overplot}
 \alias{overplot}
+\alias{overplot.default}
 \alias{overplot.swmpr}
 \title{Plot multiple SWMP time series on the same y-axis}
 \usage{
-overplot(swmpr_in, ...)
+overplot(dat_in, ...)
 
-\method{overplot}{swmpr}(swmpr_in, select = NULL, subset = NULL,
+\method{overplot}{swmpr}(dat_in, select = NULL, subset = NULL,
   operator = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL,
   lwd = NULL, ...)
+
+\method{overplot}{default}(dat_in, date_var, select = NULL, ylabs = NULL,
+  xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, ...)
 }
 \arguments{
-\item{swmpr_in}{input swmpr object}
+\item{dat_in}{input data object}
 
 \item{...}{additional arguments, currently not used}
 
-\item{select}{chr string of variable(s) to plot, passed to \code{\link{subset}}.}
+\item{select}{chr string of variable(s) to plot, passed to \code{\link{subset}}.  This is a required argument for the default method.}
 
 \item{subset}{chr string of form 'YYYY-mm-dd HH:MM' to subset a date range. Input can be one (requires operator or two values (a range).  Passed to \code{\link{subset}}.}
 
@@ -31,6 +35,8 @@ overplot(swmpr_in, ...)
 \item{lty}{numeric indicating line types, one value for all or values for each parameter}
 
 \item{lwd}{numeric indicating line widths, one value for all or values for each parameter}
+
+\item{date_var}{chr string of the name for the datetimestamp column, not required for \code{\link{swmpr}} objects}
 }
 \value{
 An R plot created using base graphics
@@ -57,6 +63,8 @@ overplot(dat, select = c('depth', 'do_mgl', 'ph', 'turb'),
 \code{\link{subset}}
 }
 \concept{
+analyze
+
 analyze
 
 analyze

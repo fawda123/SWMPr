@@ -18,14 +18,4 @@ Get gradient default colors for plots
 \details{
 This is a convenience function for retrieving a color palette.  Palettes from RColorBrewer will use the maximum number of colors.  The default palette is 'Spectral'.
 }
-\examples{
-## defaults
-gradcols()
-
-## another RColorBrewer palette
-gradcols('Pastel2')
-
-## a silly example
-gradcols(rainbow(7))
-}
 
