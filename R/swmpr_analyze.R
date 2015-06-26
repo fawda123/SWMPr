@@ -1000,7 +1000,11 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
 #' @param cols chr string of colors to use for lines
 #' @param lty numeric indicating line types, one value for all or values for each parameter
 #' @param lwd numeric indicating line widths, one value for all or values for each parameter
-#' @param ... additional arguments, currently not used
+#' @param inset numeric of relative location of legend, passed to \code{\link[graphics]{legend}}
+#' @param cex numeric of scale factor for legend, passed to \code{\link[graphics]{legend}}
+#' @param xloc x location of legend, passed to \code{\link[graphics]{legend}}
+#' @param yloc y location of legend, passed to \code{\link[graphics]{legend}}
+#' @param ... additional arguments passed to \code{\link[graphics]{plot}}
 #' 
 #' @export
 #' 
@@ -1055,7 +1059,7 @@ overplot.swmpr <- function(dat_in, select = NULL, subset = NULL, operator = NULL
 #' @concept analyze
 #' 
 #' @method overplot default
-overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, ...){
+overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, inset = -0.15, cex = 1, xloc = 'top', yloc = NULL, ...){
   
   if(!inherits(dat_in[, date_var], 'POSIXct')) 
     stop('date_var must be POSIXct class')
@@ -1089,7 +1093,7 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
   toplo <- dat_in
   
   # base plot
-  plot(x = toplo[, date_var], y = toplo[, select[1]], type = 'n', axes = F, ylab = '', xlab = '')
+  plot(x = toplo[, date_var], y = toplo[, select[1]], type = 'n', axes = F, ylab = '', xlab = '', ...)
   
   # initialize starting locations for y axis and text
   yline <- 0
@@ -1123,10 +1127,10 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
   axis.POSIXct(side = 1, x = toplo[, date_var])
   axis(side = 1, at = c(-200 * dtrng[1], 200 * dtrng[2]), labels = FALSE)
   mtext(side = 1, xlab, line = 2.5)
-  
+
   # add legend in margin
-  legend('top', inset = -0.15, legend = ylabs, col = cols, lty = lty, lwd = lwd, horiz = TRUE, xpd = TRUE, 
-    bty = 'n')
+  legend(x = xloc, y = yloc, inset = inset, cex = cex, legend = ylabs, col = cols, lty = lty, lwd = lwd, 
+    horiz = TRUE, xpd = TRUE, bty = 'n')
   
 }
 

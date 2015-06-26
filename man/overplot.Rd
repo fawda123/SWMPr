@@ -13,12 +13,13 @@ overplot(dat_in, ...)
   lwd = NULL, ...)
 
 \method{overplot}{default}(dat_in, date_var, select = NULL, ylabs = NULL,
-  xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, ...)
+  xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, inset = -0.15,
+  cex = 1, xloc = "top", yloc = NULL, ...)
 }
 \arguments{
 \item{dat_in}{input data object}
 
-\item{...}{additional arguments, currently not used}
+\item{...}{additional arguments passed to \code{\link[graphics]{plot}}}
 
 \item{select}{chr string of variable(s) to plot, passed to \code{\link{subset}}.  This is a required argument for the default method.}
 
@@ -37,6 +38,14 @@ overplot(dat_in, ...)
 \item{lwd}{numeric indicating line widths, one value for all or values for each parameter}
 
 \item{date_var}{chr string of the name for the datetimestamp column, not required for \code{\link{swmpr}} objects}
+
+\item{inset}{numeric of relative location of legend, passed to \code{\link[graphics]{legend}}}
+
+\item{cex}{numeric of scale factor for legend, passed to \code{\link[graphics]{legend}}}
+
+\item{xloc}{x location of legend, passed to \code{\link[graphics]{legend}}}
+
+\item{yloc}{y location of legend, passed to \code{\link[graphics]{legend}}}
 }
 \value{
 An R plot created using base graphics
