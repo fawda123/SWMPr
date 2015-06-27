@@ -513,8 +513,9 @@ decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily'
 #' 
 #' Decompose monthly SWMP time series into grandmean, annual, seasonal, and event series using \code{\link[wq]{decompTs}}, as described in Cloern and Jassby 2010.
 #' 
-#' @param swmpr_in input swmpr object
+#' @param dat_in input data object
 #' @param param chr string of variable to decompose
+#' @param date_col chr string indicating the name of the date column which should be a date or POSIX object.
 #' @param vals_out logical indicating of numeric output is returned, default is \code{FALSE} to return a plot.
 #' @param ... additional arguments passed to other methods, including \code{\link[wq]{decompTs}} 
 #' 
@@ -526,7 +527,7 @@ decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily'
 #' @details
 #' This function is a simple wrapper to the \code{\link[wq]{decompTs}} function in the wq package, also described in Cloern and Jassby (2010).  The function is similar to \code{\link{decomp.swmpr}} (which is a wrapper to \code{\link[stats]{decompose}}) with a few key differences.  The \code{\link{decomp.swmpr}} function decomposes the time series into a trend, seasonal, and random components, whereas the current function decomposes into the grandmean, annual, seasonal, and events components.  For both functions, the random or events components, respectively, can be considered anomalies that don't follow the trends in the remaining categories.  
 #' 
-#' The \code{decomp_cj} function provides only a monthly decomposition, which is appropriate for characterizing relatively long-term trends.  This approach is meant for nutrient data that are obtained on a monthly cycle.  The function will also work with continuous water quality or weather data but note that the data are first aggregated on the monthly scale before decomposition.  Accordingly, short-term variation less than one-month will be removed.  The \code{\link{decomp.swmpr}} function can be used to decompose daily variation.     
+#' The \code{decomp_cj} function provides only a monthly decomposition, which is appropriate for characterizing relatively long-term trends.  This approach is meant for nutrient data that are obtained on a monthly cycle.  The function will also work with continuous water quality or weather data but note that the data are first aggregated on the monthly scale before decomposition.  Use the \code{\link{decomp.swmpr}} function to decompose daily variation.
 #' 
 #' Additional arguments passed to \code{\link[wq]{decompTs}} can be used with \code{decomp_cj}, such as \code{startyr}, \code{endyr}, and \code{type}.  Values passed to \code{type} are \code{mult} (default) or \code{add}, referring to multiplicative or additive decomposition.  See the documentation for \code{\link[wq]{decompTs}} for additional explanation and examples.   
 #' 
@@ -559,7 +560,11 @@ decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily'
 #' dat2 <- qaqc(apacpwq)
 #' 
 #' decomp_cj(dat2, param = 'do_mgl')
-decomp_cj <- function(swmpr_in, ...) UseMethod('decomp_cj') 
+#' 
+#' ## using the default method with a data frame
+#' dat <- data.frame(dat)
+#' decomp_cj(dat, param = 'chla_n', date_col = 'datetimestamp')
+decomp_cj <- function(dat_in, ...) UseMethod('decomp_cj') 
 
 #' @rdname decomp_cj
 #' 
@@ -568,9 +573,9 @@ decomp_cj <- function(swmpr_in, ...) UseMethod('decomp_cj')
 #' @concept analyze
 #' 
 #' @method decomp_cj swmpr
-decomp_cj.swmpr <- function(swmpr_in, param, vals_out = FALSE, ...){
+decomp_cj.swmpr <- function(dat_in, param, vals_out = FALSE, ...){
   
-  dat <- swmpr_in
+  dat <- dat_in
   
   ## sanity checks
   parameters <- attr(dat, 'parameters')
@@ -578,10 +583,44 @@ decomp_cj.swmpr <- function(swmpr_in, param, vals_out = FALSE, ...){
   
   # monthly ts
   dat <- aggreswmp(dat, by = 'months', params = param)
-  dat_rng <- attr(dat, 'date_rng')
-  months <- data.frame(datetimestamp = seq.Date(dat_rng[1], dat_rng[2], by = 'months'))
-  dat <- merge(months, dat,  by = 'datetimestamp', all.x = T)
+  dat <- data.frame(dat)
+  decomp_cj(dat, param = param, date_col = 'datetimestamp', vals_out = vals_out, ...)
   
+}
+
+#' @rdname decomp_cj
+#' 
+#' @export
+#' 
+#' @concept analyze
+#' 
+#' @method decomp_cj default
+decomp_cj.default <- function(dat_in, param, date_col, vals_out = FALSE, ...){
+  
+  # select date column and parameter
+  dat <- dat_in[, c(date_col, param)]
+  dat[, date_col] <- as.Date(dat[, date_col])
+  
+  # check months to see if one value per month, if not then aggregate
+  chkmos <- strftime(dat[, date_col], '%m')
+  if(any(duplicated(chkmos))){
+    yrs <- strftime(dat[, date_col], '%Y')
+    mos <- strftime(dat[, date_col], '%m')
+    toagg <- paste(yrs, mos, '01', sep = '-')
+    dat[, date_col] <- toagg
+    names(dat) <- c('x', 'y')
+    dat <- aggregate(y ~ x, dat, FUN = mean, na.rm = TRUE)
+    names(dat) <- c(date_col, param)
+    dat[, date_col] <- as.Date(dat[, date_col], format = '%Y-%m-%d')
+  }
+  
+  # create a continuous month vector so decomp is on equal step
+  dat_rng <- as.Date(range(dat[, date_col], na.rm = TRUE))
+  months <- data.frame(seq.Date(dat_rng[1], dat_rng[2], by = 'months'))
+  names(months) <- date_col
+  dat <- merge(months, dat,  by = date_col, all.x = T)
+  
+  # find starting year, month to create a ts object
   year <- as.numeric(strftime(dat_rng[1], '%Y'))
   month <- as.numeric(strftime(dat_rng[1], '%m'))
   dat_mts <- ts(dat[, param], frequency = 12, start = c(year, month))
