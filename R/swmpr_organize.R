@@ -451,11 +451,12 @@ subset.swmpr <- function(x, subset = NULL, select = NULL,
 }
 
 ######
-#' Format a swmpr time vctor
+#' Format a swmpr time vector
 #'
 #' Create a continuous time vector at set time step for a swmpr object
 #' 
-#' @param swmpr_in input swmpr object
+#' @param dat_in input data object
+#' @param date_col chr string for the name of the date column
 #' @param timestep numeric value of time step to use in minutes.  Alternatively, a chr string indicating \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'days'}, or \code{'hours'} can also be used. A character input assumes 365 days in a year and 31 days in a month.
 #' @param differ numeric value defining buffer for merging time stamps to standardized time series
 #' @param ... arguments passed to or from other methods
@@ -466,7 +467,7 @@ subset.swmpr <- function(x, subset = NULL, select = NULL,
 #' 
 #' @import data.table
 #' 
-#' @return Returns a swmpr object for the specified time step
+#' @return Returns a data object for the specified time step
 #' 
 #' @seealso \code{\link{comb}}
 #' 
@@ -488,7 +489,7 @@ subset.swmpr <- function(x, subset = NULL, select = NULL,
 #' dat_nut <- apacpnut
 #' dat_nut <- setstep(dat_nut, timestep = 60)
 #' subset(dat_nut, rem_rows = TRUE, rem_cols = TRUE)
-setstep <- function(swmpr_in, ...) UseMethod('setstep')
+setstep <- function(dat_in, ...) UseMethod('setstep')
 
 #' @rdname setstep
 #' 
@@ -497,12 +498,30 @@ setstep <- function(swmpr_in, ...) UseMethod('setstep')
 #' @concept organize
 #' 
 #' @method setstep swmpr
-setstep.swmpr <- function(swmpr_in, timestep = 15, differ= timestep/2, ...){ 
+setstep.swmpr <- function(dat_in, timestep = 15, differ= timestep/2, ...){ 
   
   # swmpr data and attributes
-  dat <- swmpr_in
-  attrs <- attributes(swmpr_in)
+  attrs <- attributes(dat_in)
 
+  # run default method
+  dat_in <- as.data.frame(dat_in)
+  out <- setstep(dat_in, date_col = 'datetimestamp', timestep = timestep, differ = differ, ...)
+
+  # back to swmpr class and exit
+  out <- swmpr(out, attrs$station)
+  return(out)
+  
+} 
+
+#' @rdname setstep
+#' 
+#' @export
+#' 
+#' @concept organize
+#' 
+#' @method setstep default
+setstep.default <- function(dat_in, date_col, timestep = 15, differ= timestep/2, ...){ 
+  
   # convert timestep to numeric if chr input
   if(is.character(timestep)){
     
@@ -528,14 +547,18 @@ setstep.swmpr <- function(swmpr_in, timestep = 15, differ= timestep/2, ...){
   # sanity check
   if(timestep/2 < differ) 
     stop('Value for differ must be less than or equal to one half of timestep')
-  if('Date' %in% attrs$stamp_class) 
+  if('Date' %in% class(dat_in[, date_col])) 
     stop('Cannot use setstep with date class')
+  
+  # date range
+  date_rng <- range(dat_in[, date_col], na.rm = TRUE)
+  timezone <- attr(dat_in[, date_col], 'tzone')
   
   # round to nearest timestep
   dts_std <- as.POSIXct(
-    round(as.double(attrs$date_rng)/(timestep * 60)) * (timestep * 60),
+    round(as.double(date_rng)/(timestep * 60)) * (timestep * 60),
     origin = '1970-01-01',
-    tz = attrs$timezone
+    tz = timezone
     )
     
   # create continuous vector
@@ -544,24 +567,23 @@ setstep.swmpr <- function(swmpr_in, timestep = 15, differ= timestep/2, ...){
   
   # convert swmpr data and standardized vector to data.table for merge
   # time_dum is vector of original times for removing outside of differ
-  mrg_dat <- dat
-  mrg_dat$time_dum <- mrg_dat$datetimestamp
-  mrg_dat <- data.table::data.table(mrg_dat, key = 'datetimestamp')
-  mrg_std <- data.table::data.table(dts_std, key = 'datetimestamp')
+  mrg_dat <- dat_in
+  mrg_dat$time_dum <- mrg_dat[, date_col]
+  mrg_dat <- data.table::data.table(mrg_dat, key = date_col)
+  mrg_std <- data.table::data.table(dts_std, key = date_col)
   
   # merge all the data  using  mrg_std as master
   mrg <- mrg_dat[mrg_std, roll = 'nearest']
   mrg <- data.frame(mrg)
   
   # set values outside of differ to NA
-  time_diff <- abs(difftime(mrg$datetimestamp, mrg$time_dum, units='secs'))
+  time_diff <- abs(difftime(mrg[, date_col], mrg$time_dum, units='secs'))
   time_diff <- time_diff >= 60 * differ
-  mrg[time_diff, !names(mrg) %in% c('datetimestamp', 'time_dum')] <- NA
+  mrg[time_diff, !names(mrg) %in% c(date_col, 'time_dum')] <- NA
   
-  # output, back to swmpr object from data.table
+  # output
   out <- data.frame(mrg)
   out <- out[, !names(out) %in% 'time_dum']
-  out <- swmpr(out, attrs$station)
   
   return(out)
 

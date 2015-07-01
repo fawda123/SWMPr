@@ -2,24 +2,30 @@
 % Please edit documentation in R/swmpr_organize.R
 \name{setstep}
 \alias{setstep}
+\alias{setstep.default}
 \alias{setstep.swmpr}
-\title{Format a swmpr time vctor}
+\title{Format a swmpr time vector}
 \usage{
-setstep(swmpr_in, ...)
+setstep(dat_in, ...)
 
-\method{setstep}{swmpr}(swmpr_in, timestep = 15, differ = timestep/2, ...)
+\method{setstep}{swmpr}(dat_in, timestep = 15, differ = timestep/2, ...)
+
+\method{setstep}{default}(dat_in, date_col, timestep = 15,
+  differ = timestep/2, ...)
 }
 \arguments{
-\item{swmpr_in}{input swmpr object}
+\item{dat_in}{input data object}
 
 \item{...}{arguments passed to or from other methods}
 
 \item{timestep}{numeric value of time step to use in minutes.  Alternatively, a chr string indicating \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'days'}, or \code{'hours'} can also be used. A character input assumes 365 days in a year and 31 days in a month.}
 
 \item{differ}{numeric value defining buffer for merging time stamps to standardized time series}
+
+\item{date_col}{chr string for the name of the date column}
 }
 \value{
-Returns a swmpr object for the specified time step
+Returns a data object for the specified time step
 }
 \description{
 Create a continuous time vector at set time step for a swmpr object
@@ -47,6 +53,8 @@ subset(dat_nut, rem_rows = TRUE, rem_cols = TRUE)
 \code{\link{comb}}
 }
 \concept{
+organize
+
 organize
 
 organize
