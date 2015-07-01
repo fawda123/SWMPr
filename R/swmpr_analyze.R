@@ -390,11 +390,11 @@ na.approx.swmpr <- function(object, params = NULL, maxgap, ...){
   
 }
 
-#' Simple trend decomposition of swmpr data
+#' Simple trend decomposition
 #' 
-#' Decompose swmpr data into trend, cyclical (e.g., daily, annual), and random components using \code{\link[stats]{decompose}} and \code{\link[stats]{ts}}
+#' Decompose data into trend, cyclical (e.g., daily, annual), and random components using \code{\link[stats]{decompose}} and \code{\link[stats]{ts}}
 #' 
-#' @param swmpr_in input swmpr object
+#' @param dat_in input data object
 #' @param ... arguments passed to \code{decompose}, \code{ts}, and other methods
 #' 
 #' @export decomp
@@ -445,7 +445,7 @@ na.approx.swmpr <- function(object, params = NULL, maxgap, ...){
 #' ## decomposition and plot
 #' test <- decomp(dat, param = 'do_mgl', frequency = 'daily')
 #' plot(test)
-decomp <- function(swmpr_in, ...) UseMethod('decomp') 
+decomp <- function(dat_in, ...) UseMethod('decomp') 
 
 #' @rdname decomp
 #' 
@@ -459,17 +459,40 @@ decomp <- function(swmpr_in, ...) UseMethod('decomp')
 #' @export
 #' 
 #' @method decomp swmpr
-decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily', start = NULL, ...){
+decomp.swmpr <- function(dat_in, param, type = 'additive', frequency = 'daily', start = NULL, ...){
   
   # attributes
-  parameters <- attr(swmpr_in, 'parameters')
-  timezone <- attr(swmpr_in, 'timezone')
-  
-  ##
-  # sanity checks
+  parameters <- attr(dat_in, 'parameters')
   
   # stop if param not in parameters
   if(!any(param %in% parameters) & !is.null(param))
+    stop('Params argument must name input columns')
+  
+  # to data frame for default
+  dat_in <- as.data.frame(dat_in)
+  
+  decomp(dat_in, param = param, date_col = 'datetimestamp', type = type, 
+    frequency = frequency, start = start)
+
+}
+
+#' @rdname decomp
+#' 
+#' @param param chr string of swmpr parameter to decompose
+#' @param date_col chr string of the name of the date column
+#' @param type chr string of \code{'additive'} or \code{'multiplicative'} indicating the type of decomposition, default \code{'additive'}.
+#' @param frequency chr string or numeric vector indicating the periodic component of the input parameter.  Only \code{'daily'} or \code{'annual'} are accepted as chr strings.  Otherwise a numeric vector specifies the number of observations required for a full cycle of the input parameter.  Defaults to \code{'daily'} for a diurnal parameter.
+#' @param start numeric vector indicating the starting value for the time series given the frequency.  Only required if \code{frequency} is numeric. See \code{\link[stats]{ts}}.
+#' 
+#' @concept analyze
+#' 
+#' @export
+#' 
+#' @method decomp default
+decomp.default <- function(dat_in, param, date_col, type = 'additive', frequency = 'daily', start = NULL, ...){
+
+  # stop if param not in input data names
+  if(!param %in% names(dat_in))
     stop('Params argument must name input columns')
   
   # stop if frequency or start are incorrect
@@ -481,13 +504,16 @@ decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily'
   }
  
   # stop if time series is not standardized
-  chk_step <- unique(diff(swmpr_in$datetimestamp))
+  chk_step <- unique(diff(dat_in[, date_col]))
   if(length(chk_step) > 1)
     stop('The time step is not standardized, use setstep')
 
+  # timezone
+  timezone <- attr(dat_in[, date_col], 'tzone') 
+    
   ##
   # get frequency and starting value if input not numeric
-  start <- swmpr_in$datetimestamp[1]
+  start <- dat_in[1, date_col]
   day <- as.numeric(strftime(start, '%j', tz = timezone))
   hour <- as.numeric(strftime(start, '%H', tz = timezone))
   min <- as.numeric(strftime(start, '%M', tz = timezone))
@@ -501,7 +527,7 @@ decomp.swmpr <- function(swmpr_in, param, type = 'additive', frequency = 'daily'
   }
   
   # make ts and decompose
-  ts_smp <- ts(swmpr_in[, param], start = c(1, start), frequency = frequency)
+  ts_smp <- ts(dat_in[, param], start = c(1, start), frequency = frequency)
   out <- decompose(ts_smp, type, ...)
 
   # return decompose.ts

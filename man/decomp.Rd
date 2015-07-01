@@ -2,18 +2,32 @@
 % Please edit documentation in R/swmpr_analyze.R
 \name{decomp}
 \alias{decomp}
+\alias{decomp.default}
 \alias{decomp.swmpr}
-\title{Simple trend decomposition of swmpr data}
+\title{Simple trend decomposition}
 \usage{
-decomp(swmpr_in, ...)
+decomp(dat_in, ...)
 
-\method{decomp}{swmpr}(swmpr_in, param, type = "additive",
+\method{decomp}{swmpr}(dat_in, param, type = "additive",
+  frequency = "daily", start = NULL, ...)
+
+\method{decomp}{default}(dat_in, param, date_col, type = "additive",
   frequency = "daily", start = NULL, ...)
 }
 \arguments{
-\item{swmpr_in}{input swmpr object}
+\item{dat_in}{input data object}
 
 \item{...}{arguments passed to \code{decompose}, \code{ts}, and other methods}
+
+\item{param}{chr string of swmpr parameter to decompose}
+
+\item{type}{chr string of \code{'additive'} or \code{'multiplicative'} indicating the type of decomposition, default \code{'additive'}.}
+
+\item{frequency}{chr string or numeric vector indicating the periodic component of the input parameter.  Only \code{'daily'} or \code{'annual'} are accepted as chr strings.  Otherwise a numeric vector specifies the number of observations required for a full cycle of the input parameter.  Defaults to \code{'daily'} for a diurnal parameter.}
+
+\item{start}{numeric vector indicating the starting value for the time series given the frequency.  Only required if \code{frequency} is numeric. See \code{\link[stats]{ts}}.}
+
+\item{date_col}{chr string of the name of the date column}
 
 \item{param}{chr string of swmpr parameter to decompose}
 
@@ -27,7 +41,7 @@ decomp(swmpr_in, ...)
 Returns a decomposed.ts object
 }
 \description{
-Decompose swmpr data into trend, cyclical (e.g., daily, annual), and random components using \code{\link[stats]{decompose}} and \code{\link[stats]{ts}}
+Decompose data into trend, cyclical (e.g., daily, annual), and random components using \code{\link[stats]{decompose}} and \code{\link[stats]{ts}}
 }
 \details{
 This function is a simple wrapper to the \code{\link[stats]{decompose}} function.  The \code{decompose} function separates a time series into additive or multiplicative components describing a trend, cyclical variation (e.g., daily or annual), and the remainder.  The additive decomposition assumes that the cyclical component of the time series is stationary (i.e., the variance is constant), whereas a multiplicative decomposition accounts for non-stationarity.  By default, a moving average with a symmetric window is used to filter the cyclical component.  Alternatively, a vector of filter coefficients in reverse time order can be supplied (see \code{\link[stats]{decompose}}).
@@ -73,6 +87,8 @@ M. Kendall and A. Stuart (1983) The Advanced Theory of Statistics, Vol. 3, Griff
 \code{\link[stats]{decompose}}, \code{\link[stats]{ts}}, \code{\link[stats]{stl}}
 }
 \concept{
+analyze
+
 analyze
 
 analyze
