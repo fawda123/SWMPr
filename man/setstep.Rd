@@ -22,7 +22,7 @@ setstep(dat_in, ...)
 
 \item{differ}{numeric value defining buffer for merging time stamps to standardized time series}
 
-\item{date_col}{chr string for the name of the date column}
+\item{date_col}{chr string for the name of the date/time column, e.g., \code{"POSIXct"} or \code{"POSIXlt"} objects}
 }
 \value{
 Returns a data object for the specified time step
