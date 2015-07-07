@@ -563,7 +563,8 @@ setstep.default <- function(dat_in, date_col, timestep = 15, differ= timestep/2,
     
   # create continuous vector
   dts_std <- seq(dts_std[1], dts_std[2], by = timestep * 60)
-  dts_std <- data.frame(datetimestamp = dts_std)
+  dts_std <- data.frame(dts_std)
+  names(dts_std) <- date_col
   
   # convert swmpr data and standardized vector to data.table for merge
   # time_dum is vector of original times for removing outside of differ
