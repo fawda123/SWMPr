@@ -596,9 +596,10 @@ setstep.default <- function(dat_in, date_col, timestep = 15, differ= timestep/2,
 #' Combine swmpr data types for a station by common time series
 #' 
 #' @param ... swmpr object input from one to many
+#' @param date_col chr string indicating name of the date column
 #' @param timestep numeric value of time step to use in minutes, passed to \code{setstep}
 #' @param differ numeric value defining buffer for merging time stamps to standardized time series, passed to \code{setstep}
-#' @param method chr string indicating method of combining (\code{'union'} for all dates as continuous time series, \code{'intersect'} for areas of overlap, or \code{'station'} for date ranges of a given station)
+#' @param method chr string indicating method of combining data.  Use (\code{'union'} for all dates as continuous time series or \code{'intersect'} for only areas of overlap. If input is a  \code{swmpr} object, a \code{'station'} name can be used to combine by the date range of a given station, assuming there is overlap with the second station.  A numeric value can be supplied for the default method that specifies which data object to use for the date range.
 #' 
 #' @import data.table
 #' 
@@ -624,7 +625,9 @@ setstep.default <- function(dat_in, date_col, timestep = 15, differ= timestep/2,
 #' swmp2 <- apaebmet
 #' 
 #' ## combine nuts and wq data by union, set timestep to 120 minutes
+#' \dontrun{
 #' comb(swmp1, swmp2, timestep = 120, method = 'union')
+#' }
 comb <- function(...) UseMethod('comb')
 
 #' @rdname comb
@@ -642,20 +645,26 @@ comb.swmpr <- function(..., timestep = 15, differ= timestep/2, method = 'union')
   
   ##
   # sanity checks
-  if(length(all_dat) == 1)
-    stop('Input data must include more than one swmpr object')
+  
+  # remove qaqc if present
+  qaqc_cols <- unique(unlist(lapply(attrs, function(x) x$qaqc_cols)))
+  if(any(qaqc_cols)){
+    warning('QAQC columns present, removed from output')
+    all_dat <- lapply(all_dat, function(x) qaqc(x, qaqc_keep = NULL))
+  }
   
   # stop if from more than one timezone
   timezone <- unique(unlist(lapply(attrs, function(x) x$timezone)))
-    
   if(length(timezone) > 1)
     stop('Input data are from multiple timezones')
   
-  # stop of method is invalid
+  # stop if method is invalid
   stations <- unlist(lapply(attrs, function(x) x$station))
   
   if(!method %in% c('intersect', 'union', stations))
     stop('Method must be intersect, union, or station name')
+  # get index value of station name
+  if(method %in% stations) method <- which(method == stations)
 
   # stop if more than one data type
   types <- unlist(lapply(attrs, function(x) substring(x$station, 6)))
@@ -663,13 +672,55 @@ comb.swmpr <- function(..., timestep = 15, differ= timestep/2, method = 'union')
   if(any(duplicated(types))) 
     stop('Unable to combine duplicated data types')
   
+  # convert to df for default
+  all_dat <- lapply(all_dat, function(x) data.frame(x))
+  res <- comb(all_dat, date_col = 'datetimestamp', timestep = timestep, differ = differ, method = method)
+  
+  out <- swmpr(res, stations)
+  
+  return(out)
+  
+}
+
+#' @rdname comb
+#' 
+#' @export
+#' 
+#' @concept organize
+#' 
+#' @method comb default
+comb.default <- function(..., date_col, timestep = 15, differ= timestep/2, method = 'union'){
+  
+  ##
+  # sanity checks
+
+  # create list if not
+  if(!is.list(...))
+    all_dat <- list(...)
+  else all_dat <- c(...)
+  
+  # stop if from more than one timezone
+  timezone <- lapply(all_dat, function(x) attr(x[, date_col], 'tzone'))
+  timezone <- unique(unlist(timezone))
+  if(length(timezone) > 1)
+    stop('Input data are from multiple timezones')
+  
+  # stop if incorrect input for method
+  if(is.numeric(method)){
+    if(method > length(all_dat)) 
+      stop('numeric value for method must specify an index for the input data')
+  } else {
+    if(!method %in% c('intersect', 'union'))
+      stop('character value for method must be intersect or union')
+  }
+
   ##
   # setstep applied to data before combining
-  all_dat <- lapply(all_dat, function(x) setstep(x, timestep, differ))
+  all_dat <- lapply(all_dat, function(x) setstep(x, date_col = date_col, timestep, differ))
   
   ##
   # dates
-  date_vecs <- lapply(all_dat, function(x) x$datetimestamp)
+  date_vecs <- lapply(all_dat, function(x) x[, date_col])
   
   ## 
   # date vector for combining
@@ -679,25 +730,23 @@ comb.swmpr <- function(..., timestep = 15, differ= timestep/2, method = 'union')
     date_vec <- Reduce(method, date_vecs)
     date_vec <- as.POSIXct(date_vec, origin = '1970-01-01', tz = timezone)
     
-  # for a station
+  # for a numeric index
   } else {
     
-    sel <- unlist(lapply(attrs, function(x) x$station == method))
-    
-    date_vec <- date_vecs[sel][[1]]
+    date_vec <- all_dat[[method]][, date_col]
     
   }
     
   ##
   # merge stations by date_vec
   out <- data.table::data.table(datetimestamp = date_vec, key = 'datetimestamp')
-  
-  for(dat in all_dat){
+
+  for(dat in rev(all_dat)){ # reverse this because data are combined from back to front
     
     # set dummy time variable and parameter id for differ check
-    dat$time_dum <- dat$datetimestamp
-    dat_parms <- attr(dat, 'parameters')
-
+    dat$time_dum <- dat[, date_col]
+    dat_parms <- names(dat)[!names(dat) %in% c('time_dum', date_col)]
+    
     # merge
     dat <- data.table::data.table(dat, key = 'datetimestamp')
     out <- dat[out, roll = 'nearest']
@@ -712,10 +761,10 @@ comb.swmpr <- function(..., timestep = 15, differ= timestep/2, method = 'union')
       
   }
 
-  # format as swmpr object, return
+  # format output, return
   out <- data.frame(out)
-  out <- swmpr(out, stations)
-  
+  names(out)[names(out) %in% 'datetimestamp'] <- date_col
+
   return(out)
   
 }

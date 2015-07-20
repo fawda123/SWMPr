@@ -478,11 +478,7 @@ decomp.swmpr <- function(dat_in, param, type = 'additive', frequency = 'daily', 
 
 #' @rdname decomp
 #' 
-#' @param param chr string of swmpr parameter to decompose
 #' @param date_col chr string of the name of the date column
-#' @param type chr string of \code{'additive'} or \code{'multiplicative'} indicating the type of decomposition, default \code{'additive'}.
-#' @param frequency chr string or numeric vector indicating the periodic component of the input parameter.  Only \code{'daily'} or \code{'annual'} are accepted as chr strings.  Otherwise a numeric vector specifies the number of observations required for a full cycle of the input parameter.  Defaults to \code{'daily'} for a diurnal parameter.
-#' @param start numeric vector indicating the starting value for the time series given the frequency.  Only required if \code{frequency} is numeric. See \code{\link[stats]{ts}}.
 #' 
 #' @concept analyze
 #' 

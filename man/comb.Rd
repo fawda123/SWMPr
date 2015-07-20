@@ -2,12 +2,16 @@
 % Please edit documentation in R/swmpr_organize.R
 \name{comb}
 \alias{comb}
+\alias{comb.default}
 \alias{comb.swmpr}
 \title{Combine swmpr data}
 \usage{
 comb(...)
 
 \method{comb}{swmpr}(..., timestep = 15, differ = timestep/2,
+  method = "union")
+
+\method{comb}{default}(..., date_col, timestep = 15, differ = timestep/2,
   method = "union")
 }
 \arguments{
@@ -17,7 +21,9 @@ comb(...)
 
 \item{differ}{numeric value defining buffer for merging time stamps to standardized time series, passed to \code{setstep}}
 
-\item{method}{chr string indicating method of combining (\code{'union'} for all dates as continuous time series, \code{'intersect'} for areas of overlap, or \code{'station'} for date ranges of a given station)}
+\item{method}{chr string indicating method of combining data.  Use (\code{'union'} for all dates as continuous time series or \code{'intersect'} for only areas of overlap. If input is a  \code{swmpr} object, a \code{'station'} name can be used to combine by the date range of a given station, assuming there is overlap with the second station.  A numeric value can be supplied for the default method that specifies which data object to use for the date range.}
+
+\item{date_col}{chr string indicating name of the date column}
 }
 \value{
 Returns a combined swmpr object
@@ -38,12 +44,16 @@ swmp1 <- apacpnut
 swmp2 <- apaebmet
 
 ## combine nuts and wq data by union, set timestep to 120 minutes
+\dontrun{
 comb(swmp1, swmp2, timestep = 120, method = 'union')
+}
 }
 \seealso{
 \code{\link{setstep}}
 }
 \concept{
+organize
+
 organize
 
 organize
