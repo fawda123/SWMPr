@@ -595,7 +595,7 @@ setstep.default <- function(dat_in, date_col, timestep = 15, differ= timestep/2,
 #' 
 #' Combine swmpr data types for a station by common time series
 #' 
-#' @param ... swmpr object input from one to many
+#' @param ... input time series data objects, from one to many
 #' @param date_col chr string indicating name of the date column
 #' @param timestep numeric value of time step to use in minutes, passed to \code{setstep}
 #' @param differ numeric value defining buffer for merging time stamps to standardized time series, passed to \code{setstep}
@@ -694,10 +694,10 @@ comb.default <- function(..., date_col, timestep = 15, differ= timestep/2, metho
   ##
   # sanity checks
 
-  # create list if not
-  if(!is.list(...))
+  # create list for input data if not already
+  all_dat <- as.list(...)
+  if(!identical(all_dat, c(...)))
     all_dat <- list(...)
-  else all_dat <- c(...)
   
   # stop if from more than one timezone
   timezone <- lapply(all_dat, function(x) attr(x[, date_col], 'tzone'))
