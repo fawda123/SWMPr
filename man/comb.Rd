@@ -15,13 +15,13 @@ comb(...)
   method = "union")
 }
 \arguments{
-\item{...}{swmpr object input from one to many}
+\item{...}{input time series data objects, from one to many}
 
 \item{timestep}{numeric value of time step to use in minutes, passed to \code{setstep}}
 
 \item{differ}{numeric value defining buffer for merging time stamps to standardized time series, passed to \code{setstep}}
 
-\item{method}{chr string indicating method of combining data.  Use (\code{'union'} for all dates as continuous time series or \code{'intersect'} for only areas of overlap. If input is a  \code{swmpr} object, a \code{'station'} name can be used to combine by the date range of a given station, assuming there is overlap with the second station.  A numeric value can be supplied for the default method that specifies which data object to use for the date range.}
+\item{method}{chr string indicating method of combining data.  Use \code{'union'} for all dates as continuous time series or \code{'intersect'} for only areas of overlap. If input is a  \code{swmpr} object, a \code{'station'} name can be used to combine by the date range of a given station, assuming there is overlap with the second station.  A numeric value can be supplied for the default method that specifies which data object to use for the date range based on order of execution in the function call.}
 
 \item{date_col}{chr string indicating name of the date column}
 }
