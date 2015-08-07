@@ -20,7 +20,7 @@ notifications:
     on_success: change
     on_failure: change
 
-sudo: required
+sudo: false
 
 os:
   - linux
