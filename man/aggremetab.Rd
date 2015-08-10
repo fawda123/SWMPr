@@ -31,6 +31,7 @@ Aggregate a metabolism attribute from swmpr data by a specified time period and 
 The function summarizes metabolism data by averaging across set periods of observation. Confidence intervals are also returned based on the specified alpha level.  It is used within \code{\link{plot_metab}} function to view summarized metabolism results.  Data can be aggregated by \code{'years'}, \code{'quarters'}, \code{'months'}, or \code{'weeks'} for the supplied function, which defaults to the \code{\link[base]{mean}}. The method of treating NA values for the user-supplied function should be noted since this may greatly affect the quantity of data that are returned.
 }
 \examples{
+\dontrun{
 ## import water quality and weather data
 data(apadbwq)
 data(apaebmet)
@@ -45,6 +46,7 @@ res <- ecometab(dat)
 
 ## change aggregation period and alpha
 aggremetab(res, by = 'months', alpha = 0.1)
+}
 }
 \seealso{
 \code{\link[stats]{aggregate}}, \code{\link{aggreswmp}}, \code{\link{ecometab}}, \code{\link{plot_metab}}

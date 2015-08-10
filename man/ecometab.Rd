@@ -51,6 +51,7 @@ All DO calculations within the function are done using molar units (e.g., mmol O
 The specific approach for estimating metabolism with the open-water method is described in Caffrey et al. 2013 and references cited therein.
 }
 \examples{
+\dontrun{
 ## import water quality and weather data
 data(apadbwq)
 data(apaebmet)
@@ -61,6 +62,7 @@ dat <- comb(apadbwq, apaebmet)
 ## output units in grams of oxygen
 res <- ecometab(dat, metab_units = 'grams')
 res <- attr(res, 'metabolism')
+}
 }
 \references{
 Caffrey JM, Murrell MC, Amacker KS, Harper J, Phipps S, Woodrey M. 2013. Seasonal and inter-annual patterns in primary production, respiration and net ecosystem metabolism in 3 estuaries in the northeast Gulf of Mexico. Estuaries and Coasts. 37(1):222-241.

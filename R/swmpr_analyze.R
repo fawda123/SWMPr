@@ -14,6 +14,8 @@
 #' 
 #' @import data.table
 #' 
+#' @importFrom stats aggregate formula na.pass
+#' 
 #' @export
 #' 
 #' @details The function aggregates parameter data for a swmpr object by set periods of observation and a user-supplied function. It is most useful for aggregating noisy data to evaluate trends on longer time scales, or to simply reduce the size of a dataset. Data can be aggregated by \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'weeks'}, \code{'days'}, or \code{'hours'} for the supplied function, which defaults to the \code{\link[base]{mean}}. A swmpr object is returned for the aggregated data, although the datetimestamp vector will be converted to a date object if the aggregation period is a day or longer. Days are assigned to the date vector if the aggregation period is a week or longer based on the round method for \code{\link[data.table]{IDate}} objects. This approach was used to facilitate plotting using predefined methods for Date and POSIX objects.
@@ -25,6 +27,7 @@
 #' @seealso \code{\link[stats]{aggregate}}
 #' 
 #' @examples
+#' \dontrun{
 #' ## get data, prep
 #' data(apacpwq)
 #' dat <- apacpwq
@@ -37,6 +40,7 @@
 #' ## omit NA data in output
 #' fun_in <- function(x)  var(x, na.rm = TRUE)
 #' aggreswmp(swmpr_in, FUN = fun_in, 'years') 
+#' }
 aggreswmp <- function(swmpr_in, ...) UseMethod('aggreswmp')
 
 #' @rdname aggreswmp
@@ -139,6 +143,8 @@ aggreswmp.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = TRUE
 #' 
 #' @import data.table
 #' 
+#' @importFrom stats na.omit na.pass qt sd
+#' 
 #' @concept analyze
 #' 
 #' @export
@@ -150,6 +156,7 @@ aggreswmp.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = TRUE
 #' @seealso \code{\link[stats]{aggregate}}, \code{\link{aggreswmp}}, \code{\link{ecometab}}, \code{\link{plot_metab}}
 #' 
 #' @examples
+#' \dontrun{
 #' ## import water quality and weather data
 #' data(apadbwq)
 #' data(apaebmet)
@@ -164,6 +171,7 @@ aggreswmp.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = TRUE
 #' 
 #' ## change aggregation period and alpha
 #' aggremetab(res, by = 'months', alpha = 0.1)
+#' }
 aggremetab <- function(swmpr_in, ...) UseMethod('aggremetab')
 
 #' @rdname aggremetab
@@ -399,6 +407,8 @@ na.approx.swmpr <- function(object, params = NULL, maxgap, ...){
 #' 
 #' @export decomp
 #' 
+#' @importFrom stats decompose ts
+#' 
 #' @concept analyze
 #' 
 #' @details
@@ -557,6 +567,9 @@ decomp.default <- function(dat_in, param, date_col, type = 'additive', frequency
 #' 
 #' @import ggplot2 reshape2 wq
 #' 
+#' @importFrom stats aggregate ts
+#' @importFrom utils capture.output
+#' 
 #' @seealso \code{\link[wq]{decompTs}}, \code{\link[stats]{ts}}
 #' 
 #' @references
@@ -684,6 +697,8 @@ decomp_cj.default <- function(dat_in, param, date_col, vals_out = FALSE, ...){
 #' 
 #' @export
 #' 
+#' @importFrom stats formula
+#' 
 #' @concept analyze
 #' 
 #' @details The swmpr method for plotting is a convenience function for plotting a univariate time series.  Conventional plotting methods also work well since swmpr objects are also data frames.  See the examples for use with different methods.  
@@ -731,6 +746,9 @@ plot.swmpr <- function(x, type = 'l', ...) {
 #' 
 #' @export
 #' 
+#' @importFrom stats formula
+#' @importFrom graphics lines
+#' 
 #' @concept analyze
 #' 
 #' @method lines swmpr
@@ -761,6 +779,8 @@ lines.swmpr <- function(x, ...) {
 #' @details The swmpr method for histograms is a convenience function for the default histogram function.  Conventional histogram methods also work well since swmpr objects are also data frames.  The input data must contain only one parameter.
 #' 
 #' @export
+#' 
+#' @importFrom graphics hist
 #' 
 #' @concept analyze
 #' 
@@ -806,6 +826,9 @@ hist.swmpr <- function(x, ...) {
 #' @param ... additional arguments passed to other methods, currently not used
 #' 
 #' @import ggplot2 gridExtra
+#' 
+#' @importFrom stats aggregate as.formula formula median na.pass
+#' @importFrom grDevices colorRampPalette
 #' 
 #' @export
 #' 
@@ -1117,6 +1140,9 @@ overplot.swmpr <- function(dat_in, select = NULL, subset = NULL, operator = NULL
 #' 
 #' @export
 #' 
+#' @importFrom grDevices colorRampPalette
+#' @importFrom graphics axis axis.POSIXct legend mtext par
+#' 
 #' @concept analyze
 #' 
 #' @method overplot default
@@ -1220,6 +1246,8 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
 #' 
 #' @import oce reshape2 wq
 #' 
+#' @importFrom stats aggregate
+#' 
 #' @concept analyze
 #'
 #' @export
@@ -1250,6 +1278,7 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
 #' \code{\link{calckl}} for estimating the oxygen mass transfer coefficient used with the air-sea gas exchange model, \code{\link{comb}} for combining \code{swmpr} objects, \code{\link{metab_day}} for identifying the metabolic day for each observation in the time series, \code{\link{plot_metab}} for plotting the results, and \code{\link{aggremetab}} for aggregating the metabolism attribute.
 #' 
 #' @examples
+#' \dontrun{
 #' ## import water quality and weather data
 #' data(apadbwq)
 #' data(apaebmet)
@@ -1260,6 +1289,7 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
 #' ## output units in grams of oxygen
 #' res <- ecometab(dat, metab_units = 'grams')
 #' res <- attr(res, 'metabolism')
+#' }
 ecometab <- function(swmpr_in, ...) UseMethod('ecometab')
 
 #' @rdname ecometab
@@ -1481,6 +1511,7 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', tra
 #' \code{\link{aggremetab}}, \code{\link{ecometab}}
 #' 
 #' @examples
+#' \dontrun{
 #' ## import water quality and weather data
 #' data(apadbwq)
 #' data(apaebmet)
@@ -1501,6 +1532,7 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', tra
 #'
 #' ## plot daily raw, no aesthetics
 #' plot_metab(res, by = 'days', pretty = FALSE)
+#' }
 plot_metab <- function(swmpr_in, ...) UseMethod('plot_metab')
 
 #' @rdname plot_metab

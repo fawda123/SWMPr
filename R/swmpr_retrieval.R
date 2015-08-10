@@ -312,6 +312,8 @@ single_param <- function(station_code, param, Max = 100, trace = TRUE){
 #' 
 #' @export
 #' 
+#' @importFrom utils read.csv unzip
+#' 
 #' @return Returns a swmpr object with all parameters and QAQC columns for the station.  The full date range in the raw data are also imported.
 #' 
 #' @details 

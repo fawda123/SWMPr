@@ -35,6 +35,7 @@ A plot will only be returned if the \code{metabolism} attribute for the \code{\l
 By default, \code{pretty = TRUE} will return a \code{\link[ggplot2]{ggplot}} object with predefined aesthetics.  Setting \code{pretty = FALSE} will return the plot with minimal modifications to the \code{\link[ggplot2]{ggplot}} object.  Use the latter approach for easier customization of the plot.
 }
 \examples{
+\dontrun{
 ## import water quality and weather data
 data(apadbwq)
 data(apaebmet)
@@ -55,6 +56,7 @@ plot_metab(res, by = 'quarters', alpha = 0.1, widths = 0)
 
 ## plot daily raw, no aesthetics
 plot_metab(res, by = 'days', pretty = FALSE)
+}
 }
 \seealso{
 \code{\link{aggremetab}}, \code{\link{ecometab}}

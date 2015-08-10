@@ -37,6 +37,7 @@ The function aggregates parameter data for a swmpr object by set periods of obse
 The method of treating NA values for the user-supplied function should be noted since this may greatly affect the quantity of data that are returned (see the examples). Finally, the default argument for \code{na.action} is set to \code{na.pass} for swmpr objects to preserve the time series of the input data.
 }
 \examples{
+\dontrun{
 ## get data, prep
 data(apacpwq)
 dat <- apacpwq
@@ -49,6 +50,7 @@ aggreswmp(swmpr_in, 'quarters', params = c('do_mgl'))
 ## omit NA data in output
 fun_in <- function(x)  var(x, na.rm = TRUE)
 aggreswmp(swmpr_in, FUN = fun_in, 'years')
+}
 }
 \seealso{
 \code{\link[stats]{aggregate}}

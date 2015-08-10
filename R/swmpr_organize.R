@@ -20,6 +20,7 @@
 #' The data are filtered by matching the flag columns with the character string provided by \code{qaqc_keep}.  A single combined string is created by pasting each element together using the '|' operator, then using partial string matching with \code{\link[base]{grepl}} to compare the actual flags in the QAQC columns.  Values that can be passed to the function are those described online: \url{http://cdmo.baruch.sc.edu/data/qaqc.cfm}.
 #' 
 #' @examples
+#' \dontrun{
 #' ## get data
 #' data(apadbwq)
 #' dat <- apadbwq
@@ -29,6 +30,7 @@
 #' 
 #' ## retain observations with the 'CSM' error code
 #' qaqc(dat, qaqc_keep = 'CSM')
+#' }
 qaqc <- function(swmpr_in, ...) UseMethod('qaqc')
 
 #' @rdname qaqc
@@ -226,6 +228,8 @@ qaqcchk.swmpr <- function(swmpr_in){
 #' @param ... arguments passed to other methods
 #' 
 #' @export
+#' 
+#' @importFrom stats aggregate na.pass
 #' 
 #' @concept organize
 #' 
