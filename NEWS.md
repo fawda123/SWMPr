@@ -1,3 +1,7 @@
+#### SWMPr 2.1.1
+
+* Fixed bug with character input for `timestep` argument in `setstep`.  The default value for `differ` was causing an error.
+
 #### SWMPr 2.1.0
 
 * Version update for push to CRAN, previous was 2.0.0.  See the notes below about each version change for updates since the last push.
@@ -30,9 +34,9 @@
 * Some tweaks to `import_local` to handle more flexible text input for the station code.  Function doesn't break if the file extension is included and the date is stripped from the station attribute of the imported swmpr object.
 
 #### SWMPr 2.0.5
-*`import_local` function can now import files directly from a zipped folder, i.e., it doesn't have to be decompressed first. 
+* `import_local` function can now import files directly from a zipped folder, i.e., it doesn't have to be decompressed first. 
 
-*SWMPr functions can be searched by concepts - retrieve, organize, analyse, e.g., `help.search('retrieve', package = 'SWMPr')`  
+* SWMPr functions can be searched by concepts - retrieve, organize, analyse, e.g., `help.search('retrieve', package = 'SWMPr')`  
 
 #### SWMPr 2.0.4
 * `single_param` now retreives more than 100 records by using `all_params_dtrng` internally.
