@@ -8,10 +8,10 @@
 \usage{
 setstep(dat_in, ...)
 
-\method{setstep}{swmpr}(dat_in, timestep = 15, differ = timestep/2, ...)
+\method{setstep}{swmpr}(dat_in, timestep = 15, differ = NULL, ...)
 
-\method{setstep}{default}(dat_in, date_col, timestep = 15,
-  differ = timestep/2, ...)
+\method{setstep}{default}(dat_in, date_col, timestep = 15, differ = NULL,
+  ...)
 }
 \arguments{
 \item{dat_in}{input data object}
@@ -20,7 +20,7 @@ setstep(dat_in, ...)
 
 \item{timestep}{numeric value of time step to use in minutes.  Alternatively, a chr string indicating \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'days'}, or \code{'hours'} can also be used. A character input assumes 365 days in a year and 31 days in a month.}
 
-\item{differ}{numeric value defining buffer for merging time stamps to standardized time series}
+\item{differ}{numeric value defining buffer for merging time stamps to standardized time series, defaults to one half of the timestep}
 
 \item{date_col}{chr string for the name of the date/time column, e.g., \code{"POSIXct"} or \code{"POSIXlt"} objects}
 }

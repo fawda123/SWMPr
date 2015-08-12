@@ -462,7 +462,7 @@ subset.swmpr <- function(x, subset = NULL, select = NULL,
 #' @param dat_in input data object
 #' @param date_col chr string for the name of the date/time column, e.g., \code{"POSIXct"} or \code{"POSIXlt"} objects
 #' @param timestep numeric value of time step to use in minutes.  Alternatively, a chr string indicating \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'days'}, or \code{'hours'} can also be used. A character input assumes 365 days in a year and 31 days in a month.
-#' @param differ numeric value defining buffer for merging time stamps to standardized time series
+#' @param differ numeric value defining buffer for merging time stamps to standardized time series, defaults to one half of the timestep
 #' @param ... arguments passed to or from other methods
 #' 
 #' @export
@@ -502,7 +502,7 @@ setstep <- function(dat_in, ...) UseMethod('setstep')
 #' @concept organize
 #' 
 #' @method setstep swmpr
-setstep.swmpr <- function(dat_in, timestep = 15, differ= timestep/2, ...){ 
+setstep.swmpr <- function(dat_in, timestep = 15, differ= NULL, ...){ 
   
   # swmpr data and attributes
   attrs <- attributes(dat_in)
@@ -524,7 +524,7 @@ setstep.swmpr <- function(dat_in, timestep = 15, differ= timestep/2, ...){
 #' @concept organize
 #' 
 #' @method setstep default
-setstep.default <- function(dat_in, date_col, timestep = 15, differ= timestep/2, ...){ 
+setstep.default <- function(dat_in, date_col, timestep = 15, differ= NULL, ...){ 
   
   # convert timestep to numeric if chr input
   if(is.character(timestep)){
@@ -547,6 +547,8 @@ setstep.default <- function(dat_in, date_col, timestep = 15, differ= timestep/2,
     timestep <- mul_fac[which(timestep == chr_stp)] 
       
   }
+  
+  if(is.null(differ)) differ <- timestep/2
   
   # sanity check
   if(timestep/2 < differ) 
