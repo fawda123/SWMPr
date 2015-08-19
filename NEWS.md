@@ -1,3 +1,9 @@
+#### SWMPr 2.1.2
+
+* Default method for `smoother` was added, 
+
+* `aggremetab` can now use moving window smoothing with appropriate changes in `plot_metab`
+
 #### SWMPr 2.1.1
 
 * Fixed bug with character input for `timestep` argument in `setstep`.  The default value for `differ` was causing an error.
