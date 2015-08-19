@@ -38,7 +38,6 @@ fill2 <- na.approx(dat, params = 'do_mgl', maxgap = 30)
 
 # plot for comparison
 par(mfrow = c(3, 1))
-plot(dat, main = 'Raw')
 plot(fill1, col = 'red', main = 'Interpolation - maximum gap of 10 records')
 lines(dat)
 plot(fill2, col = 'red', main = 'Interpolation - maximum gap of 30 records')

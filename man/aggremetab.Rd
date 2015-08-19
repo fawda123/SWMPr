@@ -15,14 +15,14 @@ aggremetab(swmpr_in, ...)
 
 \item{...}{additional arguments passed to other methods}
 
-\item{by}{chr string of time period for aggregation one of \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'weeks'}, \code{'days'}, or \code{'hours'}}
+\item{by}{chr string or numeric value specifying aggregation period.  If chr string, must be \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'weeks'}, \code{'days'}, or \code{'hours'}. A numeric value indicates the number of days for a moving window average.  Additional arguments passed to \code{\link{smoother}} can be used if \code{by} is numeric.}
 
 \item{na.action}{function for treating missing data, default \code{na.pass}}
 
 \item{alpha}{numeric indicating alpha level of confidence interval for aggregated data}
 }
 \value{
-Returns an aggregated metabolism \code{\link[base]{data.frame}} if the \code{metabolism} attribute of the swmpr object is not \code{NULL}.
+Returns an aggregated metabolism \code{\link[base]{data.frame}} if the \code{metabolism} attribute of the swmpr object is not \code{NULL}.  Upper and lower confidence limits are also provided if the aggregation period was specified as a character string.
 }
 \description{
 Aggregate a metabolism attribute from swmpr data by a specified time period and method
@@ -46,6 +46,12 @@ res <- ecometab(dat)
 
 ## change aggregation period and alpha
 aggremetab(res, by = 'months', alpha = 0.1)
+
+## use a moving window average of 30 days
+aggremetab(res, by = 30)
+
+## use a left-centered window instead
+aggremetab(res, by = 30, sides = 1)
 }
 }
 \seealso{

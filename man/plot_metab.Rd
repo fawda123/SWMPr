@@ -56,6 +56,9 @@ plot_metab(res, by = 'quarters', alpha = 0.1, widths = 0)
 
 ## plot daily raw, no aesthetics
 plot_metab(res, by = 'days', pretty = FALSE)
+
+## note the difference if aggregating with a moving window average
+plot_metab(res, by = 30)
 }
 }
 \seealso{

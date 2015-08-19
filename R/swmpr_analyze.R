@@ -136,7 +136,7 @@ aggreswmp.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = TRUE
 #' Aggregate a metabolism attribute from swmpr data by a specified time period and method
 #' 
 #' @param swmpr_in input swmpr object
-#' @param by chr string of time period for aggregation one of \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'weeks'}, \code{'days'}, or \code{'hours'}
+#' @param by chr string or numeric value specifying aggregation period.  If chr string, must be \code{'years'}, \code{'quarters'}, \code{'months'}, \code{'weeks'}, \code{'days'}, or \code{'hours'}. A numeric value indicates the number of days for a moving window average.  Additional arguments passed to \code{\link{smoother}} can be used if \code{by} is numeric.
 #' @param na.action function for treating missing data, default \code{na.pass}
 #' @param alpha numeric indicating alpha level of confidence interval for aggregated data
 #' @param ... additional arguments passed to other methods
@@ -151,7 +151,7 @@ aggreswmp.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = TRUE
 #' 
 #' @details The function summarizes metabolism data by averaging across set periods of observation. Confidence intervals are also returned based on the specified alpha level.  It is used within \code{\link{plot_metab}} function to view summarized metabolism results.  Data can be aggregated by \code{'years'}, \code{'quarters'}, \code{'months'}, or \code{'weeks'} for the supplied function, which defaults to the \code{\link[base]{mean}}. The method of treating NA values for the user-supplied function should be noted since this may greatly affect the quantity of data that are returned.
 #' 
-#' @return Returns an aggregated metabolism \code{\link[base]{data.frame}} if the \code{metabolism} attribute of the swmpr object is not \code{NULL}.
+#' @return Returns an aggregated metabolism \code{\link[base]{data.frame}} if the \code{metabolism} attribute of the swmpr object is not \code{NULL}.  Upper and lower confidence limits are also provided if the aggregation period was specified as a character string.
 #' 
 #' @seealso \code{\link[stats]{aggregate}}, \code{\link{aggreswmp}}, \code{\link{ecometab}}, \code{\link{plot_metab}}
 #' 
@@ -171,6 +171,12 @@ aggreswmp.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = TRUE
 #' 
 #' ## change aggregation period and alpha
 #' aggremetab(res, by = 'months', alpha = 0.1)
+#' 
+#' ## use a moving window average of 30 days
+#' aggremetab(res, by = 30)
+#' 
+#' ## use a left-centered window instead
+#' aggremetab(res, by = 30, sides = 1)
 #' }
 aggremetab <- function(swmpr_in, ...) UseMethod('aggremetab')
 
@@ -188,44 +194,66 @@ aggremetab.swmpr <- function(swmpr_in, by = 'weeks', na.action = na.pass, alpha 
   # sanity checks
   if(is.null(metabolism)) 
     stop('No metabolism data, use the ecometab function')
-  if(!by %in% c('years', 'quarters', 'months', 'weeks', 'days'))
-    stop('Unknown value for by, see help documentation')
-    
+
   # data
   to_agg <- metabolism
   to_agg <- to_agg[, names(to_agg) %in% c('date', 'Pg', 'Rt', 'NEM')]
-
-  # create agg values from date
-  if(by != 'days'){
-    to_agg$date <- round(
-      data.table::as.IDate(to_agg$date, tz = timezone),
-      digits = by
-    )
-    to_agg$date <- base::as.Date(to_agg$date, tz = timezone)
-  }
-
-  # long-form
-  to_agg <- reshape2::melt(to_agg, measure.vars = c('Pg', 'Rt', 'NEM'))
-  names(to_agg) <- c('date', 'Estimate', 'Value')
-  to_agg$Estimate <- as.character(to_agg$Estimate)
-  
-  # aggregate
-  sum_fun <- function(x, alpha_in = alpha){
-      x <- na.omit(x)
-      means <- mean(x)
-      margs <- suppressWarnings(
-        qt(1 - alpha_in/2, length(x) - 1) * sd(x)/sqrt(length(x))
-      )
-      upper <- means + margs
-      lower <- means - margs
     
-      return(c(means, upper, lower))
+  # if agg is a character string
+  if(inherits(by, 'character')){
+    
+    # stop if value not accepted
+    if(!by %in% c('years', 'quarters', 'months', 'weeks', 'days'))
+      stop('Unknown value for by, see help documentation')
+    
+    # create agg values from date
+    if(by != 'days'){
+      to_agg$date <- round(
+        data.table::as.IDate(to_agg$date, tz = timezone),
+        digits = by
+      )
+      to_agg$date <- base::as.Date(to_agg$date, tz = timezone)
     }
-  aggs <- stats::aggregate(Value ~ date + Estimate, to_agg, 
-    FUN = function(x) sum_fun(x, alpha_in = alpha))
-  aggs_vals <- data.frame(aggs[, 'Value'])
-  names(aggs_vals) <- c('means', 'lower', 'upper')
-  aggs <- data.frame(aggs[, c('date', 'Estimate')], aggs_vals)
+    
+    # long-form
+    to_agg <- reshape2::melt(to_agg, measure.vars = c('Pg', 'Rt', 'NEM'))
+    names(to_agg) <- c('date', 'Estimate', 'Value')
+    to_agg$Estimate <- as.character(to_agg$Estimate)
+    
+    # aggregate
+    sum_fun <- function(x, alpha_in = alpha){
+        x <- na.omit(x)
+        means <- mean(x)
+        margs <- suppressWarnings(
+          qt(1 - alpha_in/2, length(x) - 1) * sd(x)/sqrt(length(x))
+        )
+        upper <- means + margs
+        lower <- means - margs
+      
+        return(c(means, upper, lower))
+      }
+    aggs <- stats::aggregate(Value ~ date + Estimate, to_agg, 
+      FUN = function(x) sum_fun(x, alpha_in = alpha))
+    aggs_vals <- data.frame(aggs[, 'Value'])
+    names(aggs_vals) <- c('val', 'lower', 'upper')
+    aggs <- data.frame(aggs[, c('date', 'Estimate')], aggs_vals)
+
+  # if agg is numeric
+  } else {
+    
+    # stop if not numeric
+    if(!inherits(by, 'numeric'))
+      stop('By argument must be character string of aggregation period or numeric indicating number of days')
+    
+    # use smoother default method
+    aggs <- smoother(to_agg[, c('Pg', 'Rt', 'NEM')], window = by, ...)
+    aggs <- data.frame(date = to_agg$date, aggs)
+    
+    # long format
+    aggs <- reshape2::melt(aggs, measure.vars = c('Pg', 'Rt', 'NEM'))
+    names(aggs) <- c('date', 'Estimate', 'val')
+  
+  }    
 
   # return output
   return(aggs)
@@ -236,7 +264,10 @@ aggremetab.swmpr <- function(swmpr_in, by = 'weeks', na.action = na.pass, alpha 
 #' 
 #' Smooth swmpr data with a moving window average
 #' 
-#' @param swmpr_in input swmpr object
+#' @param x input object
+#' @param window numeric vector defining size of the smoothing window, passed to \code{filter} 
+#' @param sides numeric vector defining method of averaging, passed to \code{filter}
+#' @param params is chr string of swmpr parameters to smooth, default all
 #' @param ... arguments passed to or from other methods
 #'  
 #' @concept analyze
@@ -244,23 +275,10 @@ aggremetab.swmpr <- function(swmpr_in, by = 'weeks', na.action = na.pass, alpha 
 #' @export smoother
 #' 
 #' @return Returns a filtered swmpr object. QAQC columns are removed if included with input object.
-smoother <- function(swmpr_in, ...) UseMethod('smoother') 
-
-#' @rdname smoother
-#' 
-#' @param window numeric vector defining size of the smoothing window, passed to \code{filter} 
-#' @param sides numeric vector defining method of averaging, passed to \code{filter}
-#' @param params is chr string of swmpr parameters to smooth, default all
-#' 
-#' @export
 #' 
 #' @details The \code{smoother} function can be used to smooth parameters in a swmpr object using a specified window size. This method is a simple wrapper to \code{\link[stats]{filter}}. The window argument specifies the number of observations included in the moving average. The sides argument specifies how the average is calculated for each observation (see the documentation for \code{\link[stats]{filter}}). A value of 1 will filter observations within the window that are previous to the current observation, whereas a value of 2 will filter all observations within the window centered at zero lag from the current observation. The params argument specifies which parameters to smooth.
 #' 
 #' @seealso \code{\link[stats]{filter}}
-#' 
-#' @method smoother swmpr
-#' 
-#' @concept analyze
 #' 
 #' @examples
 #' ## import data
@@ -277,27 +295,52 @@ smoother <- function(swmpr_in, ...) UseMethod('smoother')
 #' ## plot to see the difference
 #' plot(do_mgl ~ datetimestamp, data = dat, type = 'l')
 #' lines(test, select = 'do_mgl', col = 'red', lwd = 2)
-smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL, ...){
+smoother <- function(x, ...) UseMethod('smoother') 
+
+
+#' @rdname smoother
+#' 
+#' @export
+#' 
+#' @method smoother default
+smoother.default <- function(x, window = 5, sides = 2, ...){
+  
+  window <- rep(1, window)/window
+  nms <- names(x)
+  out <- stats::filter(x, window, sides, method = 'convolution', ...)
+  out <- as.data.frame(out)
+  names(out) <- nms
+  
+  return(out)
+  
+}
+  
+#' @rdname smoother
+#' 
+#' @export
+#' 
+#' @method smoother swmpr
+smoother.swmpr <- function(x, params = NULL, ...){
   
   # attributes
-  parameters <- attr(swmpr_in, 'parameters')
-  station <- attr(swmpr_in, 'station')
+  parameters <- attr(x, 'parameters')
+  station <- attr(x, 'station')
   
   # sanity checks
   if(!any(params %in% parameters) & !is.null(params))
     stop('Params argument must name input columns')
-  if(attr(swmpr_in, 'qaqc_cols'))
+  if(attr(x, 'qaqc_cols'))
     warning('QAQC columns present, removed in output')
 
   # prep for filter
   if(!is.null(params)) parameters <- parameters[parameters %in% params]
-  to_filt <- swmpr_in[, c('datetimestamp', parameters), drop = FALSE]
+  to_filt <- x[, c('datetimestamp', parameters), drop = FALSE]
+  to_filt <- as.data.frame(to_filt)
   datetimestamp <- to_filt$datetimestamp
   to_filt$datetimestamp <- NULL
   
   # filter
-  window <- rep(1, window)/window
-  out <- stats::filter(to_filt, window, sides, method = 'convolution')
+  out <- smoother(to_filt, ...)
   out <- data.frame(datetimestamp, out)
   names(out) <- c('datetimestamp', parameters)
   
@@ -346,7 +389,6 @@ smoother.swmpr <- function(swmpr_in, window = 5, sides = 2, params = NULL, ...){
 #' 
 #' # plot for comparison
 #' par(mfrow = c(3, 1))
-#' plot(dat, main = 'Raw')
 #' plot(fill1, col = 'red', main = 'Interpolation - maximum gap of 10 records')
 #' lines(dat)
 #' plot(fill2, col = 'red', main = 'Interpolation - maximum gap of 30 records')
@@ -1532,6 +1574,9 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', tra
 #'
 #' ## plot daily raw, no aesthetics
 #' plot_metab(res, by = 'days', pretty = FALSE)
+#' 
+#' ## note the difference if aggregating with a moving window average
+#' plot_metab(res, by = 30)
 #' }
 plot_metab <- function(swmpr_in, ...) UseMethod('plot_metab')
 
@@ -1555,10 +1600,11 @@ plot_metab.swmpr <- function(swmpr_in, by = 'months', alpha = 0.05, width = 10, 
   to_plo <- aggremetab(swmpr_in, by = by, alpha = alpha)
   
   ## base plot
-  p <- ggplot(to_plo, aes_string(x = 'date', y = 'means', group = 'Estimate')) +
+  p <- ggplot(to_plo, aes_string(x = 'date', y = 'val', group = 'Estimate')) +
     geom_line()
   
   # add bars if not days and alpha not null
+  if(inherits(by, 'numeric')) alpha <- NULL
   if(by != 'days' & !is.null(alpha))
     p <- p +
       geom_errorbar(

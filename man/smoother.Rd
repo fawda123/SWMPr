@@ -2,16 +2,18 @@
 % Please edit documentation in R/swmpr_analyze.R
 \name{smoother}
 \alias{smoother}
+\alias{smoother.default}
 \alias{smoother.swmpr}
 \title{Smooth swmpr data}
 \usage{
-smoother(swmpr_in, ...)
+smoother(x, ...)
 
-\method{smoother}{swmpr}(swmpr_in, window = 5, sides = 2, params = NULL,
-  ...)
+\method{smoother}{default}(x, window = 5, sides = 2, ...)
+
+\method{smoother}{swmpr}(x, params = NULL, ...)
 }
 \arguments{
-\item{swmpr_in}{input swmpr object}
+\item{x}{input object}
 
 \item{...}{arguments passed to or from other methods}
 
@@ -50,8 +52,6 @@ lines(test, select = 'do_mgl', col = 'red', lwd = 2)
 \code{\link[stats]{filter}}
 }
 \concept{
-analyze
-
 analyze
 }
 
