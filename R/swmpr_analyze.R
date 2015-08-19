@@ -242,7 +242,7 @@ aggremetab.swmpr <- function(swmpr_in, by = 'weeks', na.action = na.pass, alpha 
   } else {
     
     # stop if not numeric
-    if(!inherits(by, 'numeric'))
+    if(!inherits(by, c('numeric', 'integer')))
       stop('By argument must be character string of aggregation period or numeric indicating number of days')
     
     # use smoother default method
@@ -1604,7 +1604,7 @@ plot_metab.swmpr <- function(swmpr_in, by = 'months', alpha = 0.05, width = 10, 
     geom_line()
   
   # add bars if not days and alpha not null
-  if(inherits(by, 'numeric')) alpha <- NULL
+  if(inherits(by, c('numeric', 'integer'))) alpha <- NULL
   if(by != 'days' & !is.null(alpha))
     p <- p +
       geom_errorbar(
