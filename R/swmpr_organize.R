@@ -65,6 +65,12 @@ qaqc.swmpr <- function(swmpr_in,
 
   if(trace) cat('Processing QAQC columns...')
   
+  # surround integers with brackets
+  # otherwise both positive and negative flags will be kept
+  topaste <- suppressWarnings(as.numeric(qaqc_keep))
+  topaste <- !is.na(topaste)
+  qaqc_keep[topaste] <- paste0('<', qaqc_keep[topaste], '>')
+  
   #names of qaqc columns
   qaqc_sel <- grep('f_', names(dat), value = TRUE)
   
