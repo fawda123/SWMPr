@@ -38,8 +38,6 @@ The function requires one or more swmpr objects as input as separate, undefined 
 }
 \examples{
 ## get wq and met data as separate objects for the same station
-data(apacpwq)
-data(apaebmet)
 swmp1 <- apacpnut
 swmp2 <- apaebmet
 
