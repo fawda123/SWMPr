@@ -347,7 +347,7 @@ param_names <- function(param_type = c('nut', 'wq', 'met')){
 #' @param dat_in data.frame
 #' @param stat_in chr vector of station name including data type
 #' 
-#' @import maptools reshape2
+#' @import maptools
 #' 
 #' @export 
 #' 
@@ -401,7 +401,7 @@ metab_day <- function(dat_in, stat_in){
     ss_dat,
     metab_date = as.Date(ss_dat$sunrise, tz = tz)
     )
-  ss_dat <- melt(ss_dat, id.vars = 'metab_date')
+  ss_dat <- reshape2::melt(ss_dat, id.vars = 'metab_date')
   if(!"POSIXct" %in% class(ss_dat$value))
     ss_dat$value <- as.POSIXct(ss_dat$value, origin='1970-01-01',tz=tz)
   ss_dat <- ss_dat[order(ss_dat$value),]

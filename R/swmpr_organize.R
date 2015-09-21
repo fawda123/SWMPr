@@ -169,8 +169,6 @@ qaqc.swmpr <- function(swmpr_in,
 #' 
 #' @export
 #' 
-#' @import reshape2
-#' 
 #' @concept organize
 #' 
 #' @seealso \code{\link{qaqc}}
@@ -214,7 +212,7 @@ qaqcchk.swmpr <- function(swmpr_in){
   out <- lapply(c(qaqc), table)
   
   # format output as data.frame
-  out <- melt(out)
+  out <- reshape2::melt(out)
   names(out) <- c('flag', 'count', 'variable')
   out <- tidyr::spread(out, 'variable', 'count')
   out[is.na(out)] <- 0

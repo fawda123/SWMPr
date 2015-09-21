@@ -607,7 +607,7 @@ decomp.default <- function(dat_in, param, date_col, type = 'additive', frequency
 #' 
 #' @export
 #' 
-#' @import ggplot2 reshape2 wq
+#' @import ggplot2 wq
 #' 
 #' @importFrom stats aggregate ts
 #' @importFrom utils capture.output
@@ -1286,7 +1286,7 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
 #'  \item{\code{NEM}}{Net ecosytem metabolism, mmol m-2 d-1, calculated as Pg + Rt}
 #' }
 #' 
-#' @import oce reshape2 wq
+#' @import oce wq
 #' 
 #' @importFrom stats aggregate
 #' 
