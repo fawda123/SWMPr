@@ -1,3 +1,7 @@
+#### SWMPr 2.1.4
+
+* Fixed case issue with `import_local`
+
 #### SWMPr 2.1.3
 
 * Fixed bug with `qaqc` function that treated integer flags the same regardless of sign
