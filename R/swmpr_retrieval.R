@@ -347,7 +347,7 @@ import_local <- function(path, station_code, trace = FALSE){
   # check if path is zipped
   zips <- grepl('\\.zip$', path)
   
-  # remove file extension is present, lower case
+  # remove file extension if present, lower case
   station_code <- tolower(gsub('\\.csv$', '', station_code))
   
   ##
@@ -360,7 +360,7 @@ import_local <- function(path, station_code, trace = FALSE){
     # check if the requested files exist
     file_nms <- unzip(path, list = TRUE)$Name
     expr <- paste0(station_code, '.*', '\\.csv$')
-    files_in <- grep(expr, file_nms, value = TRUE)
+    files_in <- grep(expr, file_nms, value = TRUE, ignore.case = TRUE)
     if(length(files_in) == 0) stop('File(s) not found.')
     
     # extract to temporary file
@@ -379,7 +379,7 @@ import_local <- function(path, station_code, trace = FALSE){
   
   }
 
-  files_in <- grep(expr, file_nms, value = TRUE)
+  files_in <- grep(expr, file_nms, value = TRUE, ignore.case = TRUE)
   if(length(files_in) == 0) stop('File(s) not found.')
 
   station_code <- tolower(station_code)
