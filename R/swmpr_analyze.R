@@ -7,12 +7,13 @@
 #' @param FUN aggregation function, default \code{mean} with \code{na.rm = TRUE}
 #' @param params names of parameters to aggregate, default all
 #' @param aggs_out logical indicating if \code{\link[base]{data.frame}} is returned of raw data with datetimestamp formatted as aggregation period, default \code{FALSE}
+#' @param plot logical to return a plot of the summarized data, default \code{FALSE}
 #' @param na.action function for treating missing data, default \code{na.pass}.  See the documentation for \code{\link[stats]{aggregate}} for options.
 #' @param ... additional arguments passed to other methods
 #' 
 #' @concept analyze
 #' 
-#' @import data.table
+#' @import data.table ggplot2
 #' 
 #' @importFrom stats aggregate formula na.pass
 #' 
@@ -22,7 +23,7 @@
 #' 
 #' The method of treating NA values for the user-supplied function should be noted since this may greatly affect the quantity of data that are returned (see the examples). Finally, the default argument for \code{na.action} is set to \code{na.pass} for swmpr objects to preserve the time series of the input data.
 #' 
-#' @return Returns an aggregated swmpr object. QAQC columns are removed if included with input object.
+#' @return Returns an aggregated swmpr object. QAQC columns are removed if included with input object.  If \code{aggs_out = TRUE}, the original \code{swmpr} object is returned with the \code{datetimestamp} column formatted for the first day of the aggregation period from \code{by}.  A \code{\link[ggplot2]{ggplot}} object of boxplot summaries is returned if \code{plot = TRUE}.
 #' 
 #' @seealso \code{\link[stats]{aggregate}}
 #' 
@@ -35,6 +36,15 @@
 #'
 #' ## get mean DO by quarters
 #' aggreswmp(swmpr_in, 'quarters', params = c('do_mgl'))
+#'
+#' ## get a plot instead
+#' aggreswmp(swmpr_in, 'quarters', params = c('do_mgl'), plot = T)
+#' 
+#' ## plots with other variables
+#' p <- aggreswmp(swmpr_in, 'months', params = c('do_mgl', 'temp', 'sal'), plot = T)
+#' p
+#' library(ggplot2)
+#' p + geom_boxplot(aes(fill = var)) + theme(legend.position = 'none')
 #'
 #' ## get variance of DO by years, remove NA when calculating variance
 #' ## omit NA data in output
@@ -50,7 +60,7 @@ aggreswmp <- function(swmpr_in, ...) UseMethod('aggreswmp')
 #' @export
 #'
 #' @method aggreswmp swmpr
-aggreswmp.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = TRUE), params = NULL, aggs_out = FALSE, na.action = na.pass, ...){
+aggreswmp.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = TRUE), params = NULL, aggs_out = FALSE, plot = FALSE, na.action = na.pass, ...){
   
   # data
   to_agg <- swmpr_in
@@ -103,6 +113,22 @@ aggreswmp.swmpr <- function(swmpr_in, by, FUN = function(x) mean(x, na.rm = TRUE
   
   # return raw aggregations if true
   if(aggs_out) return(to_agg)
+  
+  # return plot if true
+  if(plot){
+    
+    toplo <- tidyr::gather(to_agg, 'var', 'val', -datetimestamp)
+    
+    p <- ggplot(toplo, aes(x = factor(datetimestamp), y = val)) +
+      geom_boxplot() +
+      facet_wrap(~ var, scales = 'free_y', ncol = 1) + 
+      theme_bw() +
+      theme(axis.title.y = element_blank()) + 
+      scale_x_discrete(by)
+    
+    return(p)
+     
+  }
   
   # aggregate
   form_in <- formula(. ~ datetimestamp)
@@ -1017,7 +1043,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
   # plot 1 - means and obs
   cols <- colorRampPalette(c('lightblue', 'lightgreen'))(nrow(mo_agg))
   cols <- cols[rank(mo_agg[, param])]
-  p1 <- ggplot(dat_plo, aes_string(x = 'month', y = param)) +
+  p1 <- suppressWarnings({ggplot(dat_plo, aes_string(x = 'month', y = param)) +
     geom_point(size = 2, alpha = 0.5, 
       position=position_jitter(width=0.1)
       ) +
@@ -1027,21 +1053,23 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
     geom_point(data = mo_agg, aes_string(x = 'month', y = param), 
       colour = 'darkgreen', fill = cols, size = 7, pch = 21) + 
     my_theme
+  })
   
   # box aggs, colored by median
   cols <- colorRampPalette(c('lightblue', 'lightgreen'))(nrow(mo_agg_med))
   cols <- cols[rank(mo_agg_med[, param])]
-  p2 <- ggplot(dat_plo, aes_string(x = 'month', y = param)) + 
+  p2 <- suppressWarnings({ggplot(dat_plo, aes_string(x = 'month', y = param)) + 
     geom_boxplot(fill = cols) +
     theme_classic() +
     ylab(ylab) + 
     xlab('Monthly distributions and medians') +
     my_theme
+  })
   
   # month histograms
   to_plo <- dat_plo
   to_plo$month <- factor(to_plo$month, levels = rev(mo_levs), labels = rev(mo_labs))
-  p3 <- ggplot(to_plo, aes_string(x = param)) + 
+  p3 <- suppressWarnings({ggplot(to_plo, aes_string(x = param)) + 
     geom_histogram(aes_string(y = '..density..'), colour = 'lightblue', binwidth = diff(range(to_plo[, param], na.rm = T))/30) + 
     facet_grid(month ~ .) + 
     xlab(ylab) +
@@ -1051,6 +1079,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
       strip.text.y = element_text(size = 8, angle = 90),
       strip.background = element_rect(size = 0, fill = 'lightblue')) +
     my_theme
+  })
   
   # monthly means by year
   to_plo <- dat_plo[, names(dat_plo) %in% c('month', 'year', param)]
@@ -1061,7 +1090,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
   to_plo$month <- factor(to_plo$month, labels = mo_labs, levels = mo_levs)
   names(to_plo)[names(to_plo) %in% param] <- 'V1'
   midpt <- mean(to_plo$V1, na.rm = T)
-  p4 <- ggplot(subset(to_plo, !is.na(to_plo$V1)), 
+  p4 <- suppressWarnings({ggplot(subset(to_plo, !is.na(to_plo$V1)), 
       aes_string(x = 'year', y = 'month', fill = 'V1')) +
     geom_tile() +
     geom_tile(data = subset(to_plo, is.na(to_plo$V1)), 
@@ -1075,6 +1104,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
     theme(legend.position = 'top', legend.title = element_blank()) +
     guides(fill = guide_colorbar(barheight = 0.5)) +
     my_theme
+  })
   
   # monthly anomalies
   mo_agg$month <- factor(mo_agg$month, labels = mo_labs, levels = mo_levs)
@@ -1082,7 +1112,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
   names(to_plo)[names(to_plo) %in% param] <- 'trend'
   to_plo$anom <- with(to_plo, V1 - trend)
   rngs <- max(abs(range(to_plo$anom, na.rm = T)))
-  p5 <- ggplot(subset(to_plo, !is.na(to_plo$anom)), 
+  p5 <- suppressWarnings({ggplot(subset(to_plo, !is.na(to_plo$anom)), 
       aes_string(x = 'year', y = 'month', fill = 'anom')) +
     geom_tile() +
     geom_tile(data = subset(to_plo, is.na(to_plo$anom)), 
@@ -1097,11 +1127,12 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
     theme(legend.position = 'top', legend.title = element_blank()) +
     guides(fill = guide_colorbar(barheight= 0.5)) +
     my_theme
+  })
   
   # annual anomalies
   yr_avg <- mean(yr_agg[, param], na.rm = T)
   yr_agg$anom <- yr_agg[, param] - yr_avg
-  p6 <- ggplot(yr_agg, 
+  p6 <- suppressWarnings({ggplot(yr_agg, 
       aes_string(x = 'year', y = 'anom', group = '1', fill = 'anom')) +
     geom_bar(stat = 'identity') +
     scale_fill_gradient2(name = ylab,
@@ -1113,6 +1144,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
     xlab('') +
     theme(legend.position = 'none') +
     my_theme
+  })
 
   # return plot list if TRUE
   if(plt_sep) return(list(p1, p2, p3, p4, p5, p6))

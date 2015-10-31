@@ -8,7 +8,8 @@
 aggreswmp(swmpr_in, ...)
 
 \method{aggreswmp}{swmpr}(swmpr_in, by, FUN = function(x) mean(x, na.rm =
-  TRUE), params = NULL, aggs_out = FALSE, na.action = na.pass, ...)
+  TRUE), params = NULL, aggs_out = FALSE, plot = FALSE,
+  na.action = na.pass, ...)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}
@@ -23,10 +24,12 @@ aggreswmp(swmpr_in, ...)
 
 \item{aggs_out}{logical indicating if \code{\link[base]{data.frame}} is returned of raw data with datetimestamp formatted as aggregation period, default \code{FALSE}}
 
+\item{plot}{logical to return a plot of the summarized data, default \code{FALSE}}
+
 \item{na.action}{function for treating missing data, default \code{na.pass}.  See the documentation for \code{\link[stats]{aggregate}} for options.}
 }
 \value{
-Returns an aggregated swmpr object. QAQC columns are removed if included with input object.
+Returns an aggregated swmpr object. QAQC columns are removed if included with input object.  If \code{aggs_out = TRUE}, the original \code{swmpr} object is returned with the \code{datetimestamp} column formatted for the first day of the aggregation period from \code{by}.  A \code{\link[ggplot2]{ggplot}} object of boxplot summaries is returned if \code{plot = TRUE}.
 }
 \description{
 Aggregate swmpr data by specified time period and method
@@ -45,6 +48,15 @@ swmpr_in <- subset(qaqc(dat), rem_cols = TRUE)
 
 ## get mean DO by quarters
 aggreswmp(swmpr_in, 'quarters', params = c('do_mgl'))
+
+## get a plot instead
+aggreswmp(swmpr_in, 'quarters', params = c('do_mgl'), plot = T)
+
+## plots with other variables
+p <- aggreswmp(swmpr_in, 'months', params = c('do_mgl', 'temp', 'sal'), plot = T)
+p
+library(ggplot2)
+p + geom_boxplot(aes(fill = var)) + theme(legend.position = 'none')
 
 ## get variance of DO by years, remove NA when calculating variance
 ## omit NA data in output
