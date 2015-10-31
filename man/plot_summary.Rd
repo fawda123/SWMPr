@@ -7,7 +7,8 @@
 \usage{
 plot_summary(swmpr_in, ...)
 
-\method{plot_summary}{swmpr}(swmpr_in, param, years = NULL, ...)
+\method{plot_summary}{swmpr}(swmpr_in, param, years = NULL, plt_sep = FALSE,
+  sum_out = FALSE, ...)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}
@@ -17,15 +18,23 @@ plot_summary(swmpr_in, ...)
 \item{param}{chr string of variable to plot}
 
 \item{years}{numeric vector of starting and ending years to plot, default all}
+
+\item{plt_sep}{logical if a list is returned with separate plot elements}
+
+\item{sum_out}{logical if summary data for the plots is returned}
 }
 \value{
-A graphics object (Grob) of multiple \code{\link[ggplot2]{ggplot}} objects.
+A graphics object (Grob) of multiple \code{\link[ggplot2]{ggplot}} objects, otherwise a list of  individual \code{\link[ggplot2]{ggplot}} objects if \code{plt_sep = TRUE} or a list with data frames of the summarized data if \code{sum_out = TRUE}.
 }
 \description{
 Plot graphical summaries of SWMP data for individual parameters, including seasonal/annual trends and anomalies
 }
 \details{
 This function creates several graphics showing seasonal and annual trends for a given swmp parameter.  Plots include monthly distributions, monthly anomalies, and annual anomalies in multiple formats.  Anomalies are defined as the difference between the monthly or annual average from the grand mean.  Monthly anomalies are in relation to the grand mean for the same month across all years.  All data are aggregated for quicker plotting.  Nutrient data are based on monthly averages, wheras weather and water quality data are based on daily averages.  Cumulative precipitation data are based on the daily maximum.  An interactive Shiny widget is available: \url{https://beckmw.shinyapps.io/swmp_summary/}
+
+Individual plots can be obtained if \code{plt_sep = TRUE}.  Individual plots for elements one through six in the list correspond to those from top left to bottom right in the combined plot.
+
+Summary data for the plots can be obtained if \code{sum_out = TRUE}.  This returns a list with three data frames with names \code{sum_mo}, \code{sum_moyr}, and \code{sum_mo}.  The data frames match the plots as follows: \code{sum_mo} for the top left, bottom left, and center plots, \code{sum_moyr} for the top right and middle right plots, and \code{sum_yr} for the bottom right plot.
 }
 \examples{
 ## import data
@@ -34,6 +43,16 @@ dat <- qaqc(apacpnut)
 
 ## plot
 plot_summary(dat, param = 'chla_n', years = c(2007, 2013))
+
+## get individaul plots
+plots <- plot_summary(dat, param = 'chla_n', years = c(2007, 2013), plt_sep = TRUE)
+
+plots[[1]] # top left
+plots[[3]] # middle
+plots[[6]] # bottom right
+
+## get summary data
+plot_summary(dat, param = 'chla_n', year = c(2007, 2013), sum_out = TRUE)
 }
 \seealso{
 \code{\link[ggplot2]{ggplot}}

@@ -865,6 +865,8 @@ hist.swmpr <- function(x, ...) {
 #' @param swmpr_in input swmpr object
 #' @param param chr string of variable to plot
 #' @param years numeric vector of starting and ending years to plot, default all
+#' @param plt_sep logical if a list is returned with separate plot elements
+#' @param sum_out logical if summary data for the plots is returned
 #' @param ... additional arguments passed to other methods, currently not used
 #' 
 #' @import ggplot2 gridExtra
@@ -878,7 +880,11 @@ hist.swmpr <- function(x, ...) {
 #' 
 #' @details This function creates several graphics showing seasonal and annual trends for a given swmp parameter.  Plots include monthly distributions, monthly anomalies, and annual anomalies in multiple formats.  Anomalies are defined as the difference between the monthly or annual average from the grand mean.  Monthly anomalies are in relation to the grand mean for the same month across all years.  All data are aggregated for quicker plotting.  Nutrient data are based on monthly averages, wheras weather and water quality data are based on daily averages.  Cumulative precipitation data are based on the daily maximum.  An interactive Shiny widget is available: \url{https://beckmw.shinyapps.io/swmp_summary/}
 #' 
-#' @return A graphics object (Grob) of multiple \code{\link[ggplot2]{ggplot}} objects.
+#' Individual plots can be obtained if \code{plt_sep = TRUE}.  Individual plots for elements one through six in the list correspond to those from top left to bottom right in the combined plot.
+#' 
+#' Summary data for the plots can be obtained if \code{sum_out = TRUE}.  This returns a list with three data frames with names \code{sum_mo}, \code{sum_moyr}, and \code{sum_mo}.  The data frames match the plots as follows: \code{sum_mo} for the top left, bottom left, and center plots, \code{sum_moyr} for the top right and middle right plots, and \code{sum_yr} for the bottom right plot. 
+#' 
+#' @return A graphics object (Grob) of multiple \code{\link[ggplot2]{ggplot}} objects, otherwise a list of  individual \code{\link[ggplot2]{ggplot}} objects if \code{plt_sep = TRUE} or a list with data frames of the summarized data if \code{sum_out = TRUE}.
 #' 
 #' @seealso \code{\link[ggplot2]{ggplot}}
 #' 
@@ -890,6 +896,16 @@ hist.swmpr <- function(x, ...) {
 #' ## plot
 #' plot_summary(dat, param = 'chla_n', years = c(2007, 2013))
 #' 
+#' ## get individaul plots
+#' plots <- plot_summary(dat, param = 'chla_n', years = c(2007, 2013), plt_sep = TRUE)
+#' 
+#' plots[[1]] # top left
+#' plots[[3]] # middle
+#' plots[[6]] # bottom right
+#' 
+#' ## get summary data
+#' plot_summary(dat, param = 'chla_n', year = c(2007, 2013), sum_out = TRUE)
+#' 
 plot_summary <- function(swmpr_in, ...) UseMethod('plot_summary') 
 
 #' @rdname plot_summary
@@ -899,7 +915,7 @@ plot_summary <- function(swmpr_in, ...) UseMethod('plot_summary')
 #' @concept analyze
 #' 
 #' @method plot_summary swmpr
-plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
+plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, sum_out = FALSE, ...){
   
   stat <- attr(swmpr_in, 'station')
   parameters <- attr(swmpr_in, 'parameters')
@@ -997,8 +1013,6 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
   
   # universal plot setting
   my_theme <- theme(axis.text = element_text(size = 8))
-  
-  # browser()
   
   # plot 1 - means and obs
   cols <- colorRampPalette(c('lightblue', 'lightgreen'))(nrow(mo_agg))
@@ -1100,6 +1114,39 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, ...){
     theme(legend.position = 'none') +
     my_theme
 
+  # return plot list if TRUE
+  if(plt_sep) return(list(p1, p2, p3, p4, p5, p6))
+
+  # return summary list if TRUE
+  if(sum_out){
+    
+    # month summaries
+    sum_mo <- split(dat_plo, dat_plo$month)
+    sum_mo <- lapply(sum_mo, function(x){
+        vr <- var(x[, param], na.rm = TRUE)
+        summ <- summary(x[, param])
+        names(summ)[1:6] <- c('min', 'firstq', 'med', 'mean', 'thirdq', 'max')
+        c(summ, var = vr)
+      })
+    sum_mo <- do.call('rbind', sum_mo)
+    sum_mo <- data.frame(month = rownames(sum_mo), sum_mo)
+    sum_mo$month <- factor(sum_mo$month, levels = mo_levs, labels = mo_labs)
+    row.names(sum_mo) <- 1:nrow(sum_mo)
+
+    # month, yr summaries
+    sum_moyr <- to_plo
+    names(sum_moyr)[names(sum_moyr) %in% 'V1'] <- 'mean'
+    sum_moyr <- sum_moyr[with(sum_moyr, order(year, month)), ]
+    row.names(sum_moyr) <- 1:nrow(sum_moyr)
+      
+    # annual summaries
+    sum_yr <- yr_agg
+    names(sum_yr)[names(sum_yr) %in% param] <- 'mean'
+      
+    return(list(sum_mo = sum_mo, sum_moyr = sum_moyr, sum_yr = sum_yr))
+    
+  }
+      
   ##
   # combine plots
   suppressWarnings(gridExtra::grid.arrange(
