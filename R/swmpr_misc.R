@@ -67,9 +67,9 @@ swmpr <- function(stat_in, meta_in){
 #' 
 #' @return Returns a \code{data.frame} of parsed XML nodes
 parser <- function(resp_in, parent_in = 'data'){
-  
+
   # convert to XMLDocumentContent for parsing
-  raw <- htmlTreeParse(resp_in, useInternalNodes = TRUE)
+  raw <- xmlTreeParse(resp_in, useInternalNodes = TRUE)
 
   # get parent data nodes
   parents <- xpathSApply(
@@ -83,6 +83,7 @@ parser <- function(resp_in, parent_in = 'data'){
     )
   out <- do.call('rbind', out)
   out <- data.frame(out)
+  names(out) <- tolower(names(out))
   
   # return output
   return(out)

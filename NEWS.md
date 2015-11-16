@@ -1,3 +1,7 @@
+#### SWMPr 2.1.5
+
+* `parser` now uses `xmlTreeParse` making CDMO retrieval functions much faster 
+
 #### SWMPr 2.1.4
 
 * Fixed case issue with `import_local`
