@@ -477,9 +477,9 @@ import_local <- function(path, station_code, trace = FALSE){
   
   # names as lower case
   names(out) <- tolower(names(out))
-  
+
   # remove date from station_code, convert to swmpr class
-  station_code <- gsub('[0-9].*$', '', station_code)
+  station_code <- gsub('[0-9]*$', '', station_code)
   out <- swmpr(out, station_code)
   
   if(trace) cat('\n\nData imported...')

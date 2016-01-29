@@ -30,7 +30,7 @@ swmpr <- function(stat_in, meta_in){
   param_types <- unlist(lapply(param_types, function(x) any(x %in% parameters)))
   param_types <- names(param_names())[param_types]
   station <- grep(paste0(param_types, collapse = '|'), meta_in, value = TRUE)
-  
+
   # timezone using time_vec function
   timezone <- time_vec(station_code = station, tz_only = TRUE)
 
