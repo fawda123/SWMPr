@@ -31,6 +31,8 @@ Depends:
     R (>= 3.1.1),
     ggplot2,
     zoo
+Suggests: 
+    colorspace
 Authors@R: person(given = "Marcus W.", family = "Beck",
     role = c("aut","cre"),
     email = "mbafs2012@gmail.com")
