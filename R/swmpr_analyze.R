@@ -1738,14 +1738,15 @@ plot_metab.swmpr <- function(swmpr_in, by = 'months', alpha = 0.05, width = 10, 
 #' @seealso  \code{\link[ggmap]{get_map}}, \code{\link[ggmap]{ggmap}}, \code{\link[ggplot2]{ggplot}}
 #' 
 #' @examples
+#' \dontrun{
 #' ## defaults
-#' 
 #' map_reserve('jac')
 #' 
 #' ## change defaults, map a single site
 #' 
 #' map_reserve('gtmss', zoom = 15, map_type = 'satellite', 
 #'  text_col = 'lightblue')
+#'}
 map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black', map_type = 'terrain'){
   
   # sanity check

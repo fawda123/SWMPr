@@ -28,14 +28,15 @@ Create a map of all the stations in a reserve
 This function is a simple wrapper to functions in the ggmap package which returns a map of all of the stations at a NERRS reserve.  The \code{zoom} argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  A local data file included with the package is used to get the latitude and longitude values of each station.  The files includes only active stations as of January 2015.
 }
 \examples{
+\dontrun{
 ## defaults
-
 map_reserve('jac')
 
 ## change defaults, map a single site
 
 map_reserve('gtmss', zoom = 15, map_type = 'satellite', 
  text_col = 'lightblue')
+}
 }
 \seealso{
 \code{\link[ggmap]{get_map}}, \code{\link[ggmap]{ggmap}}, \code{\link[ggplot2]{ggplot}}
