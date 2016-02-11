@@ -14,13 +14,13 @@ install:
 
 build_script:
   - travis-tool.sh install_deps
-  - travis-tool.sh install_r Rcpp # this is important
 
 test_script:
   - travis-tool.sh run_tests
 
 on_failure:
-  - travis-tool.sh dump_logs
+  - 7z a failure.zip *.Rcheck\*
+  - appveyor PushArtifact failure.zip
 
 artifacts:
   - path: '*.Rcheck\**\*.log'
