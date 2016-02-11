@@ -476,3 +476,6 @@ calckl <- function(temp, sal, atemp, wspd, bp, height = 10){
   return(KL)
   
   }
+
+#' @importFrom stats var
+NULL
