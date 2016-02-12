@@ -9,7 +9,7 @@ import_local(path, station_code, trace = FALSE)
 \arguments{
 \item{path}{chr string of full path to .csv files with raw data, can be a zipped or unzipped directory where the former must include the .zip extension}
 
-\item{station_code}{chr string of station to import, typically 7 or 8 characters but may include full name with year, excluding file extension}
+\item{station_code}{chr string of station to import, typically 7 or 8 characters including wq, nut, or met extensions, may include full name with year, excluding file extension}
 
 \item{trace}{logical indicating if progress is sent to console, default \code{FALSE}}
 }

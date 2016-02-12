@@ -315,7 +315,7 @@ rem_reps.swmpr <- function(swmpr_in, FUN = function(x) mean(x, na.rm = TRUE), ..
 #'
 #' @param x input swmpr object
 #' @param subset chr string of form 'YYYY-mm-dd HH:MM' to subset a date range.  Input can be one (requires \code{operator} or two values (a range).
-#' @param select chr string of parameters to keep
+#' @param select chr string of parameters to keep, \code{'datetimestamp'} will always be kept
 #' @param operator chr string specifiying binary operator (e.g., \code{'>'}, \code{'<='}) if subset is one date value
 #' @param rem_rows logical indicating if rows with no data are removed, default \code{FALSE}
 #' @param rem_cols is logical indicating if cols with no data are removed, default \code{FALSE}

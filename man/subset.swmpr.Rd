@@ -12,7 +12,7 @@
 
 \item{subset}{chr string of form 'YYYY-mm-dd HH:MM' to subset a date range.  Input can be one (requires \code{operator} or two values (a range).}
 
-\item{select}{chr string of parameters to keep}
+\item{select}{chr string of parameters to keep, \code{'datetimestamp'} will always be kept}
 
 \item{operator}{chr string specifiying binary operator (e.g., \code{'>'}, \code{'<='}) if subset is one date value}
 
