@@ -400,9 +400,19 @@ subset.swmpr <- function(x, subset = NULL, select = NULL,
   # all if null
   if(is.null(select)) select <- names(dat)
   else{
+    
     # stop if select not in parameters
-    if(any(!select %in% parameters)) stop('select argument is invalid')
+    chks <- select %in% c('datetimestamp', parameters, paste0('f_', parameters))
+    if(any(!chks)){
+      
+      nonmtch <- which(!chks)
+      nonmtch <- paste(select[nonmtch], collapse = ', ')
+      stop(paste('select argument is invalid:', nonmtch))
+      
+    }
+    
     select <- names(dat)[names(dat) %in% c('datetimestamp', select, paste0('f_', select))]
+
   }
   
   # subset data
