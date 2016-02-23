@@ -1151,14 +1151,21 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
 
   # return summary list if TRUE
   if(sum_out){
-    
+
     # month summaries
     sum_mo <- split(dat_plo, dat_plo$month)
     sum_mo <- lapply(sum_mo, function(x){
+      
         vr <- var(x[, param], na.rm = TRUE)
         summ <- summary(x[, param])
         names(summ)[1:6] <- c('min', 'firstq', 'med', 'mean', 'thirdq', 'max')
-        c(summ, var = vr)
+      
+        # manually add NA if not present
+        if(length(summ) == 6)
+          c(summ, `NA.s` = 0, var = vr)
+        else 
+          c(summ, var = vr)
+        
       })
     sum_mo <- do.call('rbind', sum_mo)
     sum_mo <- data.frame(month = rownames(sum_mo), sum_mo)
