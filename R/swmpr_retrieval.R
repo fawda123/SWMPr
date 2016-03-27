@@ -344,6 +344,16 @@ single_param <- function(station_code, param, Max = 100, trace = TRUE){
 #' }
 import_local <- function(path, station_code, trace = FALSE){
   
+  # add .zip if not present
+  if(file.exists(paste0(path, '.zip'))){
+      path <- paste0(path, '.zip')
+    }
+  
+  # check if file exists 
+  if(!file.exists(path)){
+    stop('Path does not exist')
+  }
+  
   # check if path is zipped
   zips <- grepl('\\.zip$', path)
   
