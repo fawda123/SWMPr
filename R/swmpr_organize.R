@@ -561,7 +561,7 @@ setstep.default <- function(dat_in, date_col, timestep = 15, differ= NULL, ...){
     timestep <- mul_fac[which(timestep == chr_stp)] 
       
   }
-  
+
   if(is.null(differ)) differ <- timestep/2
   
   # sanity check
@@ -655,7 +655,7 @@ comb <- function(...) UseMethod('comb')
 #' @concept organize
 #' 
 #' @method comb swmpr
-comb.swmpr <- function(..., timestep = 15, differ= timestep/2, method = 'union'){
+comb.swmpr <- function(..., timestep = 15, differ= NULL, method = 'union'){
   
   # swmp objects list and attributes
   all_dat <- list(...)
@@ -707,7 +707,7 @@ comb.swmpr <- function(..., timestep = 15, differ= timestep/2, method = 'union')
 #' @concept organize
 #' 
 #' @method comb default
-comb.default <- function(..., date_col, timestep = 15, differ= timestep/2, method = 'union'){
+comb.default <- function(..., date_col, timestep = 15, differ= NULL, method = 'union'){
   
   ##
   # sanity checks
@@ -754,7 +754,31 @@ comb.default <- function(..., date_col, timestep = 15, differ= timestep/2, metho
     date_vec <- all_dat[[method]][, date_col]
     
   }
+  
+  # get default differ value, as timestep/2
+  # convert timestep to numeric if chr input
+  # this is needed for default differ
+  if(is.character(timestep) & is.null(differ)){
     
+    # lookup values
+    chr_stp <- c('years', 'quarters', 'months', 'weeks', 'days', 'hours')
+    mul_fac <- c(525600, 131400, 44640, 10080, 1440, 60)
+    
+    # stop if chr_stp is wrong
+    if(!timestep %in% chr_stp){
+      
+      stop(paste(
+        'Character input for timestep must be one of of the following:', 
+        paste(chr_stp, collapse = ', ')
+      ))
+      
+    }
+  
+    # otherwise lookup
+    differ <- mul_fac[which(timestep == chr_stp)]/2
+      
+  }
+
   ##
   # merge stations by date_vec
   out <- data.table::data.table(datetimestamp = date_vec, key = 'datetimestamp')
