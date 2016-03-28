@@ -8,10 +8,9 @@
 \usage{
 comb(...)
 
-\method{comb}{swmpr}(..., timestep = 15, differ = timestep/2,
-  method = "union")
+\method{comb}{swmpr}(..., timestep = 15, differ = NULL, method = "union")
 
-\method{comb}{default}(..., date_col, timestep = 15, differ = timestep/2,
+\method{comb}{default}(..., date_col, timestep = 15, differ = NULL,
   method = "union")
 }
 \arguments{

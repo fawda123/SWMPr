@@ -655,8 +655,8 @@ decomp.default <- function(dat_in, param, date_col, type = 'additive', frequency
 #' ## decomposition of chl, ggplot
 #' decomp_cj(dat, param = 'chla_n')
 #' 
-#' ## decomposition changing argumens passed to decompTs
-#' decomp_cj(dat, param = 'chla_n', startyr = 2008, type = 'add')
+#' ## decomposition changing arguments passed to decompTs
+#' decomp_cj(dat, param = 'chla_n', type = 'add')
 #' 
 #' ## monthly decomposition of continuous data
 #' data(apacpwq)

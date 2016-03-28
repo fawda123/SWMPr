@@ -48,8 +48,8 @@ decomp_cj(dat, param = 'chla_n', vals_out = TRUE)
 ## decomposition of chl, ggplot
 decomp_cj(dat, param = 'chla_n')
 
-## decomposition changing argumens passed to decompTs
-decomp_cj(dat, param = 'chla_n', startyr = 2008, type = 'add')
+## decomposition changing arguments passed to decompTs
+decomp_cj(dat, param = 'chla_n', type = 'add')
 
 ## monthly decomposition of continuous data
 data(apacpwq)
