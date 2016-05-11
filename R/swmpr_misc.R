@@ -109,7 +109,7 @@ time_vec <- function(chr_in = NULL, station_code, tz_only = FALSE){
   
   # lookup table for time zones based on gmt offset - no DST!
   gmt_tab <- data.frame(
-    gmt_off=c(-4,-5,-6,-8,-9),
+    gmt_off = c(-4,-5,-6,-8,-9),
     tz = c('America/Virgin', 'America/Jamaica', 'America/Regina',
       'Pacific/Pitcairn', 'Pacific/Gambier'),
     stringsAsFactors = FALSE
@@ -341,12 +341,15 @@ param_names <- function(param_type = c('nut', 'wq', 'met')){
 "apaebmet"
 
 ######
-#' Identify metabolic days in a swmpr time series
+#' Identify metabolic days in a time series
 #'
-#' Identify metabolic days in a swmpr time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.  The function calls the \code{\link[maptools]{sunriset}} function from the maptools package, which uses algorithms from the National Oceanic and Atmospheric Administration (\url{http://www.esrl.noaa.gov/gmd/grad/solcalc/}).
+#' Identify metabolic days in a time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.  The function calls the \code{\link[maptools]{sunriset}} function from the maptools package, which uses algorithms from the National Oceanic and Atmospheric Administration (\url{http://www.esrl.noaa.gov/gmd/grad/solcalc/}).
 #' 
 #' @param dat_in data.frame
-#' @param stat_in chr vector of station name including data type
+#' @param tz chr string for timezone, e.g., 'America/Chicago'
+#' @param lat numeric for latitude
+#' @param long numeric for longitude (negative west of prime meridian)
+#' @param ... arguments passed to or from other methods
 #' 
 #' @import maptools
 #' 
@@ -357,26 +360,15 @@ param_names <- function(param_type = c('nut', 'wq', 'met')){
 #' @seealso 
 #' \code{\link{ecometab}}, \code{\link[maptools]{sunriset}}
 #' 
-metab_day <- function(dat_in, stat_in){
-  
-  # station locations
-  dat_locs <- get('stat_locs')
-  stat_meta <- dat_locs[grep(gsub('wq$', '', stat_in), dat_locs$station_code),]
-  
-  # all times are standard - no DST!
-  gmt_tab <- data.frame(
-    gmt_off=c(-4, -5, -6, -8, -9),
-    tz = c('America/Virgin', 'America/Jamaica', 'America/Regina',
-      'Pacific/Pitcairn', 'Pacific/Gambier'),
-    stringsAsFactors = F
-    )
-  
-  # get sunrise/sunset times using functions from maptools
-  # adapted from streammetabolism sunrise.set function
-  lat <- stat_meta$latitude
-  long <- stat_meta$longitude
-  gmt_off <- stat_meta$gmt_off
-  tz <- gmt_tab[gmt_tab$gmt_off == gmt_off, 'tz']
+metab_day <- function(dat_in, ...) UseMethod('metab_day')
+
+#' @rdname metab_day
+#' 
+#' @export
+#' 
+#' @method metab_day default
+metab_day.default <- function(dat_in, tz, lat, long, ...){
+ 
   start_day <- format(
     dat_in$datetimestamp[which.min(dat_in$datetimestamp)] - (60 * 60 * 24), 
     format = '%Y/%m/%d'
@@ -404,7 +396,7 @@ metab_day <- function(dat_in, stat_in){
     )
   ss_dat <- reshape2::melt(ss_dat, id.vars = 'metab_date')
   if(!"POSIXct" %in% class(ss_dat$value))
-    ss_dat$value <- as.POSIXct(ss_dat$value, origin='1970-01-01',tz=tz)
+    ss_dat$value <- as.POSIXct(ss_dat$value, origin='1970-01-01', tz = tz)
   ss_dat <- ss_dat[order(ss_dat$value),]
   ss_dat$day_hrs <- unlist(lapply(
     split(ss_dat, ss_dat$metab_date),
@@ -418,8 +410,8 @@ metab_day <- function(dat_in, stat_in){
   matches <- findInterval(dat_in$datetimestamp, ss_dat$solar_time)
   out <- data.frame(dat_in, ss_dat[matches, ])
   return(out)
-      
-  }
+   
+}
 
 ######
 #' Calculate oxygen mass transfer coefficient
