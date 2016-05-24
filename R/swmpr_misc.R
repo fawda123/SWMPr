@@ -409,6 +409,7 @@ metab_day.default <- function(dat_in, tz, lat, long, ...){
   # output is meteorological day matches appended to dat_in
   matches <- findInterval(dat_in$datetimestamp, ss_dat$solar_time)
   out <- data.frame(dat_in, ss_dat[matches, ])
+  row.names(out) <- 1:nrow(out)
   return(out)
    
 }
