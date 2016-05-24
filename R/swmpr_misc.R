@@ -368,16 +368,14 @@ metab_day <- function(dat_in, ...) UseMethod('metab_day')
 #' 
 #' @method metab_day default
 metab_day.default <- function(dat_in, tz, lat, long, ...){
- 
-  start_day <- format(
-    dat_in$datetimestamp[which.min(dat_in$datetimestamp)] - (60 * 60 * 24), 
-    format = '%Y/%m/%d'
-    )
-  tot_days <- 1 + length(unique(as.Date(dat_in$datetimestamp)))
+
+  dtrng <- range(as.Date(dat_in$datetimestamp), na.rm = TRUE)
+  start_day <- dtrng[1] - 1
+  end_day <- dtrng[2] + 1
   lat.long <- matrix(c(long, lat), nrow = 1)
   sequence <- seq(
     from = as.POSIXct(start_day, tz = tz), 
-    length.out = tot_days, 
+    to = as.POSIXct(end_day, tz = tz),
     by = "days"
     )
   sunrise <- sunriset(lat.long, sequence, direction = "sunrise", 
