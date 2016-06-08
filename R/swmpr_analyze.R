@@ -1421,7 +1421,14 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
 #' res <- ecometab(dat, metab_units = 'grams')
 #' res <- attr(res, 'metabolism')
 #' 
-#' ## recreate a generic data object to use with the default method
+#' ## manual input of integration depth
+#' ## NA values must be filled
+#' dat_fill <- na.approx(dat, params = 'depth', maxgap = 1e6)
+#' depth <- dat_fill$depth
+#' res <- ecometab(dat, metab_units = 'grams', depth_val = depth)
+#' 
+#' ## use ecometab with a data frame
+#' ## first recreate a generic data object to use
 #' cols <- c('datetimestamp', 'do_mgl', 'depth', 'atemp', 'sal', 'temp', 'wspd', 'bp')
 #' dat <- data.frame(dat)
 #' dat <- dat[, cols]
@@ -1501,6 +1508,20 @@ ecometab.default <- function(dat_in, tz, lat, long, depth_val = NULL, metab_unit
   if(sum(nm_chk) != length(to_keep))
     stop('Column names are incorrect, missing ', paste(to_keep[!nm_chk], collapse = ', ')) 
 
+  # if 'depth_val' is provided, replace depth with the constant or supplied vector
+  if(!is.null(depth_val)){
+    
+    # checks if vector supplied
+    chkln <- length(depth_val) > 1
+    if(any(is.na(depth_val)) & chkln)  
+      stop('NA values for depth_val not permitted')
+    if(length(depth_val) != nrow(dat) & chkln) 
+      stop('depth_val must have length equal to input data if not a constant')
+
+    dat_in$depth <- depth_val   
+    
+  }
+  
   # columns to keep
   dat <- data.frame(dat_in)
   dat <- dat[,names(dat) %in% to_keep]
@@ -1578,28 +1599,15 @@ ecometab.default <- function(dat_in, tz, lat, long, depth_val = NULL, metab_unit
   # used to get loss of O2 from diffusion
   dosat <- with(dat, do_mgl/(oxySol(temp * (1000 + sigt)/1000, sal)))
 
-  #station depth, defaults to mean depth value, floored at 1 in case not on bottom
+  # station depth, defaults to mean depth value if not provided, floored at 1 in case not on bottom
   # uses 'depth_val' if provided, either as a repeated single value or supplied vector
   if(is.null(depth_val)){
     
     H <- rep(0.5 + mean(pmax(1, dat$depth), na.rm = T), nrow(dat))
-  
-  } else {
+
+  } else {  
     
-    # if only one depth val, repeat
-    if(length(depth_val) == 1){
-      
-      H <- rep(depth_val, nrow(dat))
-      
-    # otherwise use vector with checks
-    } else {
-      
-      if(any(is.na(depth_val)))  stop('NA values for depth_val not permitted')
-      if(length(depth_val) != nrow(dat)) stop('depth_val must have length equal to input data')
-      
-      H <- depth_val
-       
-    }
+    H <- dat$depth
     
   }
   

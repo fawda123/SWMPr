@@ -73,7 +73,14 @@ dat <- comb(apadbwq, apaebmet)
 res <- ecometab(dat, metab_units = 'grams')
 res <- attr(res, 'metabolism')
 
-## recreate a generic data object to use with the default method
+## manual input of integration depth
+## NA values must be filled
+dat_fill <- na.approx(dat, params = 'depth', maxgap = 1e6)
+depth <- dat_fill$depth
+res <- ecometab(dat, metab_units = 'grams', depth_val = depth)
+
+## use ecometab with a data frame
+## first recreate a generic data object to use
 cols <- c('datetimestamp', 'do_mgl', 'depth', 'atemp', 'sal', 'temp', 'wspd', 'bp')
 dat <- data.frame(dat)
 dat <- dat[, cols]
