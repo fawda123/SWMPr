@@ -1388,7 +1388,7 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
 #' 
 #' The open-water method is a common approach to quantify net ecosystem metabolism using a mass balance equation that describes the change in dissolved oxygen over time from the balance between photosynthetic and respiration processes, corrected using an empirically constrained air-sea gas diffusion model (see Ro and Hunt 2006, Thebault et al. 2008).  The diffusion-corrected DO flux estimates are averaged separately over each day and night of the time series. The nighttime average DO flux is used to estimate respiration rates, while the daytime DO flux is used to estimate net primary production. To generate daily integrated rates, respiration rates are assumed constant such that hourly night time DO flux rates are multiplied by 24. Similarly, the daytime DO flux rates are multiplied by the number of daylight hours, which varies with location and time of year, to yield net daytime primary production. Respiration rates are subtracted from daily net production estimates to yield gross production rates.  The metabolic day is considered the 24 hour period between sunsets on two adjacent calendar days.
 #' 
-#' Areal rates for gross production and total respiration are based on volumetric rates normalized to the depth of the water column at the sampling location, which is assumed to be well-mixed, such that the DO sensor is reflecting the integrated processes in the entire water column (including the benthos).  Water column depth is calculated as the mean value of the depth variable across the time series in the \code{\link{swmpr}} object.  Depth values are floored at one meter for very shallow stations and 0.5 meters is also added to reflect the practice of placing sensors slightly off of the bottom.  Additionally, the air-sea gas exchange model is calibrated with wind data either collected at, or adjusted to, wind speed at 10 m above the surface. The metadata should be consulted for exact height.  The value can be changed manually using a \code{height} argument, which is passed to \code{\link{calckl}}.
+#' Areal rates for gross production and total respiration are based on volumetric rates normalized to the depth of the water column at the sampling location, which is assumed to be well-mixed, such that the DO sensor is reflecting the integrated processes in the entire water column (including the benthos).  Water column depth is calculated as the mean value of the depth variable across the time series in the \code{\link{swmpr}} object.  Depth values are floored at one meter for very shallow stations and 0.5 meters is also added to reflect the practice of placing sensors slightly off of the bottom. A user-supplied depth value can also be passed to the \code{depth_val} argument, either as a single value that is repeated or as a vector equal in length to the number of rows in the input data.  Additionally, the air-sea gas exchange model is calibrated with wind data either collected at, or adjusted to, wind speed at 10 m above the surface. The metadata should be consulted for exact height.  The value can be changed manually using a \code{height} argument, which is passed to \code{\link{calckl}}.
 #' 
 #' A minimum of three records are required for both day and night periods to calculate daily metabolism estimates.  Occasional missing values for air temperature, barometric pressure, and wind speed are replaced with the climatological means (hourly means by month) for the period of record using adjacent data within the same month as the missing data.
 #' 
@@ -1577,12 +1577,31 @@ ecometab.default <- function(dat_in, tz, lat, long, depth_val = NULL, metab_unit
   # dosat as proportion
   # used to get loss of O2 from diffusion
   dosat <- with(dat, do_mgl/(oxySol(temp * (1000 + sigt)/1000, sal)))
-  
+
   #station depth, defaults to mean depth value, floored at 1 in case not on bottom
-  #uses 'depth_val' if provided
-  if(is.null(depth_val))
+  # uses 'depth_val' if provided, either as a repeated single value or supplied vector
+  if(is.null(depth_val)){
+    
     H <- rep(0.5 + mean(pmax(1, dat$depth), na.rm = T), nrow(dat))
-  else H <- rep(depth_val, nrow(dat))
+  
+  } else {
+    
+    # if only one depth val, repeat
+    if(length(depth_val) == 1){
+      
+      H <- rep(depth_val, nrow(dat))
+      
+    # otherwise use vector with checks
+    } else {
+      
+      if(any(is.na(depth_val)))  stop('NA values for depth_val not permitted')
+      if(length(depth_val) != nrow(dat)) stop('depth_val must have length equal to input data')
+      
+      H <- depth_val
+       
+    }
+    
+  }
   
   #use metab_day to add columns indicating light/day, date, and hours of sunlight
   dat <- metab_day(dat, tz = tz, lat = lat, long = long)
