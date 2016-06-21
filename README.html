@@ -10,14 +10,15 @@
 
 
 
+
 <title></title>
 
-<script src="README_files/jquery-1.11.0/jquery.min.js"></script>
+<script src="README_files/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="README_files/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet" />
-<script src="README_files/bootstrap-3.3.1/js/bootstrap.min.js"></script>
-<script src="README_files/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
-<script src="README_files/bootstrap-3.3.1/shim/respond.min.js"></script>
+<link href="README_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="README_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="README_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="README_files/bootstrap-3.3.5/shim/respond.min.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <link rel="stylesheet"
@@ -39,6 +40,34 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 
 
 
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
 </head>
 
 <body>
@@ -53,17 +82,47 @@ code {
   color: inherit;
   background-color: rgba(0, 0, 0, 0.04);
 }
-img { 
-  max-width:100%; 
-  height: auto; 
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
 }
 </style>
+
+
 <div class="container-fluid main-container">
 
+<!-- tabsets -->
+<script src="README_files/navigation-1.0/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
 
 
 
-<p><img src="swmpr_logo.png" /></p>
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+
+</div>
+
+
+<div class="figure">
+<img src="swmpr_logo.png" />
+</div>
 <div id="marcus-w.-beck-beck.marcusepa.gov" class="section level4">
 <h4><em>Marcus W. Beck, <a href="mailto:beck.marcus@epa.gov">beck.marcus@epa.gov</a></em></h4>
 <p>Linux and OS X: <a href="https://travis-ci.org/fawda123/SWMPr"><img src="https://travis-ci.org/fawda123/SWMPr.png?branch=master" alt="Travis-CI Build Status" /></a></p>
@@ -73,7 +132,7 @@ img {
 <div id="overview" class="section level1">
 <h1>Overview</h1>
 <p>The System Wide Monitoring Program (<a href="http://nerrs.noaa.gov/RCDefault.aspx?ID=18">SWMP</a>) was implemented by the National Estuarine Research Reserve System (<a href="http://nerrs.noaa.gov/">NERRS</a>) in 1995 to provide continuous monitoring data at over 140 continuous monitoring stations in 28 estuaries across the United States. SWMPr (pronounced “swamper”) is an R package for retrieving, organizing, and analyzing estuary monitoring data from SWMP. Please cite the package as follows:</p>
-<p><em>Beck MW. 2015. SWMPr: An R package for the National Estuarine Research Reserve System. Version 2.1.4. <a href="https://github.com/fawda123/SWMPr" class="uri">https://github.com/fawda123/SWMPr</a></em></p>
+<p><em>Beck MW. 2016. SWMPr: An R package for retrieving, organizing, and analyzing environmental data for estuaries. The R Journal. In press. <a href="https://journal.r-project.org/archive/accepted/beck.pdf" class="uri">https://journal.r-project.org/archive/accepted/beck.pdf</a></em></p>
 </div>
 <div id="installing-the-package" class="section level1">
 <h1>Installing the package</h1>
@@ -83,7 +142,7 @@ library(SWMPr)</code></pre>
 <p>The development (unstable) version of this package can be installed from Github:</p>
 <pre class="r"><code>install.packages(&#39;devtools&#39;)
 library(devtools)
-install_github(&#39;fawda123/SWMPr&#39;)
+install_github(&#39;fawda123/SWMPr&#39;, ref = &#39;development&#39;)
 library(SWMPr)</code></pre>
 </div>
 <div id="using-the-package" class="section level1">
@@ -374,6 +433,8 @@ Converts time vectors to POSIX objects with correct time zone for a site/station
 </tr>
 </table>
 </div>
+
+
 
 
 </div>
