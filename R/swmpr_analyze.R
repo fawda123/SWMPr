@@ -1515,7 +1515,7 @@ ecometab.default <- function(dat_in, tz, lat, long, depth_val = NULL, metab_unit
     chkln <- length(depth_val) > 1
     if(any(is.na(depth_val)) & chkln)  
       stop('NA values for depth_val not permitted')
-    if(length(depth_val) != nrow(dat) & chkln) 
+    if(length(depth_val) != nrow(dat_in) & chkln) 
       stop('depth_val must have length equal to input data if not a constant')
 
     dat_in$depth <- depth_val   
