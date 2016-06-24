@@ -1388,7 +1388,9 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
 #' 
 #' The open-water method is a common approach to quantify net ecosystem metabolism using a mass balance equation that describes the change in dissolved oxygen over time from the balance between photosynthetic and respiration processes, corrected using an empirically constrained air-sea gas diffusion model (see Ro and Hunt 2006, Thebault et al. 2008).  The diffusion-corrected DO flux estimates are averaged separately over each day and night of the time series. The nighttime average DO flux is used to estimate respiration rates, while the daytime DO flux is used to estimate net primary production. To generate daily integrated rates, respiration rates are assumed constant such that hourly night time DO flux rates are multiplied by 24. Similarly, the daytime DO flux rates are multiplied by the number of daylight hours, which varies with location and time of year, to yield net daytime primary production. Respiration rates are subtracted from daily net production estimates to yield gross production rates.  The metabolic day is considered the 24 hour period between sunsets on two adjacent calendar days.
 #' 
-#' Areal rates for gross production and total respiration are based on volumetric rates normalized to the depth of the water column at the sampling location, which is assumed to be well-mixed, such that the DO sensor is reflecting the integrated processes in the entire water column (including the benthos).  Water column depth is calculated as the mean value of the depth variable across the time series in the \code{\link{swmpr}} object.  Depth values are floored at one meter for very shallow stations and 0.5 meters is also added to reflect the practice of placing sensors slightly off of the bottom. A user-supplied depth value can also be passed to the \code{depth_val} argument, either as a single value that is repeated or as a vector equal in length to the number of rows in the input data.  Additionally, the air-sea gas exchange model is calibrated with wind data either collected at, or adjusted to, wind speed at 10 m above the surface. The metadata should be consulted for exact height.  The value can be changed manually using a \code{height} argument, which is passed to \code{\link{calckl}}.
+#' Areal rates for gross production and total respiration are based on volumetric rates normalized to the depth of the water column at the sampling location, which is assumed to be well-mixed, such that the DO sensor is reflecting the integrated processes in the entire water column (including the benthos).  Water column depth is calculated as the mean value of the depth variable across the time series in the \code{\link{swmpr}} object.  Depth values are floored at one meter for very shallow stations and 0.5 meters is also added to reflect the practice of placing sensors slightly off of the bottom. A user-supplied depth value can also be passed to the \code{depth_val} argument, either as a single value that is repeated or as a vector equal in length to the number of rows in the input data.  An accurate depth value should be used as this acts as a direct scalar on metabolism estimates.
+#' 
+#' The air-sea gas exchange model is calibrated with wind data either collected at, or adjusted to, wind speed at 10 m above the surface. The metadata should be consulted for exact height.  The value can be changed manually using a \code{height} argument, which is passed to \code{\link{calckl}}.
 #' 
 #' A minimum of three records are required for both day and night periods to calculate daily metabolism estimates.  Occasional missing values for air temperature, barometric pressure, and wind speed are replaced with the climatological means (hourly means by month) for the period of record using adjacent data within the same month as the missing data.
 #' 
@@ -1410,29 +1412,33 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
 #' 
 #' @examples
 #' \dontrun{
-#' ## import water quality and weather data
+#' ## import water quality and weather data, qaqc
 #' data(apadbwq)
 #' data(apaebmet)
+#' wq <- qaqc(apadbwq)
+#' met <- qaqc(apaebmet)
 #' 
 #' ## combine
-#' dat <- comb(apadbwq, apaebmet)
+#' dat <- comb(wq, met)
 #' 
 #' ## output units in grams of oxygen
 #' res <- ecometab(dat, metab_units = 'grams')
-#' res <- attr(res, 'metabolism')
+#' attr(res, 'metabolism')
 #' 
 #' ## manual input of integration depth
 #' ## NA values must be filled
 #' dat_fill <- na.approx(dat, params = 'depth', maxgap = 1e6)
 #' depth <- dat_fill$depth
 #' res <- ecometab(dat, metab_units = 'grams', depth_val = depth)
+#' attr(res, 'metabolism')
 #' 
-#' ## use ecometab with a data frame
-#' ## first recreate a generic data object to use
+#' ## use the default method for ecometab with a generic data frame
+#' ## first recreate a generic object from the sample data
 #' cols <- c('datetimestamp', 'do_mgl', 'depth', 'atemp', 'sal', 'temp', 'wspd', 'bp')
 #' dat <- data.frame(dat)
 #' dat <- dat[, cols]
 #' res <- ecometab(dat, tz = 'America/Jamaica', lat = 29.67, long = -85.06)
+#' res
 #' }
 ecometab <- function(dat_in, ...) UseMethod('ecometab')
 
@@ -1632,7 +1638,7 @@ ecometab.default <- function(dat_in, tz, lat, long, depth_val = NULL, metab_unit
   out <- lapply(
     split(proc_dat, proc_dat$metab_date),
     function(x){
-      
+
       #filter for minimum no. of records 
       if(length(with(x[x$solar_period == 'sunrise', ], na.omit(ddo))) < 3 |
          length(with(x[x$solar_period == 'sunset', ], na.omit(ddo))) < 3 ){
