@@ -1532,9 +1532,6 @@ ecometab.default <- function(dat_in, tz, lat, long, depth_val = NULL, metab_unit
   dat <- data.frame(dat_in)
   dat <- dat[,names(dat) %in% to_keep]
   
-  # set all timesteps to one hour
-  dat <- setstep(dat, date_col = 'datetimestamp', timestep = 60)
-  
   # all vals as numeric
   dat[, 2:ncol(dat)] <- apply(
     dat[, 2:ncol(dat), drop = FALSE],
@@ -1546,7 +1543,8 @@ ecometab.default <- function(dat_in, tz, lat, long, depth_val = NULL, metab_unit
   dat$do <- dat[, 'do_mgl'] / 32 * 1000
 
   # get change in do per hour, as mmol m^-3 hr^-1
-  ddo <- diff(dat$do)
+  # difference between time steps, divided by time (in mins) between time steps, multiplied by 60
+  ddo <- with(dat, 60 * diff(do) / as.double(diff(datetimestamp), units = 'mins'))
 
   # take diff of each column, divide by 2, add original value
   datetimestamp <- diff(dat$datetimestamp)/2 + dat$datetimestamp[-c(nrow(dat))]
@@ -1597,13 +1595,10 @@ ecometab.default <- function(dat_in, tz, lat, long, depth_val = NULL, metab_unit
   bp_mix[is.na(bp_mix)] <- clim_means$bp[is.na(bp_mix)]
 
   ##
-  # get sigma_t estimates
-  sigt <- with(dat, swSigmaT(sal, temp, mean(dat$bp/100, na.rm = T)))
-  
-  # dosat is do at saturation given temp (C), salinity (st. unit), and press (atm)
+  # dosat is do at saturation given temp (C), salinity (st. unit), and press (atm, mb * 1/1013.25)
   # dosat as proportion
   # used to get loss of O2 from diffusion
-  dosat <- with(dat, do_mgl/(oxySol(temp * (1000 + sigt)/1000, sal)))
+  dosat <- with(dat, do_mgl/oxySol(temp, sal, bp * 1/1013.25))
 
   # station depth, defaults to mean depth value if not provided, floored at 1 in case not on bottom
   # uses 'depth_val' if provided, either as a repeated single value or supplied vector
