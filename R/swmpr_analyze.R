@@ -1544,7 +1544,7 @@ ecometab.default <- function(dat_in, tz, lat, long, depth_val = NULL, metab_unit
 
   # get change in do per hour, as mmol m^-3 hr^-1
   # difference between time steps, divided by time (in mins) between time steps, multiplied by 60
-  ddo <- with(dat, 60 * diff(do) / as.double(diff(datetimestamp), units = 'mins'))
+  ddo <- with(dat, diff(do) / as.double(diff(datetimestamp), units = 'hours'))
 
   # take diff of each column, divide by 2, add original value
   datetimestamp <- diff(dat$datetimestamp)/2 + dat$datetimestamp[-c(nrow(dat))]
