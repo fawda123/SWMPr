@@ -37,7 +37,14 @@ library(SWMPr)
 
 #Using the package
 
-Please see the [sister repository](https://github.com/fawda123/swmpr_manu) for a [draft manuscript](https://github.com/fawda123/swmpr_manu/blob/master/swmpr_manu.pdf) that describes package use in detail.  A brief description of the available functions is provided below. See help documentation for more details on each function (e.g., `?all_params`).
+A detailed manuscript describing full use of the package is available from the [R Journal](https://journal.r-project.org/archive/accepted/beck.pdf). All source materials for the manuscript are available [here](https://github.com/fawda123/swmpr_manu).  A brief description of the available functions is provided below. See help documentation for more details on each function (e.g., `?all_params`).  All functions are grouped into respective categories that describe their use: retrieve, organize, and analyze.  Help files for functions in each category can be viewed as follows:
+
+
+```r
+help.search('retrieve', package = 'SWMPr')
+help.search('organize', package = 'SWMPr')
+help.search('analyze', package = 'SWMPr')
+```
 
 <h3>Retrieve</h3>
 <table>
