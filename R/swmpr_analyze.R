@@ -625,7 +625,7 @@ decomp.default <- function(dat_in, param, date_col, type = 'additive', frequency
 #' A \code{\link[ggplot2]{ggplot}} object if \code{vals_out = TRUE} (default), otherwise a monthly time series matrix of class \code{\link[stats]{ts}}.
 #' 
 #' @details
-#' This function is a simple wrapper to the \code{\link[wq]{decompTs}} function in the wq package, also described in Cloern and Jassby (2010).  The function is similar to \code{\link{decomp.swmpr}} (which is a wrapper to \code{\link[stats]{decompose}}) with a few key differences.  The \code{\link{decomp.swmpr}} function decomposes the time series into a trend, seasonal, and random components, whereas the current function decomposes into the grandmean, annual, seasonal, and events components.  For both functions, the random or events components, respectively, can be considered anomalies that don't follow the trends in the remaining categories.  
+#' This function is a simple wrapper to the \code{\link[wq]{decompTs}} function in the archived wq package, also described in Cloern and Jassby (2010).  The function is similar to \code{\link{decomp.swmpr}} (which is a wrapper to \code{\link[stats]{decompose}}) with a few key differences.  The \code{\link{decomp.swmpr}} function decomposes the time series into a trend, seasonal, and random components, whereas the current function decomposes into the grandmean, annual, seasonal, and events components.  For both functions, the random or events components, respectively, can be considered anomalies that don't follow the trends in the remaining categories.  
 #' 
 #' The \code{decomp_cj} function provides only a monthly decomposition, which is appropriate for characterizing relatively long-term trends.  This approach is meant for nutrient data that are obtained on a monthly cycle.  The function will also work with continuous water quality or weather data but note that the data are first aggregated on the monthly scale before decomposition.  Use the \code{\link{decomp.swmpr}} function to decompose daily variation.
 #' 
@@ -633,7 +633,7 @@ decomp.default <- function(dat_in, param, date_col, type = 'additive', frequency
 #' 
 #' @export
 #' 
-#' @import ggplot2 wq
+#' @import ggplot2
 #' 
 #' @importFrom stats aggregate ts
 #' @importFrom utils capture.output
@@ -729,7 +729,7 @@ decomp_cj.default <- function(dat_in, param, date_col, vals_out = FALSE, ...){
   dat_mts <- ts(dat[, param], frequency = 12, start = c(year, month))
   
   # decomp
-  out <- wq::decompTs(dat_mts, ...)
+  out <- decompTs(dat_mts, ...)
   
   # convert results to data frame
   Time <- unique(as.numeric(gsub('[A-z]| ', '', capture.output(out[, 0])[-1])))
@@ -1375,7 +1375,7 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
 #'  \item{\code{NEM}}{Net ecosytem metabolism, mmol m-2 d-1, calculated as Pg + Rt}
 #' }
 #' 
-#' @import oce wq
+#' @import oce
 #' 
 #' @importFrom stats aggregate
 #' 
