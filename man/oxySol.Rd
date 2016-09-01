@@ -17,7 +17,7 @@ oxySol(t, S, P = NULL)
 Dissolved oxygen concentration in mg/L at 100\% saturation. If \code{P = NULL}, saturation values at 1 atm are calculated.
 }
 \description{
-Finds dissolved oxygen concentration in equilibrium with water-saturated air. Function and documentation herein are from archived wq package: \url{https://cran.r-project.org/web/packages/wq/index.html}
+Finds dissolved oxygen concentration in equilibrium with water-saturated air. Function and documentation herein are from archived wq package.
 }
 \details{
 Calculations are based on the approach of Benson and Krause (1984), using Green and Carritt's (1967) equation for dependence of water vapor partial pressure on \code{t} and \code{S}. Equations are valid for temperature in the range 0-40 C and salinity in the range 0-40.

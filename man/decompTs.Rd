@@ -24,7 +24,7 @@ A monthly time series matrix with the following individual time series:
 \item{events }{optionally, the residual or "events" series}
 }
 \description{
-The function decomposes a time series into a long-term mean, annual, seasonal and "events" component. The decomposition can be multiplicative or additive, and based on median or mean centering. Function and documentation herein are from archived wq package: \url{https://cran.r-project.org/web/packages/wq/index.html}
+The function decomposes a time series into a long-term mean, annual, seasonal and "events" component. The decomposition can be multiplicative or additive, and based on median or mean centering. Function and documentation herein are from archived wq package.
 }
 \details{
 The rationale for this simple approach to decomposing a time series, with examples of its application, is given by Cloern and Jassby (2010). It is motivated by the observation that many important events for estuaries (e.g., persistent dry periods, species invasions) start or stop suddenly. Smoothing to extract the annualized term, which can disguise the timing of these events and make analysis of them unnecessarily difficult, is not used.

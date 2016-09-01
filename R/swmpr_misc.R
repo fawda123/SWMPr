@@ -471,7 +471,7 @@ calckl <- function(temp, sal, atemp, wspd, bp, height = 10){
 ######
 #' Dissolved oxygen at saturation
 #'
-#' Finds dissolved oxygen concentration in equilibrium with water-saturated air. Function and documentation herein are from archived wq package: \url{https://cran.r-project.org/web/packages/wq/index.html}
+#' Finds dissolved oxygen concentration in equilibrium with water-saturated air. Function and documentation herein are from archived wq package.
 #'
 #' @param t tem temperature, degrees C
 #' @param S salinity, on the Practical Salinity Scale
@@ -508,7 +508,7 @@ oxySol <- function (t, S, P = NULL)
 ######
 #' Decompose a time series
 #' 
-#' The function decomposes a time series into a long-term mean, annual, seasonal and "events" component. The decomposition can be multiplicative or additive, and based on median or mean centering. Function and documentation herein are from archived wq package: \url{https://cran.r-project.org/web/packages/wq/index.html}
+#' The function decomposes a time series into a long-term mean, annual, seasonal and "events" component. The decomposition can be multiplicative or additive, and based on median or mean centering. Function and documentation herein are from archived wq package.
 #'
 #' @param x a monthly time series vector
 #' @param event whether or not an "events" component should be determined
