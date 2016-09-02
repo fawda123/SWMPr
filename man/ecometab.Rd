@@ -2,16 +2,20 @@
 % Please edit documentation in R/swmpr_analyze.R
 \name{ecometab}
 \alias{ecometab}
+\alias{ecometab.default}
 \alias{ecometab.swmpr}
 \title{Ecosystem metabolism}
 \usage{
-ecometab(swmpr_in, ...)
+ecometab(dat_in, ...)
 
-\method{ecometab}{swmpr}(swmpr_in, depth_val = NULL, metab_units = "mmol",
+\method{ecometab}{swmpr}(dat_in, depth_val = NULL, metab_units = "mmol",
   trace = FALSE, ...)
+
+\method{ecometab}{default}(dat_in, tz, lat, long, depth_val = NULL,
+  metab_units = "mmol", trace = FALSE, ...)
 }
 \arguments{
-\item{swmpr_in}{Input swmpr object which must include time series of dissolved oxygen (mg L-1)}
+\item{dat_in}{Input data object, see details for required time series}
 
 \item{...}{arguments passed to other methods}
 
@@ -20,9 +24,15 @@ ecometab(swmpr_in, ...)
 \item{metab_units}{chr indicating desired units of output for oxygen, either as mmol or grams}
 
 \item{trace}{logical indicating if progress is shown in the console}
+
+\item{tz}{chr string for timezone, e.g., 'America/Chicago'}
+
+\item{lat}{numeric for latitude}
+
+\item{long}{numeric for longitude (negative west of prime meridian)}
 }
 \value{
-The original \code{\link{swmpr}} object is returned that includes a metabolism attribute as a \code{\link[base]{data.frame}} of daily integrated metabolism estimates.  See the examples for retrieval.  
+A \code{data.frame} of daily integrated metabolism estimates is returned. If a \code{\link{swmpr}} object is passed to the function, this \code{data.frame} is added to the \code{metab} attribute and the original object is returned.  See the examples for retrieval from a \code{swmpr} object.  The metabolism \code{data.frame} contains the following:  
 \describe{
  \item{\code{date}}{The metabolic day, defined as the 24 hour period starting at sunrise (calculated using \code{\link{metab_day}})}
  \item{\code{DOF_d}}{Mean DO flux during day hours, mmol m-2 hr-1. Day hours are calculated using the \code{\link{metab_day}} function.}
@@ -38,11 +48,13 @@ The original \code{\link{swmpr}} object is returned that includes a metabolism a
 Estimate ecosystem metabolism using the Odum open-water method.  Estimates of daily integrated gross production, total respiration, and net ecosystem metabolism are returned.
 }
 \details{
-Input data include both water quality and weather time series, which are typically collected with independent instrument systems.  This requires merging of the time series datasets using the \code{\link{comb}} function after creating separate swmpr objects.
+Input data include both water quality and weather time series, which are typically collected with independent instrument systems.  For SWMP data, this requires merging water quality and meteorology \code{swmpr} data objects using the \code{\link{comb}} function (see examples).  For the default method not using SWMP data, the input \code{data.frame} must have columns named \code{datetimestamp} (date/time column, as \code{\link[base]{POSIXct}} object), \code{do_mgl} (dissolved oxygen, mg/L), \code{depth} (depth, m), \code{atemp} (air temperature, C), \code{sal} (salinity, psu), \code{temp} (water temperature, C), \code{wspd} (wind speed, m/s), and \code{bp} (barometric pressure, mb). 
 
 The open-water method is a common approach to quantify net ecosystem metabolism using a mass balance equation that describes the change in dissolved oxygen over time from the balance between photosynthetic and respiration processes, corrected using an empirically constrained air-sea gas diffusion model (see Ro and Hunt 2006, Thebault et al. 2008).  The diffusion-corrected DO flux estimates are averaged separately over each day and night of the time series. The nighttime average DO flux is used to estimate respiration rates, while the daytime DO flux is used to estimate net primary production. To generate daily integrated rates, respiration rates are assumed constant such that hourly night time DO flux rates are multiplied by 24. Similarly, the daytime DO flux rates are multiplied by the number of daylight hours, which varies with location and time of year, to yield net daytime primary production. Respiration rates are subtracted from daily net production estimates to yield gross production rates.  The metabolic day is considered the 24 hour period between sunsets on two adjacent calendar days.
 
-Areal rates for gross production and total respiration are based on volumetric rates normalized to the depth of the water column at the sampling location, which is assumed to be well-mixed, such that the DO sensor is reflecting the integrated processes in the entire water column (including the benthos).  Water column depth is calculated as the mean value of the depth variable across the time series in the \code{\link{swmpr}} object.  Depth values are floored at one meter for very shallow stations and 0.5 meters is also added to reflect the practice of placing sensors slightly off of the bottom.  Additionally, the air-sea gas exchange model is calibrated with wind data either collected at, or adjusted to, wind speed at 10 m above the surface. The metadata should be consulted for exact height.  The value can be changed manually using a \code{height} argument, which is passed to \code{\link{calckl}}.
+Areal rates for gross production and total respiration are based on volumetric rates normalized to the depth of the water column at the sampling location, which is assumed to be well-mixed, such that the DO sensor is reflecting the integrated processes in the entire water column (including the benthos).  Water column depth is calculated as the mean value of the depth variable across the time series in the \code{\link{swmpr}} object.  Depth values are floored at one meter for very shallow stations and 0.5 meters is also added to reflect the practice of placing sensors slightly off of the bottom. A user-supplied depth value can also be passed to the \code{depth_val} argument, either as a single value that is repeated or as a vector equal in length to the number of rows in the input data.  An accurate depth value should be used as this acts as a direct scalar on metabolism estimates.
+
+The air-sea gas exchange model is calibrated with wind data either collected at, or adjusted to, wind speed at 10 m above the surface. The metadata should be consulted for exact height.  The value can be changed manually using a \code{height} argument, which is passed to \code{\link{calckl}}.
 
 A minimum of three records are required for both day and night periods to calculate daily metabolism estimates.  Occasional missing values for air temperature, barometric pressure, and wind speed are replaced with the climatological means (hourly means by month) for the period of record using adjacent data within the same month as the missing data.
 
@@ -52,16 +64,33 @@ The specific approach for estimating metabolism with the open-water method is de
 }
 \examples{
 \dontrun{
-## import water quality and weather data
+## import water quality and weather data, qaqc
 data(apadbwq)
 data(apaebmet)
+wq <- qaqc(apadbwq)
+met <- qaqc(apaebmet)
 
 ## combine
-dat <- comb(apadbwq, apaebmet)
+dat <- comb(wq, met)
 
 ## output units in grams of oxygen
 res <- ecometab(dat, metab_units = 'grams')
-res <- attr(res, 'metabolism')
+attr(res, 'metabolism')
+
+## manual input of integration depth
+## NA values must be filled
+dat_fill <- na.approx(dat, params = 'depth', maxgap = 1e6)
+depth <- dat_fill$depth
+res <- ecometab(dat, metab_units = 'grams', depth_val = depth)
+attr(res, 'metabolism')
+
+## use the default method for ecometab with a generic data frame
+## first recreate a generic object from the sample data
+cols <- c('datetimestamp', 'do_mgl', 'depth', 'atemp', 'sal', 'temp', 'wspd', 'bp')
+dat <- data.frame(dat)
+dat <- dat[, cols]
+res <- ecometab(dat, tz = 'America/Jamaica', lat = 29.67, long = -85.06)
+res
 }
 }
 \references{
@@ -77,6 +106,8 @@ Thebault J, Schraga TS, Cloern JE, Dunlavey EG. 2008. Primary production and car
 \code{\link{calckl}} for estimating the oxygen mass transfer coefficient used with the air-sea gas exchange model, \code{\link{comb}} for combining \code{swmpr} objects, \code{\link{metab_day}} for identifying the metabolic day for each observation in the time series, \code{\link{plot_metab}} for plotting the results, and \code{\link{aggremetab}} for aggregating the metabolism attribute.
 }
 \concept{
+analyze
+
 analyze
 
 analyze

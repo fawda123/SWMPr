@@ -625,7 +625,7 @@ decomp.default <- function(dat_in, param, date_col, type = 'additive', frequency
 #' A \code{\link[ggplot2]{ggplot}} object if \code{vals_out = TRUE} (default), otherwise a monthly time series matrix of class \code{\link[stats]{ts}}.
 #' 
 #' @details
-#' This function is a simple wrapper to the \code{\link[wq]{decompTs}} function in the wq package, also described in Cloern and Jassby (2010).  The function is similar to \code{\link{decomp.swmpr}} (which is a wrapper to \code{\link[stats]{decompose}}) with a few key differences.  The \code{\link{decomp.swmpr}} function decomposes the time series into a trend, seasonal, and random components, whereas the current function decomposes into the grandmean, annual, seasonal, and events components.  For both functions, the random or events components, respectively, can be considered anomalies that don't follow the trends in the remaining categories.  
+#' This function is a simple wrapper to the \code{\link[wq]{decompTs}} function in the archived wq package, also described in Cloern and Jassby (2010).  The function is similar to \code{\link{decomp.swmpr}} (which is a wrapper to \code{\link[stats]{decompose}}) with a few key differences.  The \code{\link{decomp.swmpr}} function decomposes the time series into a trend, seasonal, and random components, whereas the current function decomposes into the grandmean, annual, seasonal, and events components.  For both functions, the random or events components, respectively, can be considered anomalies that don't follow the trends in the remaining categories.  
 #' 
 #' The \code{decomp_cj} function provides only a monthly decomposition, which is appropriate for characterizing relatively long-term trends.  This approach is meant for nutrient data that are obtained on a monthly cycle.  The function will also work with continuous water quality or weather data but note that the data are first aggregated on the monthly scale before decomposition.  Use the \code{\link{decomp.swmpr}} function to decompose daily variation.
 #' 
@@ -633,7 +633,7 @@ decomp.default <- function(dat_in, param, date_col, type = 'additive', frequency
 #' 
 #' @export
 #' 
-#' @import ggplot2 wq
+#' @import ggplot2
 #' 
 #' @importFrom stats aggregate ts
 #' @importFrom utils capture.output
@@ -729,7 +729,7 @@ decomp_cj.default <- function(dat_in, param, date_col, vals_out = FALSE, ...){
   dat_mts <- ts(dat[, param], frequency = 12, start = c(year, month))
   
   # decomp
-  out <- wq::decompTs(dat_mts, ...)
+  out <- decompTs(dat_mts, ...)
   
   # convert results to data frame
   Time <- unique(as.numeric(gsub('[A-z]| ', '', capture.output(out[, 0])[-1])))
@@ -1354,13 +1354,16 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
 #' 
 #' Estimate ecosystem metabolism using the Odum open-water method.  Estimates of daily integrated gross production, total respiration, and net ecosystem metabolism are returned.
 #' 
-#' @param swmpr_in Input swmpr object which must include time series of dissolved oxygen (mg L-1) 
+#' @param dat_in Input data object, see details for required time series
+#' @param tz chr string for timezone, e.g., 'America/Chicago'
+#' @param lat numeric for latitude
+#' @param long numeric for longitude (negative west of prime meridian)
 #' @param depth_val numeric value for station depth (m) if time series is not available
 #' @param metab_units chr indicating desired units of output for oxygen, either as mmol or grams
 #' @param trace logical indicating if progress is shown in the console
 #' @param ... arguments passed to other methods
 #' 
-#' @return The original \code{\link{swmpr}} object is returned that includes a metabolism attribute as a \code{\link[base]{data.frame}} of daily integrated metabolism estimates.  See the examples for retrieval.  
+#' @return A \code{data.frame} of daily integrated metabolism estimates is returned. If a \code{\link{swmpr}} object is passed to the function, this \code{data.frame} is added to the \code{metab} attribute and the original object is returned.  See the examples for retrieval from a \code{swmpr} object.  The metabolism \code{data.frame} contains the following:  
 #' \describe{
 #'  \item{\code{date}}{The metabolic day, defined as the 24 hour period starting at sunrise (calculated using \code{\link{metab_day}})}
 #'  \item{\code{DOF_d}}{Mean DO flux during day hours, mmol m-2 hr-1. Day hours are calculated using the \code{\link{metab_day}} function.}
@@ -1372,7 +1375,7 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
 #'  \item{\code{NEM}}{Net ecosytem metabolism, mmol m-2 d-1, calculated as Pg + Rt}
 #' }
 #' 
-#' @import oce wq
+#' @import oce
 #' 
 #' @importFrom stats aggregate
 #' 
@@ -1381,11 +1384,13 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
 #' @export
 #'
 #' @details 
-#' Input data include both water quality and weather time series, which are typically collected with independent instrument systems.  This requires merging of the time series datasets using the \code{\link{comb}} function after creating separate swmpr objects.
+#' Input data include both water quality and weather time series, which are typically collected with independent instrument systems.  For SWMP data, this requires merging water quality and meteorology \code{swmpr} data objects using the \code{\link{comb}} function (see examples).  For the default method not using SWMP data, the input \code{data.frame} must have columns named \code{datetimestamp} (date/time column, as \code{\link[base]{POSIXct}} object), \code{do_mgl} (dissolved oxygen, mg/L), \code{depth} (depth, m), \code{atemp} (air temperature, C), \code{sal} (salinity, psu), \code{temp} (water temperature, C), \code{wspd} (wind speed, m/s), and \code{bp} (barometric pressure, mb). 
 #' 
 #' The open-water method is a common approach to quantify net ecosystem metabolism using a mass balance equation that describes the change in dissolved oxygen over time from the balance between photosynthetic and respiration processes, corrected using an empirically constrained air-sea gas diffusion model (see Ro and Hunt 2006, Thebault et al. 2008).  The diffusion-corrected DO flux estimates are averaged separately over each day and night of the time series. The nighttime average DO flux is used to estimate respiration rates, while the daytime DO flux is used to estimate net primary production. To generate daily integrated rates, respiration rates are assumed constant such that hourly night time DO flux rates are multiplied by 24. Similarly, the daytime DO flux rates are multiplied by the number of daylight hours, which varies with location and time of year, to yield net daytime primary production. Respiration rates are subtracted from daily net production estimates to yield gross production rates.  The metabolic day is considered the 24 hour period between sunsets on two adjacent calendar days.
 #' 
-#' Areal rates for gross production and total respiration are based on volumetric rates normalized to the depth of the water column at the sampling location, which is assumed to be well-mixed, such that the DO sensor is reflecting the integrated processes in the entire water column (including the benthos).  Water column depth is calculated as the mean value of the depth variable across the time series in the \code{\link{swmpr}} object.  Depth values are floored at one meter for very shallow stations and 0.5 meters is also added to reflect the practice of placing sensors slightly off of the bottom.  Additionally, the air-sea gas exchange model is calibrated with wind data either collected at, or adjusted to, wind speed at 10 m above the surface. The metadata should be consulted for exact height.  The value can be changed manually using a \code{height} argument, which is passed to \code{\link{calckl}}.
+#' Areal rates for gross production and total respiration are based on volumetric rates normalized to the depth of the water column at the sampling location, which is assumed to be well-mixed, such that the DO sensor is reflecting the integrated processes in the entire water column (including the benthos).  Water column depth is calculated as the mean value of the depth variable across the time series in the \code{\link{swmpr}} object.  Depth values are floored at one meter for very shallow stations and 0.5 meters is also added to reflect the practice of placing sensors slightly off of the bottom. A user-supplied depth value can also be passed to the \code{depth_val} argument, either as a single value that is repeated or as a vector equal in length to the number of rows in the input data.  An accurate depth value should be used as this acts as a direct scalar on metabolism estimates.
+#' 
+#' The air-sea gas exchange model is calibrated with wind data either collected at, or adjusted to, wind speed at 10 m above the surface. The metadata should be consulted for exact height.  The value can be changed manually using a \code{height} argument, which is passed to \code{\link{calckl}}.
 #' 
 #' A minimum of three records are required for both day and night periods to calculate daily metabolism estimates.  Occasional missing values for air temperature, barometric pressure, and wind speed are replaced with the climatological means (hourly means by month) for the period of record using adjacent data within the same month as the missing data.
 #' 
@@ -1407,18 +1412,35 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
 #' 
 #' @examples
 #' \dontrun{
-#' ## import water quality and weather data
+#' ## import water quality and weather data, qaqc
 #' data(apadbwq)
 #' data(apaebmet)
+#' wq <- qaqc(apadbwq)
+#' met <- qaqc(apaebmet)
 #' 
 #' ## combine
-#' dat <- comb(apadbwq, apaebmet)
+#' dat <- comb(wq, met)
 #' 
 #' ## output units in grams of oxygen
 #' res <- ecometab(dat, metab_units = 'grams')
-#' res <- attr(res, 'metabolism')
+#' attr(res, 'metabolism')
+#' 
+#' ## manual input of integration depth
+#' ## NA values must be filled
+#' dat_fill <- na.approx(dat, params = 'depth', maxgap = 1e6)
+#' depth <- dat_fill$depth
+#' res <- ecometab(dat, metab_units = 'grams', depth_val = depth)
+#' attr(res, 'metabolism')
+#' 
+#' ## use the default method for ecometab with a generic data frame
+#' ## first recreate a generic object from the sample data
+#' cols <- c('datetimestamp', 'do_mgl', 'depth', 'atemp', 'sal', 'temp', 'wspd', 'bp')
+#' dat <- data.frame(dat)
+#' dat <- dat[, cols]
+#' res <- ecometab(dat, tz = 'America/Jamaica', lat = 29.67, long = -85.06)
+#' res
 #' }
-ecometab <- function(swmpr_in, ...) UseMethod('ecometab')
+ecometab <- function(dat_in, ...) UseMethod('ecometab')
 
 #' @rdname ecometab
 #' 
@@ -1427,9 +1449,9 @@ ecometab <- function(swmpr_in, ...) UseMethod('ecometab')
 #' @concept analyze
 #' 
 #' @method ecometab swmpr
-ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', trace = FALSE, ...){
+ecometab.swmpr <- function(dat_in, depth_val = NULL, metab_units = 'mmol', trace = FALSE, ...){
   
-  stat <- attr(swmpr_in, 'station')
+  stat <- attr(dat_in, 'station')
   
   # stop if units not mmol or grams
   if(any(!(grepl('mmol|grams', metab_units))))
@@ -1440,34 +1462,90 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', tra
     stop('Requires water quality and weather data')
   stat <- grep('wq$', stat, value = T)
   
+  # station locations
+  dat_locs <- get('stat_locs')
+  stat_meta <- dat_locs[grep(gsub('wq$', '', stat), dat_locs$station_code),]
+  
+  # all times are standard - no DST!
+  gmt_tab <- data.frame(
+    gmt_off=c(-4, -5, -6, -8, -9),
+    tz = c('America/Virgin', 'America/Jamaica', 'America/Regina',
+      'Pacific/Pitcairn', 'Pacific/Gambier'),
+    stringsAsFactors = F
+    )
+  
+  # lat, long, tz from stat_meta
+  lat <- stat_meta$latitude
+  long <- stat_meta$longitude
+  gmt_off <- stat_meta$gmt_off
+  tz <- gmt_tab[gmt_tab$gmt_off == gmt_off, 'tz']
+ 
+  # pass args to default method
+  out <- ecometab.default(dat_in, tz = tz, lat = lat, long = long, depth_val = depth_val, 
+    metab_units = metab_units, trace = trace, ...)
+    
+  # append to metabolism attribute
+  attr(dat_in, 'metabolism') <- out
+  attr(dat_in, 'metab_units') <- metab_units
+  
+  return(dat_in)
+      
+}
+
+#' @rdname ecometab
+#'
+#' @export
+#'
+#' @concept analyze
+#' 
+#' @method ecometab default
+ecometab.default <- function(dat_in, tz, lat, long, depth_val = NULL, metab_units = 'mmol', trace = FALSE, ...){
+  
   # start timer
   if(trace){
     tictoc::tic()
-    cat(paste0('Estimating ecosystem metabolism for ', stat, '...\n\n'))
+    cat(paste0('Estimating ecosystem metabolism...\n\n'))
   }
   
-  # set all timesteps to one hour
-  swmpr_in <- setstep(swmpr_in, timestep = 60)
-  
-  # columns to keep
-  dat <- data.frame(swmpr_in)
+  # check for correct columns
   to_keep <- c('datetimestamp', 'do_mgl', 'depth', 'atemp', 'sal', 'temp', 
     'wspd', 'bp')
+  nm_chk <- to_keep %in% names(dat_in)
+  if(sum(nm_chk) != length(to_keep))
+    stop('Column names are incorrect, missing ', paste(to_keep[!nm_chk], collapse = ', ')) 
+
+  # if 'depth_val' is provided, replace depth with the constant or supplied vector
+  if(!is.null(depth_val)){
+    
+    # checks if vector supplied
+    chkln <- length(depth_val) > 1
+    if(any(is.na(depth_val)) & chkln)  
+      stop('NA values for depth_val not permitted')
+    if(length(depth_val) != nrow(dat_in) & chkln) 
+      stop('depth_val must have length equal to input data if not a constant')
+
+    dat_in$depth <- depth_val   
+    
+  }
+  
+  # columns to keep
+  dat <- data.frame(dat_in)
   dat <- dat[,names(dat) %in% to_keep]
   
   # all vals as numeric
   dat[, 2:ncol(dat)] <- apply(
-      dat[, 2:ncol(dat), drop = FALSE],
-      2,
-      function(x) suppressWarnings(as.numeric(x))
-      )
+    dat[, 2:ncol(dat), drop = FALSE],
+    2,
+    function(x) suppressWarnings(as.numeric(x))
+    )
   
   #convert do from mg/L to mmol/m3
   dat$do <- dat[, 'do_mgl'] / 32 * 1000
-  
+
   # get change in do per hour, as mmol m^-3 hr^-1
-  ddo <- diff(dat$do)
-  
+  # difference between time steps, divided by time (in mins) between time steps, multiplied by 60
+  ddo <- with(dat, diff(do) / as.double(diff(datetimestamp), units = 'hours'))
+
   # take diff of each column, divide by 2, add original value
   datetimestamp <- diff(dat$datetimestamp)/2 + dat$datetimestamp[-c(nrow(dat))]
   dat <- apply(
@@ -1477,7 +1555,7 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', tra
     )
   dat <- data.frame(datetimestamp, dat)
   do <- dat$do
-  
+
   ##
   # replace missing wx values with climatological means
   # only atemp, wspd, and bp
@@ -1517,22 +1595,25 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', tra
   bp_mix[is.na(bp_mix)] <- clim_means$bp[is.na(bp_mix)]
 
   ##
-  # get sigma_t estimates
-  sigt <- with(dat, swSigmaT(sal, temp, mean(dat$bp/100, na.rm = T)))
-  
-  # dosat is do at saturation given temp (C), salinity (st. unit), and press (atm)
+  # dosat is do at saturation given temp (C), salinity (st. unit), and press (atm, mb * 1/1013.25)
   # dosat as proportion
   # used to get loss of O2 from diffusion
-  dosat <- with(dat, do_mgl/(oxySol(temp * (1000 + sigt)/1000, sal)))
-  
-  #station depth, defaults to mean depth value, floored at 1 in case not on bottom
-  #uses 'depth_val' if provided
-  if(is.null(depth_val))
+  dosat <- with(dat, do_mgl/oxySol(temp, sal, bp * 1/1013.25))
+
+  # station depth, defaults to mean depth value if not provided, floored at 1 in case not on bottom
+  # uses 'depth_val' if provided, either as a repeated single value or supplied vector
+  if(is.null(depth_val)){
+    
     H <- rep(0.5 + mean(pmax(1, dat$depth), na.rm = T), nrow(dat))
-  else H <- rep(depth_val, nrow(dat))
+
+  } else {  
+    
+    H <- dat$depth
+    
+  }
   
   #use metab_day to add columns indicating light/day, date, and hours of sunlight
-  dat <- metab_day(dat, stat)
+  dat <- metab_day(dat, tz = tz, lat = lat, long = long)
   
   #get air sea gas-exchange using wx data with climate means
   KL <- with(dat, calckl(temp, sal, atemp_mix, wspd_mix, bp_mix, ...))
@@ -1552,7 +1633,7 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', tra
   out <- lapply(
     split(proc_dat, proc_dat$metab_date),
     function(x){
-      
+
       #filter for minimum no. of records 
       if(length(with(x[x$solar_period == 'sunrise', ], na.omit(ddo))) < 3 |
          length(with(x[x$solar_period == 'sunset', ], na.omit(ddo))) < 3 ){
@@ -1599,13 +1680,9 @@ ecometab.swmpr <- function(swmpr_in, depth_val = NULL, metab_units = 'mmol', tra
     
   }
   
-  # append to metabolism attribute
-  attr(swmpr_in, 'metabolism') <- out
-  attr(swmpr_in, 'metab_units') <- metab_units
-  
   if(trace) tictoc::toc()
   
-  return(swmpr_in)
+  return(out)
   
 }
 

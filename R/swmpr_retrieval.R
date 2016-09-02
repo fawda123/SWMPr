@@ -353,6 +353,10 @@ import_local <- function(path, station_code, trace = FALSE){
   if(!file.exists(path)){
     stop('Path does not exist')
   }
+
+  # check if qualifiers are present in station_code
+  if(!grepl('wq|met|nut', station_code))
+    stop('station_code must include wq, met, or nut')
   
   # check if path is zipped
   zips <- grepl('\\.zip$', path)
@@ -399,7 +403,7 @@ import_local <- function(path, station_code, trace = FALSE){
   names(dat) <- gsub('.csv', '', files_in)
   
   if(trace) cat('Loading files...\n\n')
-  
+
   for(file_in in files_in){
     
     if(trace) cat(file_in, '\t')
@@ -438,7 +442,7 @@ import_local <- function(path, station_code, trace = FALSE){
     dat[[nm]] <- tmp
     
     }
-  
+
   # remove temporary files if zips
   if(zips) unlink(tmp_fl, recursive = TRUE)
   

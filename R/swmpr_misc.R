@@ -109,7 +109,7 @@ time_vec <- function(chr_in = NULL, station_code, tz_only = FALSE){
   
   # lookup table for time zones based on gmt offset - no DST!
   gmt_tab <- data.frame(
-    gmt_off=c(-4,-5,-6,-8,-9),
+    gmt_off = c(-4,-5,-6,-8,-9),
     tz = c('America/Virgin', 'America/Jamaica', 'America/Regina',
       'Pacific/Pitcairn', 'Pacific/Gambier'),
     stringsAsFactors = FALSE
@@ -341,12 +341,15 @@ param_names <- function(param_type = c('nut', 'wq', 'met')){
 "apaebmet"
 
 ######
-#' Identify metabolic days in a swmpr time series
+#' Identify metabolic days in a time series
 #'
-#' Identify metabolic days in a swmpr time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.  The function calls the \code{\link[maptools]{sunriset}} function from the maptools package, which uses algorithms from the National Oceanic and Atmospheric Administration (\url{http://www.esrl.noaa.gov/gmd/grad/solcalc/}).
+#' Identify metabolic days in a time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.  The function calls the \code{\link[maptools]{sunriset}} function from the maptools package, which uses algorithms from the National Oceanic and Atmospheric Administration (\url{http://www.esrl.noaa.gov/gmd/grad/solcalc/}).
 #' 
 #' @param dat_in data.frame
-#' @param stat_in chr vector of station name including data type
+#' @param tz chr string for timezone, e.g., 'America/Chicago'
+#' @param lat numeric for latitude
+#' @param long numeric for longitude (negative west of prime meridian)
+#' @param ... arguments passed to or from other methods
 #' 
 #' @import maptools
 #' 
@@ -357,35 +360,22 @@ param_names <- function(param_type = c('nut', 'wq', 'met')){
 #' @seealso 
 #' \code{\link{ecometab}}, \code{\link[maptools]{sunriset}}
 #' 
-metab_day <- function(dat_in, stat_in){
-  
-  # station locations
-  dat_locs <- get('stat_locs')
-  stat_meta <- dat_locs[grep(gsub('wq$', '', stat_in), dat_locs$station_code),]
-  
-  # all times are standard - no DST!
-  gmt_tab <- data.frame(
-    gmt_off=c(-4, -5, -6, -8, -9),
-    tz = c('America/Virgin', 'America/Jamaica', 'America/Regina',
-      'Pacific/Pitcairn', 'Pacific/Gambier'),
-    stringsAsFactors = F
-    )
-  
-  # get sunrise/sunset times using functions from maptools
-  # adapted from streammetabolism sunrise.set function
-  lat <- stat_meta$latitude
-  long <- stat_meta$longitude
-  gmt_off <- stat_meta$gmt_off
-  tz <- gmt_tab[gmt_tab$gmt_off == gmt_off, 'tz']
-  start_day <- format(
-    dat_in$datetimestamp[which.min(dat_in$datetimestamp)] - (60 * 60 * 24), 
-    format = '%Y/%m/%d'
-    )
-  tot_days <- 1 + length(unique(as.Date(dat_in$datetimestamp)))
+metab_day <- function(dat_in, ...) UseMethod('metab_day')
+
+#' @rdname metab_day
+#' 
+#' @export
+#' 
+#' @method metab_day default
+metab_day.default <- function(dat_in, tz, lat, long, ...){
+
+  dtrng <- range(as.Date(dat_in$datetimestamp), na.rm = TRUE)
+  start_day <- dtrng[1] - 1
+  end_day <- dtrng[2] + 1
   lat.long <- matrix(c(long, lat), nrow = 1)
   sequence <- seq(
     from = as.POSIXct(start_day, tz = tz), 
-    length.out = tot_days, 
+    to = as.POSIXct(end_day, tz = tz),
     by = "days"
     )
   sunrise <- sunriset(lat.long, sequence, direction = "sunrise", 
@@ -404,7 +394,7 @@ metab_day <- function(dat_in, stat_in){
     )
   ss_dat <- reshape2::melt(ss_dat, id.vars = 'metab_date')
   if(!"POSIXct" %in% class(ss_dat$value))
-    ss_dat$value <- as.POSIXct(ss_dat$value, origin='1970-01-01',tz=tz)
+    ss_dat$value <- as.POSIXct(ss_dat$value, origin='1970-01-01', tz = tz)
   ss_dat <- ss_dat[order(ss_dat$value),]
   ss_dat$day_hrs <- unlist(lapply(
     split(ss_dat, ss_dat$metab_date),
@@ -417,9 +407,10 @@ metab_day <- function(dat_in, stat_in){
   # output is meteorological day matches appended to dat_in
   matches <- findInterval(dat_in$datetimestamp, ss_dat$solar_time)
   out <- data.frame(dat_in, ss_dat[matches, ])
+  row.names(out) <- 1:nrow(out)
   return(out)
-      
-  }
+   
+}
 
 ######
 #' Calculate oxygen mass transfer coefficient
@@ -477,5 +468,128 @@ calckl <- function(temp, sal, atemp, wspd, bp, height = 10){
   
   }
 
-#' @importFrom stats var
+######
+#' Dissolved oxygen at saturation
+#'
+#' Finds dissolved oxygen concentration in equilibrium with water-saturated air. Function and documentation herein are from archived wq package.
+#'
+#' @param t tem temperature, degrees C
+#' @param S salinity, on the Practical Salinity Scale
+#' @param P pressure, atm
+#'
+#' @details Calculations are based on the approach of Benson and Krause (1984), using Green and Carritt's (1967) equation for dependence of water vapor partial pressure on \code{t} and \code{S}. Equations are valid for temperature in the range 0-40 C and salinity in the range 0-40.
+#'
+#' @return Dissolved oxygen concentration in mg/L at 100\% saturation. If \code{P = NULL}, saturation values at 1 atm are calculated.
+#'
+#' @references
+#' Benson, B.B. and Krause, D. (1984) The concentration and isotopic fractionation of oxygen dissolved in fresh-water and seawater in equilibrium with the atmosphere. \emph{Limnology and Oceanography} \bold{29,} 620-632.
+#'
+#' Green, E.J. and Carritt, D.E. (1967) New tables for oxygen saturation of seawater. \emph{Journal of Marine Research} \bold{25,} 140-147.
+oxySol <- function (t, S, P = NULL)
+{
+    T = t + 273.15
+    lnCstar = -139.34411 + 157570.1/T - 66423080/T^2 + 1.2438e+10/T^3 -
+        862194900000/T^4 - S * (0.017674 - 10.754/T + 2140.7/T^2)
+    Cstar1 <- exp(lnCstar)
+    if (is.null(P)) {
+        Cstar1
+    }
+    else {
+        Pwv = (1 - 0.000537 * S) * exp(18.1973 * (1 - 373.16/T) +
+            3.1813e-07 * (1 - exp(26.1205 * (1 - T/373.16))) -
+            0.018726 * (1 - exp(8.03945 * (1 - 373.16/T))) +
+            5.02802 * log(373.16/T))
+        theta = 0.000975 - 1.426e-05 * t + 6.436e-08 * t^2
+        Cstar1 * P * (1 - Pwv/P) * (1 - theta * P)/((1 - Pwv) *
+            (1 - theta))
+    }
+}
+
+######
+#' Decompose a time series
+#' 
+#' The function decomposes a time series into a long-term mean, annual, seasonal and "events" component. The decomposition can be multiplicative or additive, and based on median or mean centering. Function and documentation herein are from archived wq package.
+#'
+#' @param x a monthly time series vector
+#' @param event whether or not an "events" component should be determined
+#' @param type the type of decomposition, either multiplicative ("mult") or additive ("add")
+#' @param center the method of centering, either median or mean
+#' 
+#' @details
+#' The rationale for this simple approach to decomposing a time series, with examples of its application, is given by Cloern and Jassby (2010). It is motivated by the observation that many important events for estuaries (e.g., persistent dry periods, species invasions) start or stop suddenly. Smoothing to extract the annualized term, which can disguise the timing of these events and make analysis of them unnecessarily difficult, is not used.
+#' 
+#' A multiplicative decomposition will typically be useful for a biological community- or population-related variable (e.g., chlorophyll-a) that experiences exponential changes in time and is approximately lognormal, whereas an additive decomposition is more suitable for a normal variable. The default centering method is the median, especially appropriate for series that have large, infrequent events.
+#' 
+#' If \code{event = TRUE}, the seasonal component represents a recurring monthly pattern and the events component a residual series. Otherwise, the seasonal component becomes the residual series. The latter is appropriate when seasonal patterns change systematically over time. 
+#' 
+#' @seealso \code{\link{decomp_cj}}
+#' 
+#' @return
+#' A monthly time series matrix with the following individual time series:
+#' \item{original }{original time series}
+#' \item{annual }{annual mean series}
+#' \item{seasonal }{repeating seasonal component}
+#' \item{events }{optionally, the residual or "events" series}
+#' 
+#' @references
+#' Cloern, J.E. and Jassby, A.D. (2010) Patterns and scales of phytoplankton variability in estuarine-coastal ecosystems. \emph{Estuaries and Coasts} \bold{33,} 230--241.
+decompTs <-
+function(x, event = TRUE, type = c("mult", "add"),
+         center = c("median", "mean")) {
+
+  # Validate input
+  if (!is.ts(x) || !identical(frequency(x), 12)) {
+    stop("x must be a monthly 'ts' vector")
+  }
+  type = match.arg(type)
+  center = match.arg(center)
+
+  # Set the time window
+  startyr <- start(x)[1]
+  endyr <- end(x)[1]
+  x <- window(x, start = c(startyr, 1), end = c(endyr, 12), extend=TRUE)
+
+  # Choose the arithmetic typeations, depending on type
+  if (type == "mult") {
+    `%/-%` <- function(x, y) x / y
+    `%*+%` <- function(x, y) x * y
+  } else {
+    `%/-%` <- function(x, y) x - y
+    `%*+%` <- function(x, y) x + y
+  }
+
+  # Choose the centering method, depending on center
+  if (center == "median") {
+    center <- function(x, na.rm=FALSE) median(x, na.rm=na.rm)
+  } else {
+    center <- function(x, na.rm=FALSE) mean(x, na.rm=na.rm)
+  }
+
+  # Long-term center
+  grand <- center(x, na.rm=TRUE)
+
+  # Annual component
+  x1 <- x %/-% grand
+  annual0 <- aggregate(x1, 1, center, na.rm=TRUE)
+  annual1 <- as.vector(t(matrix(rep(annual0, 12), ncol=12)))
+  annual <- ts(annual1, start=startyr, frequency=12)
+
+  # Remaining components
+  x2 <- x1 %/-% annual
+  if (event) {
+  	# Seasonal component
+    seasonal0 <- matrix(x2, nrow=12)
+    seasonal1 <- apply(seasonal0, 1, center, na.rm=TRUE)
+    seasonal <- ts(rep(seasonal1, endyr - startyr + 1), start=startyr,
+                   frequency=12)
+	  # Events component
+    x3 <- x2 %/-% seasonal
+    # result
+    ts.union(original=x, annual, seasonal, events=x3)
+  } else {
+    ts.union(original=x, annual, seasonal=x2)
+  }
+}
+
+#' @importFrom stats var end frequency is.ts start ts.union window
 NULL

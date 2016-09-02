@@ -2,17 +2,26 @@
 % Please edit documentation in R/swmpr_misc.R
 \name{metab_day}
 \alias{metab_day}
-\title{Identify metabolic days in a swmpr time series}
+\alias{metab_day.default}
+\title{Identify metabolic days in a time series}
 \usage{
-metab_day(dat_in, stat_in)
+metab_day(dat_in, ...)
+
+\method{metab_day}{default}(dat_in, tz, lat, long, ...)
 }
 \arguments{
 \item{dat_in}{data.frame}
 
-\item{stat_in}{chr vector of station name including data type}
+\item{...}{arguments passed to or from other methods}
+
+\item{tz}{chr string for timezone, e.g., 'America/Chicago'}
+
+\item{lat}{numeric for latitude}
+
+\item{long}{numeric for longitude (negative west of prime meridian)}
 }
 \description{
-Identify metabolic days in a swmpr time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.  The function calls the \code{\link[maptools]{sunriset}} function from the maptools package, which uses algorithms from the National Oceanic and Atmospheric Administration (\url{http://www.esrl.noaa.gov/gmd/grad/solcalc/}).
+Identify metabolic days in a time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.  The function calls the \code{\link[maptools]{sunriset}} function from the maptools package, which uses algorithms from the National Oceanic and Atmospheric Administration (\url{http://www.esrl.noaa.gov/gmd/grad/solcalc/}).
 }
 \details{
 This function is only used within \code{\link{ecometab}} and should not be called explicitly.
