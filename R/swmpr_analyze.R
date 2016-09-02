@@ -611,7 +611,7 @@ decomp.default <- function(dat_in, param, date_col, type = 'additive', frequency
 
 #' Simple trend decomposition of monthly swmpr data
 #' 
-#' Decompose monthly SWMP time series into grandmean, annual, seasonal, and event series using \code{\link[wq]{decompTs}}, as described in Cloern and Jassby 2010.
+#' Decompose monthly SWMP time series into grandmean, annual, seasonal, and event series as described in Cloern and Jassby 2010.
 #' 
 #' @param dat_in input data object
 #' @param param chr string of variable to decompose

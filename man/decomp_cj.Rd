@@ -36,7 +36,7 @@ decomp_cj(dat_in, ...)
 A \code{\link[ggplot2]{ggplot}} object if \code{vals_out = TRUE} (default), otherwise a monthly time series matrix of class \code{\link[stats]{ts}}.
 }
 \description{
-Decompose monthly SWMP time series into grandmean, annual, seasonal, and event series using \code{\link[wq]{decompTs}}, as described in Cloern and Jassby 2010.
+Decompose monthly SWMP time series into grandmean, annual, seasonal, and event series as described in Cloern and Jassby 2010.
 }
 \details{
 This function is a simple wrapper to the \code{decompTs} function in the archived wq package, also described in Cloern and Jassby (2010).  The function is similar to \code{\link{decomp.swmpr}} (which is a wrapper to \code{\link[stats]{decompose}}) with a few key differences.  The \code{\link{decomp.swmpr}} function decomposes the time series into a trend, seasonal, and random components, whereas the current function decomposes into the grandmean, annual, seasonal, and events components.  For both functions, the random or events components, respectively, can be considered anomalies that don't follow the trends in the remaining categories.  
