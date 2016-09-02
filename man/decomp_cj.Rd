@@ -8,18 +8,27 @@
 \usage{
 decomp_cj(dat_in, ...)
 
-\method{decomp_cj}{swmpr}(dat_in, param, vals_out = FALSE, ...)
+\method{decomp_cj}{swmpr}(dat_in, param, vals_out = FALSE, event = TRUE,
+  type = c("mult", "add"), center = c("median", "mean"), ...)
 
-\method{decomp_cj}{default}(dat_in, param, date_col, vals_out = FALSE, ...)
+\method{decomp_cj}{default}(dat_in, param, date_col, vals_out = FALSE,
+  event = TRUE, type = c("mult", "add"), center = c("median", "mean"),
+  ...)
 }
 \arguments{
 \item{dat_in}{input data object}
 
-\item{...}{additional arguments passed to other methods, including \code{\link[wq]{decompTs}}}
+\item{...}{additional arguments passed to or from other methods}
 
 \item{param}{chr string of variable to decompose}
 
 \item{vals_out}{logical indicating of numeric output is returned, default is \code{FALSE} to return a plot.}
+
+\item{event}{logical indicating if an "events" component should be determined}
+
+\item{type}{chr string indicating the type of decomposition, either multiplicative ("mult") or additive ("add")}
+
+\item{center}{chr string indicating the method of centering, either median or mean}
 
 \item{date_col}{chr string indicating the name of the date column which should be a date or POSIX object.}
 }
@@ -30,11 +39,9 @@ A \code{\link[ggplot2]{ggplot}} object if \code{vals_out = TRUE} (default), othe
 Decompose monthly SWMP time series into grandmean, annual, seasonal, and event series using \code{\link[wq]{decompTs}}, as described in Cloern and Jassby 2010.
 }
 \details{
-This function is a simple wrapper to the \code{\link[wq]{decompTs}} function in the archived wq package, also described in Cloern and Jassby (2010).  The function is similar to \code{\link{decomp.swmpr}} (which is a wrapper to \code{\link[stats]{decompose}}) with a few key differences.  The \code{\link{decomp.swmpr}} function decomposes the time series into a trend, seasonal, and random components, whereas the current function decomposes into the grandmean, annual, seasonal, and events components.  For both functions, the random or events components, respectively, can be considered anomalies that don't follow the trends in the remaining categories.  
+This function is a simple wrapper to the \code{decompTs} function in the archived wq package, also described in Cloern and Jassby (2010).  The function is similar to \code{\link{decomp.swmpr}} (which is a wrapper to \code{\link[stats]{decompose}}) with a few key differences.  The \code{\link{decomp.swmpr}} function decomposes the time series into a trend, seasonal, and random components, whereas the current function decomposes into the grandmean, annual, seasonal, and events components.  For both functions, the random or events components, respectively, can be considered anomalies that don't follow the trends in the remaining categories.  
 
 The \code{decomp_cj} function provides only a monthly decomposition, which is appropriate for characterizing relatively long-term trends.  This approach is meant for nutrient data that are obtained on a monthly cycle.  The function will also work with continuous water quality or weather data but note that the data are first aggregated on the monthly scale before decomposition.  Use the \code{\link{decomp.swmpr}} function to decompose daily variation.
-
-Additional arguments passed to \code{\link[wq]{decompTs}} can be used with \code{decomp_cj}, such as \code{startyr}, \code{endyr}, and \code{type}.  Values passed to \code{type} are \code{mult} (default) or \code{add}, referring to multiplicative or additive decomposition.  See the documentation for \code{\link[wq]{decompTs}} for additional explanation and examples.
 }
 \examples{
 ## get data
@@ -65,7 +72,7 @@ decomp_cj(dat, param = 'chla_n', date_col = 'datetimestamp')
 Cloern, J.E., Jassby, A.D. 2010. Patterns and scales of phytoplankton variability in estuarine-coastal ecosystems. Estuaries and Coasts. 33:230-241.
 }
 \seealso{
-\code{\link[wq]{decompTs}}, \code{\link[stats]{ts}}
+\code{\link[stats]{ts}}
 }
 \concept{
 analyze

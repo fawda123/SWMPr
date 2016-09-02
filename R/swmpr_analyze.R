@@ -617,7 +617,10 @@ decomp.default <- function(dat_in, param, date_col, type = 'additive', frequency
 #' @param param chr string of variable to decompose
 #' @param date_col chr string indicating the name of the date column which should be a date or POSIX object.
 #' @param vals_out logical indicating of numeric output is returned, default is \code{FALSE} to return a plot.
-#' @param ... additional arguments passed to other methods, including \code{\link[wq]{decompTs}} 
+#' @param event logical indicating if an "events" component should be determined
+#' @param type chr string indicating the type of decomposition, either multiplicative ("mult") or additive ("add")
+#' @param center chr string indicating the method of centering, either median or mean
+#' @param ... additional arguments passed to or from other methods
 #' 
 #' @concept analyze
 #' 
@@ -625,11 +628,9 @@ decomp.default <- function(dat_in, param, date_col, type = 'additive', frequency
 #' A \code{\link[ggplot2]{ggplot}} object if \code{vals_out = TRUE} (default), otherwise a monthly time series matrix of class \code{\link[stats]{ts}}.
 #' 
 #' @details
-#' This function is a simple wrapper to the \code{\link[wq]{decompTs}} function in the archived wq package, also described in Cloern and Jassby (2010).  The function is similar to \code{\link{decomp.swmpr}} (which is a wrapper to \code{\link[stats]{decompose}}) with a few key differences.  The \code{\link{decomp.swmpr}} function decomposes the time series into a trend, seasonal, and random components, whereas the current function decomposes into the grandmean, annual, seasonal, and events components.  For both functions, the random or events components, respectively, can be considered anomalies that don't follow the trends in the remaining categories.  
+#' This function is a simple wrapper to the \code{decompTs} function in the archived wq package, also described in Cloern and Jassby (2010).  The function is similar to \code{\link{decomp.swmpr}} (which is a wrapper to \code{\link[stats]{decompose}}) with a few key differences.  The \code{\link{decomp.swmpr}} function decomposes the time series into a trend, seasonal, and random components, whereas the current function decomposes into the grandmean, annual, seasonal, and events components.  For both functions, the random or events components, respectively, can be considered anomalies that don't follow the trends in the remaining categories.  
 #' 
 #' The \code{decomp_cj} function provides only a monthly decomposition, which is appropriate for characterizing relatively long-term trends.  This approach is meant for nutrient data that are obtained on a monthly cycle.  The function will also work with continuous water quality or weather data but note that the data are first aggregated on the monthly scale before decomposition.  Use the \code{\link{decomp.swmpr}} function to decompose daily variation.
-#' 
-#' Additional arguments passed to \code{\link[wq]{decompTs}} can be used with \code{decomp_cj}, such as \code{startyr}, \code{endyr}, and \code{type}.  Values passed to \code{type} are \code{mult} (default) or \code{add}, referring to multiplicative or additive decomposition.  See the documentation for \code{\link[wq]{decompTs}} for additional explanation and examples.   
 #' 
 #' @export
 #' 
@@ -638,7 +639,7 @@ decomp.default <- function(dat_in, param, date_col, type = 'additive', frequency
 #' @importFrom stats aggregate ts
 #' @importFrom utils capture.output
 #' 
-#' @seealso \code{\link[wq]{decompTs}}, \code{\link[stats]{ts}}
+#' @seealso \code{\link[stats]{ts}}
 #' 
 #' @references
 #' Cloern, J.E., Jassby, A.D. 2010. Patterns and scales of phytoplankton variability in estuarine-coastal ecosystems. Estuaries and Coasts. 33:230-241.
@@ -676,7 +677,7 @@ decomp_cj <- function(dat_in, ...) UseMethod('decomp_cj')
 #' @concept analyze
 #' 
 #' @method decomp_cj swmpr
-decomp_cj.swmpr <- function(dat_in, param, vals_out = FALSE, ...){
+decomp_cj.swmpr <- function(dat_in, param, vals_out = FALSE, event = TRUE, type = c('mult', 'add'), center = c('median', 'mean'), ...){
   
   dat <- dat_in
   
@@ -687,7 +688,7 @@ decomp_cj.swmpr <- function(dat_in, param, vals_out = FALSE, ...){
   # monthly ts
   dat <- aggreswmp(dat, by = 'months', params = param)
   dat <- data.frame(dat)
-  decomp_cj(dat, param = param, date_col = 'datetimestamp', vals_out = vals_out, ...)
+  decomp_cj(dat, param = param, date_col = 'datetimestamp', vals_out = vals_out, event = event, type = type, center = center, ...)
   
 }
 
@@ -698,7 +699,7 @@ decomp_cj.swmpr <- function(dat_in, param, vals_out = FALSE, ...){
 #' @concept analyze
 #' 
 #' @method decomp_cj default
-decomp_cj.default <- function(dat_in, param, date_col, vals_out = FALSE, ...){
+decomp_cj.default <- function(dat_in, param, date_col, vals_out = FALSE, event = TRUE, type = c('mult', 'add'), center = c('median', 'mean'), ...){
   
   # select date column and parameter
   dat <- dat_in[, c(date_col, param)]
@@ -729,7 +730,7 @@ decomp_cj.default <- function(dat_in, param, date_col, vals_out = FALSE, ...){
   dat_mts <- ts(dat[, param], frequency = 12, start = c(year, month))
   
   # decomp
-  out <- decompTs(dat_mts, ...)
+  out <- decompTs(dat_mts, event = event, type = type, center = center, ...)
   
   # convert results to data frame
   Time <- unique(as.numeric(gsub('[A-z]| ', '', capture.output(out[, 0])[-1])))
