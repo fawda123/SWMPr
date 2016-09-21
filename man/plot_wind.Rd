@@ -21,7 +21,7 @@ plot_wind(swmpr_in, ...)
 
 \item{angle}{numeric for the number of degrees occupied by each spoke}
 
-\item{width}{numeric indicating widths of paddles of \code{paddle = TRUE}}
+\item{width}{numeric for width of paddles if \code{paddle = TRUE}}
 
 \item{breaks}{numeric for the number of break points in the wind speed}
 
@@ -43,7 +43,7 @@ plot_wind(swmpr_in, ...)
 
 \item{par.settings}{list for optional plot formatting passed to \code{\link[lattice]{lattice.options}}}
 
-\item{strip}{list for optional formatting of strips passed to \code{\link[lattice]{strip.custom}}}
+\item{strip}{list for optional strip formatting passed to \code{\link[lattice]{strip.custom}}}
 }
 \value{
 A wind rose plot
