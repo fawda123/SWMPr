@@ -31,6 +31,19 @@ swmpr <- function(stat_in, meta_in){
   param_types <- names(param_names())[param_types]
   station <- grep(paste0(param_types, collapse = '|'), meta_in, value = TRUE)
 
+  # remove trailing blanks in qaqc columns
+  if(qaqc_cols){
+   
+    fcols <- grep('^f_', names(stat_in),value = TRUE)
+    stat_in[, fcols] <- sapply(fcols, function(x){
+      
+      out <- gsub('\\s+$', '', stat_in[, x])
+      return(out)
+      
+    })
+    
+  }
+  
   # timezone using time_vec function
   timezone <- time_vec(station_code = station, tz_only = TRUE)
 
