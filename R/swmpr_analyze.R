@@ -1212,11 +1212,13 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
 #' @param xlab chr string of label for x-axis
 #' @param cols chr string of colors to use for lines
 #' @param lty numeric indicating line types, one value for all or values for each parameter
-#' @param lwd numeric indicating line widths, one value for all or values for each parameter
+#' @param lwd numeric indicating line widths, one value for all or values for each parameter, used as \code{cex} for point size if \code{type = 'p'}
 #' @param inset numeric of relative location of legend, passed to \code{\link[graphics]{legend}}
 #' @param cex numeric of scale factor for legend, passed to \code{\link[graphics]{legend}}
 #' @param xloc x location of legend, passed to \code{\link[graphics]{legend}}
 #' @param yloc y location of legend, passed to \code{\link[graphics]{legend}}
+#' @param pch numeric for point type of points are used
+#' @param type character string indicating \code{'p'} or \code{'l'} for points or lines, as a single value for all parameters or a combined vector equal in length to the number of parameters 
 #' @param ... additional arguments passed to \code{\link[graphics]{plot}}
 #' 
 #' @export
@@ -1240,6 +1242,15 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
 #' ## a truly heinous plot
 #' overplot(dat, select = c('depth', 'do_mgl', 'ph', 'turb'), 
 #'  subset = c('2013-01-01 0:0', '2013-02-01 0:0'), lwd = 2)
+#'  
+#' \dontrun{
+#' ## change the type argument if plotting discrete and continuous data
+#' swmp1 <- apacpnut
+#' swmp2 <- apaebmet
+#' dat <- comb(swmp1, swmp2, timestep = 120, method = 'union')
+#' overplot(dat, select = c('chla_n', 'atemp'), subset = c('2012-01-01 0:0', '2013-01-01 0:0'), 
+#'  type = c('p', 'l'))
+#' }
 overplot <- function(dat_in, ...) UseMethod('overplot') 
 
 #' @rdname overplot
@@ -1249,7 +1260,7 @@ overplot <- function(dat_in, ...) UseMethod('overplot')
 #' @concept analyze
 #' 
 #' @method overplot swmpr
-overplot.swmpr <- function(dat_in, select = NULL, subset = NULL, operator = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, ...){
+overplot.swmpr <- function(dat_in, select = NULL, subset = NULL, operator = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, pch = NULL, type = NULL, ...){
   
   # get parameters to select if null, remove qaqc cols
   if(is.null(select)) 
@@ -1261,7 +1272,7 @@ overplot.swmpr <- function(dat_in, select = NULL, subset = NULL, operator = NULL
   toplo <- subset(dat_in, select = select, subset = subset, operator = operator)
   toplo <- as.data.frame(toplo)  
 
-  overplot(toplo, date_var = 'datetimestamp', select = select, ylab = ylabs, xlab = xlab, cols = cols, lty = lty, lwd = lwd, ...)
+  overplot(toplo, date_var = 'datetimestamp', select = select, ylab = ylabs, xlab = xlab, cols = cols, lty = lty, lwd = lwd, pch = pch, type = type, ...)
   
 }
 
@@ -1275,7 +1286,7 @@ overplot.swmpr <- function(dat_in, select = NULL, subset = NULL, operator = NULL
 #' @concept analyze
 #' 
 #' @method overplot default
-overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, inset = -0.15, cex = 1, xloc = 'top', yloc = NULL, ...){
+overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, inset = -0.15, cex = 1, xloc = 'top', yloc = NULL, pch = NULL, type = NULL, ...){
   
   if(!inherits(dat_in[, date_var], 'POSIXct')) 
     stop('date_var must be POSIXct class')
@@ -1283,33 +1294,50 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
   # subset data if needed
   dat_in <- dat_in[, c(date_var, select)]
   
+  # number of vars to plot
+  lnsel <- length(select)
+  
   # fill missing arguments if not supplied
-  if(!is.null(cols) & length(cols) ==1) cols <- rep(cols, length(select))
+  if(!is.null(cols) & length(cols) ==1) cols <- rep(cols, lnsel)
   if(is.null(cols))
-    cols <- colorRampPalette(gradcols())(length(select))
+    cols <- colorRampPalette(gradcols())(lnsel)
   if(is.null(lwd)){
-    lwd <- rep(1, length(select))
+    lwd <- rep(1, lnsel)
   } else {
-    if(length(lwd == 1)) lwd <- rep(lwd, length(select))
+    if(length(lwd) == 1) lwd <- rep(lwd, lnsel)
+    if(length(lwd) != lnsel) stop('lwd must have length equal to 1 or variables to select')
   }
   if(is.null(lty)){
-    lty <- seq(1, length(select))
+    lty <- seq(1, lnsel)
   } else {
-    if(length(lty == 1)) lty <- rep(lty, length(select))
+    if(length(lty) == 1) lty <- rep(lty, lnsel)
+    if(length(lty) != lnsel) stop('lty must have length equal to 1 or variables to select')
   }
   if(is.null(ylabs))
     ylabs <- select
   if(is.null(xlab))
     xlab <- 'DateTimeStamp'
+  if(is.null(pch)) {
+    pch <- seq(1, lnsel)
+  } else {
+    if(length(pch) == 1) pch <- rep(pch, lnsel)
+    if(length(pch) != lnsel) stop('pch must have length equal to 1 or variables to select')
+  }
+  if(is.null(type)){
+    type <- rep('l', lnsel)
+  } else {
+    if(length(type) == 1) type <- rep(type, lnsel)
+    if(length(type) != lnsel) stop('type must have length equal to 1 or variables to select')
+  }
   
   # x dimension extension for multiple yaxix labels
-  xext <- 4 * length(select)
+  xext <- 4 * lnsel
   par(mar = c(5.1, xext, 4.1, 2.1))
   
   toplo <- dat_in
-  
+
   # base plot
-  plot(x = toplo[, date_var], y = toplo[, select[1]], type = 'n', axes = F, ylab = '', xlab = '', ...)
+  plot(x = toplo[, date_var], y = toplo[, select[1]], type = 'n', axes = F, ylab = '', xlab = '')
   
   # initialize starting locations for y axis and text
   yline <- 0
@@ -1324,8 +1352,8 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
     # add line to existing empty plot
     par(new = TRUE)
     yvar <- toplo[, select[parm]]
-    plot(x = toplo[, date_var], y = yvar, type = 'l', axes = F, 
-      ylab = '', xlab = '', lty = lty[parm], lwd = lwd[parm], col = cols[parm])
+    plot(x = toplo[, date_var], y = yvar, type = type[parm], axes = F, 
+      ylab = '', xlab = '', lty = lty[parm], lwd = lwd[parm], cex = lwd[parm], pch = pch[parm], col = cols[parm], ...)
     
     # add y axes and appropriate labels
     axis(side = 2, at = c(-2 * ylims, 2 * ylims), line = yline, labels = FALSE)
@@ -1345,7 +1373,9 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
   mtext(side = 1, xlab, line = 2.5)
 
   # add legend in margin
-  legend(x = xloc, y = yloc, inset = inset, cex = cex, legend = ylabs, col = cols, lty = lty, lwd = lwd, 
+  lty[type == 'p'] <- NA
+  pch[type == 'l'] <- NA
+  legend(x = xloc, y = yloc, inset = inset, cex = cex, legend = ylabs, col = cols, lty = lty, lwd = lwd, pch = pch,
     horiz = TRUE, xpd = TRUE, bty = 'n')
   
 }
