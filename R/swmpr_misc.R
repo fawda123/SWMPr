@@ -547,8 +547,8 @@ oxySol <- function (t, S, P = NULL)
 #' @references
 #' Cloern, J.E. and Jassby, A.D. (2010) Patterns and scales of phytoplankton variability in estuarine-coastal ecosystems. \emph{Estuaries and Coasts} \bold{33,} 230--241.
 decompTs <-
-function(x, event = TRUE, type = c("mult", "add"),
-         center = c("median", "mean")) {
+function(x, event = TRUE, type = c("add", "mult"),
+         center = c("mean", "median")) {
 
   # Validate input
   if (!is.ts(x) || !identical(frequency(x), 12)) {

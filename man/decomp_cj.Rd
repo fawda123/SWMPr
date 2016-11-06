@@ -56,7 +56,7 @@ decomp_cj(dat, param = 'chla_n', vals_out = TRUE)
 decomp_cj(dat, param = 'chla_n')
 
 ## decomposition changing arguments passed to decompTs
-decomp_cj(dat, param = 'chla_n', type = 'add')
+decomp_cj(dat, param = 'chla_n', type = 'mult')
 
 ## monthly decomposition of continuous data
 data(apacpwq)
