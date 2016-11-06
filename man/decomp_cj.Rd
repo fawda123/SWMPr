@@ -33,7 +33,7 @@ decomp_cj(dat_in, ...)
 \item{date_col}{chr string indicating the name of the date column which should be a date or POSIX object.}
 }
 \value{
-A \code{\link[ggplot2]{ggplot}} object if \code{vals_out = TRUE} (default), otherwise a monthly time series matrix of class \code{\link[stats]{ts}}.
+A \code{\link[ggplot2]{ggplot}} object if \code{vals_out = FALSE} (default), otherwise a monthly time series matrix of class \code{\link[stats]{ts}}.
 }
 \description{
 Decompose monthly SWMP time series into grandmean, annual, seasonal, and event series as described in Cloern and Jassby 2010.
