@@ -598,9 +598,9 @@ function(x, event = TRUE, type = c("mult", "add"),
 	  # Events component
     x3 <- x2 %/-% seasonal
     # result
-    ts.union(original=x, annual, seasonal, events=x3)
+    ts.union(original=x, grand, annual, seasonal, events=x3)
   } else {
-    ts.union(original=x, annual, seasonal=x2)
+    ts.union(original=x, grand, annual, seasonal=x2)
   }
 }
 

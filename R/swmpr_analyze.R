@@ -618,8 +618,8 @@ decomp.default <- function(dat_in, param, date_col, type = 'additive', frequency
 #' @param date_col chr string indicating the name of the date column which should be a date or POSIX object.
 #' @param vals_out logical indicating of numeric output is returned, default is \code{FALSE} to return a plot.
 #' @param event logical indicating if an "events" component should be determined
-#' @param type chr string indicating the type of decomposition, either multiplicative ("mult") or additive ("add")
-#' @param center chr string indicating the method of centering, either median or mean
+#' @param type chr string indicating the type of decomposition, either additive (\code{"add"}) or multiplicative (\code{"mult"})
+#' @param center chr string indicating the method of centering, either \code{"mean"} or \code{"median"}
 #' @param ... additional arguments passed to or from other methods
 #' 
 #' @concept analyze
@@ -677,7 +677,7 @@ decomp_cj <- function(dat_in, ...) UseMethod('decomp_cj')
 #' @concept analyze
 #' 
 #' @method decomp_cj swmpr
-decomp_cj.swmpr <- function(dat_in, param, vals_out = FALSE, event = TRUE, type = c('mult', 'add'), center = c('median', 'mean'), ...){
+decomp_cj.swmpr <- function(dat_in, param, vals_out = FALSE, event = TRUE, type = c('add', 'mult'), center = c('mean', 'median'), ...){
   
   dat <- dat_in
   
@@ -699,7 +699,7 @@ decomp_cj.swmpr <- function(dat_in, param, vals_out = FALSE, event = TRUE, type 
 #' @concept analyze
 #' 
 #' @method decomp_cj default
-decomp_cj.default <- function(dat_in, param, date_col, vals_out = FALSE, event = TRUE, type = c('mult', 'add'), center = c('median', 'mean'), ...){
+decomp_cj.default <- function(dat_in, param, date_col, vals_out = FALSE, event = TRUE, type = c('add', 'mult'), center = c('mean', 'median'), ...){
   
   # select date column and parameter
   dat <- dat_in[, c(date_col, param)]
