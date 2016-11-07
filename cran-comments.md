@@ -1,6 +1,6 @@
 ## Resubmission 
 
-This is a resubmission for a version update  
+This is a resubmission for a version update.  I have also added a URL for the System Wide Monitoring Program website in the Description field of the DESCRIPTION file. 
 
 ## Test environments
 * ubuntu 12.04 (on travis-ci), R 3.2.5
