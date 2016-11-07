@@ -1,3 +1,25 @@
+#### SWMPr 2.2.0
+
+* Added `plot_wind` function for wind roses from weather data
+
+* Fixes to `decomp_cj` function, including grandmean back to output
+
+* Added point and line options for `overplot`
+
+* Trailing whitespace in qaqc columns are removed in `swmpr` argument
+
+* Removed dependency to deprecated wq package
+
+* Safety stop in `import_local` if data type not in station code
+
+* Removed use of `setstep` function in `ecometab` that caused less precise results
+
+* Fixed bug with sanity check of `depth_val` argument in `ecometab`
+
+* Fixed bug with `metab_day` if original time series was not continuous
+
+* Default S3 method added to `ecometab`
+
 #### SWMPr 2.1.5
 
 * `parser` now uses `xmlTreeParse` making CDMO retrieval functions much faster 
