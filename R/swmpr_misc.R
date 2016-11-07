@@ -31,6 +31,19 @@ swmpr <- function(stat_in, meta_in){
   param_types <- names(param_names())[param_types]
   station <- grep(paste0(param_types, collapse = '|'), meta_in, value = TRUE)
 
+  # remove trailing blanks in qaqc columns
+  if(qaqc_cols){
+   
+    fcols <- grep('^f_', names(stat_in),value = TRUE)
+    stat_in[, fcols] <- sapply(fcols, function(x){
+      
+      out <- gsub('\\s+$', '', stat_in[, x])
+      return(out)
+      
+    })
+    
+  }
+  
   # timezone using time_vec function
   timezone <- time_vec(station_code = station, tz_only = TRUE)
 
@@ -534,8 +547,8 @@ oxySol <- function (t, S, P = NULL)
 #' @references
 #' Cloern, J.E. and Jassby, A.D. (2010) Patterns and scales of phytoplankton variability in estuarine-coastal ecosystems. \emph{Estuaries and Coasts} \bold{33,} 230--241.
 decompTs <-
-function(x, event = TRUE, type = c("mult", "add"),
-         center = c("median", "mean")) {
+function(x, event = TRUE, type = c("add", "mult"),
+         center = c("mean", "median")) {
 
   # Validate input
   if (!is.ts(x) || !identical(frequency(x), 12)) {
@@ -585,9 +598,9 @@ function(x, event = TRUE, type = c("mult", "add"),
 	  # Events component
     x3 <- x2 %/-% seasonal
     # result
-    ts.union(original=x, annual, seasonal, events=x3)
+    ts.union(original=x, grand, annual, seasonal, events=x3)
   } else {
-    ts.union(original=x, annual, seasonal=x2)
+    ts.union(original=x, grand, annual, seasonal=x2)
   }
 }
 

@@ -9,10 +9,10 @@
 decomp_cj(dat_in, ...)
 
 \method{decomp_cj}{swmpr}(dat_in, param, vals_out = FALSE, event = TRUE,
-  type = c("mult", "add"), center = c("median", "mean"), ...)
+  type = c("add", "mult"), center = c("mean", "median"), ...)
 
 \method{decomp_cj}{default}(dat_in, param, date_col, vals_out = FALSE,
-  event = TRUE, type = c("mult", "add"), center = c("median", "mean"),
+  event = TRUE, type = c("add", "mult"), center = c("mean", "median"),
   ...)
 }
 \arguments{
@@ -26,14 +26,14 @@ decomp_cj(dat_in, ...)
 
 \item{event}{logical indicating if an "events" component should be determined}
 
-\item{type}{chr string indicating the type of decomposition, either multiplicative ("mult") or additive ("add")}
+\item{type}{chr string indicating the type of decomposition, either additive (\code{"add"}) or multiplicative (\code{"mult"})}
 
-\item{center}{chr string indicating the method of centering, either median or mean}
+\item{center}{chr string indicating the method of centering, either \code{"mean"} or \code{"median"}}
 
 \item{date_col}{chr string indicating the name of the date column which should be a date or POSIX object.}
 }
 \value{
-A \code{\link[ggplot2]{ggplot}} object if \code{vals_out = TRUE} (default), otherwise a monthly time series matrix of class \code{\link[stats]{ts}}.
+A \code{\link[ggplot2]{ggplot}} object if \code{vals_out = FALSE} (default), otherwise a monthly time series matrix of class \code{\link[stats]{ts}}.
 }
 \description{
 Decompose monthly SWMP time series into grandmean, annual, seasonal, and event series as described in Cloern and Jassby 2010.
@@ -56,7 +56,7 @@ decomp_cj(dat, param = 'chla_n', vals_out = TRUE)
 decomp_cj(dat, param = 'chla_n')
 
 ## decomposition changing arguments passed to decompTs
-decomp_cj(dat, param = 'chla_n', type = 'add')
+decomp_cj(dat, param = 'chla_n', type = 'mult')
 
 ## monthly decomposition of continuous data
 data(apacpwq)

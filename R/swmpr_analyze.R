@@ -618,14 +618,14 @@ decomp.default <- function(dat_in, param, date_col, type = 'additive', frequency
 #' @param date_col chr string indicating the name of the date column which should be a date or POSIX object.
 #' @param vals_out logical indicating of numeric output is returned, default is \code{FALSE} to return a plot.
 #' @param event logical indicating if an "events" component should be determined
-#' @param type chr string indicating the type of decomposition, either multiplicative ("mult") or additive ("add")
-#' @param center chr string indicating the method of centering, either median or mean
+#' @param type chr string indicating the type of decomposition, either additive (\code{"add"}) or multiplicative (\code{"mult"})
+#' @param center chr string indicating the method of centering, either \code{"mean"} or \code{"median"}
 #' @param ... additional arguments passed to or from other methods
 #' 
 #' @concept analyze
 #' 
 #' @return  
-#' A \code{\link[ggplot2]{ggplot}} object if \code{vals_out = TRUE} (default), otherwise a monthly time series matrix of class \code{\link[stats]{ts}}.
+#' A \code{\link[ggplot2]{ggplot}} object if \code{vals_out = FALSE} (default), otherwise a monthly time series matrix of class \code{\link[stats]{ts}}.
 #' 
 #' @details
 #' This function is a simple wrapper to the \code{decompTs} function in the archived wq package, also described in Cloern and Jassby (2010).  The function is similar to \code{\link{decomp.swmpr}} (which is a wrapper to \code{\link[stats]{decompose}}) with a few key differences.  The \code{\link{decomp.swmpr}} function decomposes the time series into a trend, seasonal, and random components, whereas the current function decomposes into the grandmean, annual, seasonal, and events components.  For both functions, the random or events components, respectively, can be considered anomalies that don't follow the trends in the remaining categories.  
@@ -657,7 +657,7 @@ decomp.default <- function(dat_in, param, date_col, type = 'additive', frequency
 #' decomp_cj(dat, param = 'chla_n')
 #' 
 #' ## decomposition changing arguments passed to decompTs
-#' decomp_cj(dat, param = 'chla_n', type = 'add')
+#' decomp_cj(dat, param = 'chla_n', type = 'mult')
 #' 
 #' ## monthly decomposition of continuous data
 #' data(apacpwq)
@@ -677,7 +677,7 @@ decomp_cj <- function(dat_in, ...) UseMethod('decomp_cj')
 #' @concept analyze
 #' 
 #' @method decomp_cj swmpr
-decomp_cj.swmpr <- function(dat_in, param, vals_out = FALSE, event = TRUE, type = c('mult', 'add'), center = c('median', 'mean'), ...){
+decomp_cj.swmpr <- function(dat_in, param, vals_out = FALSE, event = TRUE, type = c('add', 'mult'), center = c('mean', 'median'), ...){
   
   dat <- dat_in
   
@@ -699,7 +699,7 @@ decomp_cj.swmpr <- function(dat_in, param, vals_out = FALSE, event = TRUE, type 
 #' @concept analyze
 #' 
 #' @method decomp_cj default
-decomp_cj.default <- function(dat_in, param, date_col, vals_out = FALSE, event = TRUE, type = c('mult', 'add'), center = c('median', 'mean'), ...){
+decomp_cj.default <- function(dat_in, param, date_col, vals_out = FALSE, event = TRUE, type = c('add', 'mult'), center = c('mean', 'median'), ...){
   
   # select date column and parameter
   dat <- dat_in[, c(date_col, param)]
@@ -1212,11 +1212,13 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
 #' @param xlab chr string of label for x-axis
 #' @param cols chr string of colors to use for lines
 #' @param lty numeric indicating line types, one value for all or values for each parameter
-#' @param lwd numeric indicating line widths, one value for all or values for each parameter
+#' @param lwd numeric indicating line widths, one value for all or values for each parameter, used as \code{cex} for point size if \code{type = 'p'}
 #' @param inset numeric of relative location of legend, passed to \code{\link[graphics]{legend}}
 #' @param cex numeric of scale factor for legend, passed to \code{\link[graphics]{legend}}
 #' @param xloc x location of legend, passed to \code{\link[graphics]{legend}}
 #' @param yloc y location of legend, passed to \code{\link[graphics]{legend}}
+#' @param pch numeric for point type of points are used
+#' @param type character string indicating \code{'p'} or \code{'l'} for points or lines, as a single value for all parameters or a combined vector equal in length to the number of parameters 
 #' @param ... additional arguments passed to \code{\link[graphics]{plot}}
 #' 
 #' @export
@@ -1240,6 +1242,15 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
 #' ## a truly heinous plot
 #' overplot(dat, select = c('depth', 'do_mgl', 'ph', 'turb'), 
 #'  subset = c('2013-01-01 0:0', '2013-02-01 0:0'), lwd = 2)
+#'  
+#' \dontrun{
+#' ## change the type argument if plotting discrete and continuous data
+#' swmp1 <- apacpnut
+#' swmp2 <- apaebmet
+#' dat <- comb(swmp1, swmp2, timestep = 120, method = 'union')
+#' overplot(dat, select = c('chla_n', 'atemp'), subset = c('2012-01-01 0:0', '2013-01-01 0:0'), 
+#'  type = c('p', 'l'))
+#' }
 overplot <- function(dat_in, ...) UseMethod('overplot') 
 
 #' @rdname overplot
@@ -1249,7 +1260,7 @@ overplot <- function(dat_in, ...) UseMethod('overplot')
 #' @concept analyze
 #' 
 #' @method overplot swmpr
-overplot.swmpr <- function(dat_in, select = NULL, subset = NULL, operator = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, ...){
+overplot.swmpr <- function(dat_in, select = NULL, subset = NULL, operator = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, pch = NULL, type = NULL, ...){
   
   # get parameters to select if null, remove qaqc cols
   if(is.null(select)) 
@@ -1261,7 +1272,7 @@ overplot.swmpr <- function(dat_in, select = NULL, subset = NULL, operator = NULL
   toplo <- subset(dat_in, select = select, subset = subset, operator = operator)
   toplo <- as.data.frame(toplo)  
 
-  overplot(toplo, date_var = 'datetimestamp', select = select, ylab = ylabs, xlab = xlab, cols = cols, lty = lty, lwd = lwd, ...)
+  overplot(toplo, date_var = 'datetimestamp', select = select, ylab = ylabs, xlab = xlab, cols = cols, lty = lty, lwd = lwd, pch = pch, type = type, ...)
   
 }
 
@@ -1275,7 +1286,7 @@ overplot.swmpr <- function(dat_in, select = NULL, subset = NULL, operator = NULL
 #' @concept analyze
 #' 
 #' @method overplot default
-overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, inset = -0.15, cex = 1, xloc = 'top', yloc = NULL, ...){
+overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, inset = -0.15, cex = 1, xloc = 'top', yloc = NULL, pch = NULL, type = NULL, ...){
   
   if(!inherits(dat_in[, date_var], 'POSIXct')) 
     stop('date_var must be POSIXct class')
@@ -1283,33 +1294,50 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
   # subset data if needed
   dat_in <- dat_in[, c(date_var, select)]
   
+  # number of vars to plot
+  lnsel <- length(select)
+  
   # fill missing arguments if not supplied
-  if(!is.null(cols) & length(cols) ==1) cols <- rep(cols, length(select))
+  if(!is.null(cols) & length(cols) ==1) cols <- rep(cols, lnsel)
   if(is.null(cols))
-    cols <- colorRampPalette(gradcols())(length(select))
+    cols <- colorRampPalette(gradcols())(lnsel)
   if(is.null(lwd)){
-    lwd <- rep(1, length(select))
+    lwd <- rep(1, lnsel)
   } else {
-    if(length(lwd == 1)) lwd <- rep(lwd, length(select))
+    if(length(lwd) == 1) lwd <- rep(lwd, lnsel)
+    if(length(lwd) != lnsel) stop('lwd must have length equal to 1 or variables to select')
   }
   if(is.null(lty)){
-    lty <- seq(1, length(select))
+    lty <- seq(1, lnsel)
   } else {
-    if(length(lty == 1)) lty <- rep(lty, length(select))
+    if(length(lty) == 1) lty <- rep(lty, lnsel)
+    if(length(lty) != lnsel) stop('lty must have length equal to 1 or variables to select')
   }
   if(is.null(ylabs))
     ylabs <- select
   if(is.null(xlab))
     xlab <- 'DateTimeStamp'
+  if(is.null(pch)) {
+    pch <- seq(1, lnsel)
+  } else {
+    if(length(pch) == 1) pch <- rep(pch, lnsel)
+    if(length(pch) != lnsel) stop('pch must have length equal to 1 or variables to select')
+  }
+  if(is.null(type)){
+    type <- rep('l', lnsel)
+  } else {
+    if(length(type) == 1) type <- rep(type, lnsel)
+    if(length(type) != lnsel) stop('type must have length equal to 1 or variables to select')
+  }
   
   # x dimension extension for multiple yaxix labels
-  xext <- 4 * length(select)
+  xext <- 4 * lnsel
   par(mar = c(5.1, xext, 4.1, 2.1))
   
   toplo <- dat_in
-  
+
   # base plot
-  plot(x = toplo[, date_var], y = toplo[, select[1]], type = 'n', axes = F, ylab = '', xlab = '', ...)
+  plot(x = toplo[, date_var], y = toplo[, select[1]], type = 'n', axes = F, ylab = '', xlab = '')
   
   # initialize starting locations for y axis and text
   yline <- 0
@@ -1324,8 +1352,8 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
     # add line to existing empty plot
     par(new = TRUE)
     yvar <- toplo[, select[parm]]
-    plot(x = toplo[, date_var], y = yvar, type = 'l', axes = F, 
-      ylab = '', xlab = '', lty = lty[parm], lwd = lwd[parm], col = cols[parm])
+    plot(x = toplo[, date_var], y = yvar, type = type[parm], axes = F, 
+      ylab = '', xlab = '', lty = lty[parm], lwd = lwd[parm], cex = lwd[parm], pch = pch[parm], col = cols[parm], ...)
     
     # add y axes and appropriate labels
     axis(side = 2, at = c(-2 * ylims, 2 * ylims), line = yline, labels = FALSE)
@@ -1345,7 +1373,9 @@ overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab
   mtext(side = 1, xlab, line = 2.5)
 
   # add legend in margin
-  legend(x = xloc, y = yloc, inset = inset, cex = cex, legend = ylabs, col = cols, lty = lty, lwd = lwd, 
+  lty[type == 'p'] <- NA
+  pch[type == 'l'] <- NA
+  legend(x = xloc, y = yloc, inset = inset, cex = cex, legend = ylabs, col = cols, lty = lty, lwd = lwd, pch = pch,
     horiz = TRUE, xpd = TRUE, bty = 'n')
   
 }
@@ -1866,4 +1896,108 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
   
   return(p)
 
+}
+
+#' Create a wind rose 
+#'
+#' Create a wind rose from met data
+#' 
+#' @param swmpr_in input swmpr object
+#' @param years numeric of years to plot, defaults to most recent
+#' @param angle numeric for the number of degrees occupied by each spoke
+#' @param width numeric for width of paddles if \code{paddle = TRUE}
+#' @param breaks numeric for the number of break points in the wind speed
+#' @param paddle logical for paddles at the ends of the spokes 
+#' @param grid.line numeric for grid line interval to use
+#' @param max.freq numeric for the scaling used to set the maximum value of the radial limits (like zoom)
+#' @param cols chr string for colors to use for plotting, can be any palette R recognizes or a collection of colors as a vector
+#' @param annotate logical indicating if text is shown on the bottom of the plot for the percentage of observations as 'calm' and mean values
+#' @param main chr string for plot title, defaults to station name and year plotted
+#' @param type chr string for temporal divisions of the plot, defaults to whole year.  See details. 
+#' @param between list for lattice plot options, defines spacing between plots
+#' @param par.settings list for optional plot formatting passed to \code{\link[lattice]{lattice.options}}
+#' @param strip list for optional strip formatting passed to \code{\link[lattice]{strip.custom}}
+#' @param ... arguments passed to or from other methods
+#' 
+#' @export
+#' 
+#' @details This function is a convenience wrapper to \code{\link[openair]{windRose}}.  Most of the arguments are taken directly from this function.
+#' 
+#' The \code{type} argument can be used for temporal divisions of the plot.  Options include the entire year (\code{type = "default"}), seasons (\code{type = "season"}), months (\code{type = "month"}), or weekdays (\code{type = "weekday"}).  Combinations are also possible (see \code{\link[openair]{windRose}}).
+#' 
+#' @author Kim Cressman, Marcus Beck
+#' 
+#' @concept analyze
+#' 
+#' @return A wind rose plot
+#' 
+#' @examples 
+#' plot_wind(apaebmet)
+plot_wind <- function(swmpr_in, ...) UseMethod('plot_wind')
+
+#' @rdname plot_wind
+#'
+#' @export
+#' 
+#' @method plot_wind swmpr
+plot_wind.swmpr <- function(swmpr_in, years = NULL, angle = 45, width = 1.5, breaks = 5, paddle = FALSE, grid.line = 10, max.freq = 30, cols = 'GnBu', annotate = FALSE, main = NULL, type = 'default', between = list(x = 1, y = 1), par.settings = NULL, strip = NULL, ...){
+
+  dat <- swmpr_in
+  station <- attr(dat, 'station')
+  dat$date <- dat$datetimestamp
+  dat$yrs <- as.numeric(strftime(dat$datetimestamp, '%Y'))
+  
+  # fill par settings with default
+  if(is.null(par.settings))
+    par.settings <- list(axis.line = list(col = 'darkgray'),
+      par.main.text = list(cex=1.1),
+      strip.border = list(col = 'darkgray'),
+      layout.widths = list(right.padding = 3),
+      layout.heights = list(top.padding = 3)
+      )
+          
+  # fill strip settings with default
+  if(is.null(strip))
+    strip <- lattice::strip.custom(par.strip.text=list(cex=0.8, fontface='bold'))
+  
+  # yrs as latest
+  if(is.null(years)){
+    years <- unique(dat$yrs)
+    years <- years[which.max(years)]
+  }
+  
+  #subset by yrs
+  if(any(!years %in% dat$yrs)) 
+    stop('Check years')
+  dat <- dat[dat$yrs %in% years, ]
+
+  # name from input object
+  if(is.null(main)){
+    
+    check_sta <- grepl('met$', station)
+    if(!check_sta)
+      stop('No weather data')
+  
+    station <- station[check_sta]
+    main <- paste(station, paste(years, collapse = ', '), sep = ', ')
+
+  }
+
+  openair::windRose(dat,  ws ='wspd', wd ='wdir', 
+    angle = angle, 
+    width = width, 
+    breaks = breaks, 
+    paddle = paddle,  
+    grid.line = grid.line, 
+    max.freq = max.freq,
+    cols = cols,
+    annotate = annotate,
+    main = main,
+    type = type, 
+    between = between,
+    par.settings = par.settings, 
+    strip = strip,
+    ...
+    )
+  
 }

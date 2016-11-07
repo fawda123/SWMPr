@@ -10,11 +10,11 @@ overplot(dat_in, ...)
 
 \method{overplot}{swmpr}(dat_in, select = NULL, subset = NULL,
   operator = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL,
-  lwd = NULL, ...)
+  lwd = NULL, pch = NULL, type = NULL, ...)
 
 \method{overplot}{default}(dat_in, date_var, select = NULL, ylabs = NULL,
   xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, inset = -0.15,
-  cex = 1, xloc = "top", yloc = NULL, ...)
+  cex = 1, xloc = "top", yloc = NULL, pch = NULL, type = NULL, ...)
 }
 \arguments{
 \item{dat_in}{input data object}
@@ -35,7 +35,11 @@ overplot(dat_in, ...)
 
 \item{lty}{numeric indicating line types, one value for all or values for each parameter}
 
-\item{lwd}{numeric indicating line widths, one value for all or values for each parameter}
+\item{lwd}{numeric indicating line widths, one value for all or values for each parameter, used as \code{cex} for point size if \code{type = 'p'}}
+
+\item{pch}{numeric for point type of points are used}
+
+\item{type}{character string indicating \code{'p'} or \code{'l'} for points or lines, as a single value for all parameters or a combined vector equal in length to the number of parameters}
 
 \item{date_var}{chr string of the name for the datetimestamp column, not required for \code{\link{swmpr}} objects}
 
@@ -67,6 +71,15 @@ overplot(dat)
 ## a truly heinous plot
 overplot(dat, select = c('depth', 'do_mgl', 'ph', 'turb'), 
  subset = c('2013-01-01 0:0', '2013-02-01 0:0'), lwd = 2)
+ 
+\dontrun{
+## change the type argument if plotting discrete and continuous data
+swmp1 <- apacpnut
+swmp2 <- apaebmet
+dat <- comb(swmp1, swmp2, timestep = 120, method = 'union')
+overplot(dat, select = c('chla_n', 'atemp'), subset = c('2012-01-01 0:0', '2013-01-01 0:0'), 
+ type = c('p', 'l'))
+}
 }
 \seealso{
 \code{\link{subset}}
