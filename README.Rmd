@@ -87,6 +87,7 @@ help.search('analyze', package = 'SWMPr')
 <tr><td><code>plot_metab
 </code></td><td> Plot ecosystem metabolism estimates after running <code>ecometab</code> on a swmpr object.</td></tr>
 <tr><td><code>plot_summary</code></td><td> Create summary plots of seasonal/annual trends and anomalies for a water quality or weather parameter.</td></tr>
+<tr><td><code>plot_wind</code></td><td> Create a wind rose using weather data.</td></tr>
 <tr><td><code>smoother.swmpr</code></td><td> Smooth swmpr objects with a moving window average. Window size and sides can be specified, passed to <code>filter</code>.</td></tr>
 </table>
 <h3>Miscellaneous</h3>
