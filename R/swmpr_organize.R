@@ -223,6 +223,112 @@ qaqcchk.swmpr <- function(swmpr_in){
 }
 
 ######
+#' Flag observations above/below detection limits
+#' 
+#' Flag observations above/below detection limits
+#'
+#' @param swmpr_in input swmpr object
+#' @param flag_type chr string indicating the flag type to return, must be one of \code{'below'}, \code{'above'}, or \code{'both'}, see details
+#' @param select chr string of parameters to keep, defaults to all, \code{'datetimestamp'} will always be kept
+#' @param ... optional arguments passed to or from other methods
+#' 
+#' @details 
+#' Censored observations are identified in swmpr objects using the CDMO codes -4 or -5, indicating outside the low or high sensor range, respectively.  The QAQC columns are searched for all parameters and replaced with the appropriate value indicating the detection limit as defined by \code{flag_type}.  The default argument \code{flag_type = 'both'} will recode the QAQC columns as -1, 0, or 1 indicating below, within, or above the detection limit.  Setting \code{flag_type = 'below'} or \code{'above'} will convert the columsn to \code{TRUE}/\code{FALSE} values indicating observations beyond the detection limit (either above or below, \code{TRUE}) or within the normal detection range \code{FALSE}. 
+#' 
+#' The \code{f_} prefix in the column names for the QAQC codes is changed to \code{c_} in the output to indicate censored flags.  Note that the function will of course not work if already processed with \code{\link{qaqc}}.
+#' 
+#' The detection limit for a parameter may change over time and the actual value is not stored in the metadata.  The data must be visually examined to identify the actual limit.  
+#'
+#' @concept organize
+#' 
+#' @export
+#' 
+#' @seealso \code{\link{qaqc}}
+#' 
+#' @return Returns a swmpr object with QAQC columns changed to censored flag columns and the appropriate flag type based on the input arguments.
+#' 
+#' @examples
+#' ## get data
+#' data(apacpnut)
+#' dat <- apacpnut
+#' 
+#' ## convert all qaqc columns to censored flags, -1 below, 0 within, 1 above
+#' cens_id(dat)
+#' 
+#' ## T/F for above or within, note that none are above
+#' cens_id(dat, flag_type = 'above')
+#' 
+#' ## T/F for below or within
+#' cens_id(dat, flag_type = 'below')
+cens_id <- function(swmpr_in, ...) UseMethod('cens_id')
+
+#' @rdname cens_id
+#' 
+#' @export
+#' 
+#' @concept organize
+#' 
+#' @method cens_id swmpr
+cens_id.swmpr <- function(swmpr_in, flag_type = 'both', select = NULL, ...){ 
+  
+  # sanity checks
+  qaqc_cols <- attr(swmpr_in, 'qaqc_cols')
+  station <- attr(swmpr_in, 'station')
+  
+  dat <- swmpr_in
+  
+  # exit function if no qaqc columns
+  if(!qaqc_cols) stop('No qaqc columns in input data')
+  
+  if(!flag_type %in% c('both', 'above', 'below'))
+    stop('flag_type must be one of both, above, or below')
+  
+  #names of qaqc columns
+  qaqc_sel <- grepl('f_', names(dat))
+  
+  # get matrix of -1, 0, or 1 for below, within, or above detect limit
+  qaqc_vec <- dat[, qaqc_sel, drop = FALSE]
+  qaqc_vec <- apply(qaqc_vec, 2, 
+    function(x){
+      
+      x <- as.character(x)
+      out <- rep(0, length(x))
+      out[grepl('<-5>', x)] <- '1'
+      out[grepl('<-4>', x)] <- '-1'
+      out[is.na(x)] <- NA
+      out
+    
+    }
+  )
+  
+  # change flag type 
+  if(flag_type == 'above')
+    qaqc_vec <- qaqc_vec == '1'
+    
+  if(flag_type == 'below')
+    qaqc_vec <- qaqc_vec == '-1'
+  
+  # reassign values, change names
+  dat[, qaqc_sel] <- qaqc_vec
+  names(dat)[qaqc_sel] <- gsub('^f_', 'c_', names(dat)[qaqc_sel])
+  
+  # prep output
+  out <- dat
+  
+  # create swmpr class
+  out <- swmpr(out, station)
+  
+  # subset columns if select not null
+  if(is.null(select)) return(out)
+  
+  select <- c(select, paste0('c_', select, collapse = ''))
+  out <- out[, names(out) %in% c('datetimestamp', select)]
+  
+  return(out)
+  
+}
+
+######
 #' Remove replicates in nutrient data
 #' 
 #' Remove replicates in SWMP nutrient data to keep approximate monthly time step
