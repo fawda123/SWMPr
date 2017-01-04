@@ -58,31 +58,32 @@ help.search('analyze', package = 'SWMPr')
 </table>
 <h3>Organize</h3>
 <table>
-<tr><td><code>comb.swmpr</code></td><td> Combines swmpr objects to a common time series using setstep, such as combining the weather, nutrients, and water quality data for a single station. Only different data types can be combined.</td></tr>
-<tr><td><code>qaqc.swmpr</code></td><td> Remove QAQC columns and remove data based on QAQC flag values for a swmpr object. Only applies if QAQC columns are present.</td></tr>
-<tr><td><code>qaqcchk.swmpr</code></td><td> View a summary of the number of observations in a swmpr object that are assigned to different QAQC flags used by CDMO. The output is used to inform further processing but is not used explicitly.</td></tr>
-<tr><td><code>rem_reps.swmpr</code></td><td> Remove replicate nutrient data that occur on the same day. The default is to average replicates.</td></tr>
-<tr><td><code>setstep.swmpr</code></td><td> Format data from a swmpr object to a continuous time series at a given timestep. The function is used in <code>comb.swmpr</code> and can also be used with individual stations.</td></tr>
-<tr><td><code>subset.swmpr</code></td><td> Subset by dates and/or columns for a swmpr object. This is a method passed to the generic `subset’ function provided in the base package.</td></tr>
+<tr><td><code>cens_id</code></td><td> Creates additional columns in a swmpr object that identify observations below, within, or above the detection limit.</td></tr>
+<tr><td><code>comb</code></td><td> Combines swmpr objects to a common time series using setstep, such as combining the weather, nutrients, and water quality data for a single station. Only different data types can be combined.</td></tr>
+<tr><td><code>qaqc</code></td><td> Remove QAQC columns and remove data based on QAQC flag values for a swmpr object. Only applies if QAQC columns are present.</td></tr>
+<tr><td><code>qaqcchk</code></td><td> View a summary of the number of observations in a swmpr object that are assigned to different QAQC flags used by CDMO. The output is used to inform further processing but is not used explicitly.</td></tr>
+<tr><td><code>rem_reps</code></td><td> Remove replicate nutrient data that occur on the same day. The default is to average replicates.</td></tr>
+<tr><td><code>setstep</code></td><td> Format data from a swmpr object to a continuous time series at a given timestep. The function is used in <code>comb</code> and can also be used with individual stations.</td></tr>
+<tr><td><code>subset</code></td><td> Subset by dates and/or columns for a swmpr object. This is a method passed to the generic `subset’ function provided in the base package.</td></tr>
 </table>
 <h3>Analyze</h3>
 <table>
-<tr><td><code>aggreswmp.swmpr</code></td><td> Aggregate swmpr objects for different time periods - years, quarters, months, weeks, days, or hours. Aggregation function is user-supplied but defaults to mean.</td></tr>
-<tr><td><code>aggremetab.swmpr</code></td><td> Aggregate metabolism data from a swmpr object. This is primarily used within <code>plot_metab</code> but may be useful for simple summaries of raw daily data.</td></tr>
-<tr><td><code>ecometab.swmpr</code></td><td> Estimate ecosystem metabolism for a combined water quality and weather dataset using the open-water method.</td></tr>
-<tr><td><code>decomp.swmpr</code></td><td> Decompose a swmpr time series into trend, seasonal, and residual components. This is a simple wrapper to <code>decompose</code>. Decomposition of monthly or daily trends is possible.</td></tr>
-<tr><td><code>decomp_cj.swmpr</code></td><td> Decompose a swmpr time series into grandmean, annual, seasonal, and events components. This is a simple wrapper to <code>decompTs</code> in the wq package. Only monthly decomposition is possible.</td></tr>
-<tr><td><code>hist.swmpr</code></td><td> Plot a histogram for a swmpr object.</td></tr>
-<tr><td><code>lines.swmpr</code></td><td> Add lines to an existing swmpr plot.</td></tr>
+<tr><td><code>aggreswmp</code></td><td> Aggregate swmpr objects for different time periods - years, quarters, months, weeks, days, or hours. Aggregation function is user-supplied but defaults to mean.</td></tr>
+<tr><td><code>aggremetab</code></td><td> Aggregate metabolism data from a swmpr object. This is primarily used within <code>plot_metab</code> but may be useful for simple summaries of raw daily data.</td></tr>
+<tr><td><code>ecometab</code></td><td> Estimate ecosystem metabolism for a combined water quality and weather dataset using the open-water method.</td></tr>
+<tr><td><code>decomp</code></td><td> Decompose a swmpr time series into trend, seasonal, and residual components. This is a simple wrapper to <code>decompose</code>. Decomposition of monthly or daily trends is possible.</td></tr>
+<tr><td><code>decomp_cj</code></td><td> Decompose a swmpr time series into grandmean, annual, seasonal, and events components. This is a simple wrapper to <code>decompTs</code> in the wq package. Only monthly decomposition is possible.</td></tr>
+<tr><td><code>hist</code></td><td> Plot a histogram for a swmpr object.</td></tr>
+<tr><td><code>lines</code></td><td> Add lines to an existing swmpr plot.</td></tr>
 <tr><td><code>map_reserve</code></td><td> Create a map of all stations in a reserve using the ggmap package.</td></tr>
-<tr><td><code>na.approx.swmpr</code></td><td> Linearly interpolate missing data (<code>NA</code> values) in a swmpr object. The maximum gap size that is interpolated is defined as a maximum number of records with missing data.</td></tr>
+<tr><td><code>na.approx</code></td><td> Linearly interpolate missing data (<code>NA</code> values) in a swmpr object. The maximum gap size that is interpolated is defined as a maximum number of records with missing data.</td></tr>
 <tr><td><code>overplot</code></td><td> Plot multiple SWMP time series on the same y-axis.</td></tr>
-<tr><td><code>plot.swmpr</code></td><td> Plot a univariate time series for a swmpr object. The parameter name must be specified.</td></tr>
+<tr><td><code>plot</code></td><td> Plot a univariate time series for a swmpr object. The parameter name must be specified.</td></tr>
 <tr><td><code>plot_metab
 </code></td><td> Plot ecosystem metabolism estimates after running <code>ecometab</code> on a swmpr object.</td></tr>
 <tr><td><code>plot_summary</code></td><td> Create summary plots of seasonal/annual trends and anomalies for a water quality or weather parameter.</td></tr>
 <tr><td><code>plot_wind</code></td><td> Create a wind rose using weather data.</td></tr>
-<tr><td><code>smoother.swmpr</code></td><td> Smooth swmpr objects with a moving window average. Window size and sides can be specified, passed to <code>filter</code>.</td></tr>
+<tr><td><code>smoother</code></td><td> Smooth swmpr objects with a moving window average. Window size and sides can be specified, passed to <code>filter</code>.</td></tr>
 </table>
 <h3>Miscellaneous</h3>
 <table>
