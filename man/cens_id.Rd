@@ -19,17 +19,16 @@ cens_id(swmpr_in, ...)
 \item{select}{chr string of parameters to keep, defaults to all, \code{'datetimestamp'} will always be kept}
 }
 \value{
-Returns a swmpr object with QAQC columns changed to censored flag columns and the appropriate flag type based on the input arguments.
+Returns a swmpr object with additional columns for censored flag values and the appropriate flag type based on the input arguments.  Censored flag columns are named with a \code{c_} prefix.
 }
 \description{
 Flag observations above/below detection limits
 }
 \details{
 Censored observations are identified in swmpr objects using the CDMO flags -4 or -5, indicating outside the low or high sensor range, respectively.  Additional codes are identified including A (-2007) or SUL (2007-) for above and B (-2007), SBL (2007-), SCB (2007-, calculated) for below detection limits.   The QAQC columns are searched for all parameters and replaced with the appropriate value indicating the detection limit as defined by \code{flag_type}.  The default argument \code{flag_type = 'both'} will recode the QAQC columns as -1, 0, or 1 indicating below, within, or above the detection limit.  Setting \code{flag_type = 'below'} or \code{'above'} will convert the columns to \code{TRUE}/\code{FALSE} values indicating observations beyond the detection limit (either above or below, \code{TRUE}) or within the normal detection range \code{FALSE}. 
+The output includes additional columns similar to those for QAQC flags, such that the column names for censored flags include a \code{c_} prefix before the parameter name.  Note that the function will of course not work if already processed with \code{\link{qaqc}}.  QAQC columns are retaine for additional processing.
 
-The \code{f_} prefix in the column names for the QAQC codes is changed to \code{c_} in the output to indicate censored flags.  Note that the function will of course not work if already processed with \code{\link{qaqc}}.
-
-The detection limit for a parameter may change over time and the actual value is not stored in the metadata.  The data must be visually examined to identify the actual limit.
+The user should refer to the metadata or visually examine the observed data to identify the actual limit, which may change over time.
 }
 \examples{
 ## get data

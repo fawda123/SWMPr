@@ -51,6 +51,7 @@ qaqc.swmpr <- function(swmpr_in,
   # swmpr data and attributes
   dat <- swmpr_in
   qaqc_cols <- attr(swmpr_in, 'qaqc_cols')
+  cens_cols <- attr(swmpr_in, 'cens_cols')
   station <- attr(swmpr_in, 'station')
   parameters <- attr(swmpr_in, 'parameters')
   
@@ -123,6 +124,23 @@ qaqc.swmpr <- function(swmpr_in,
     out
     )
   names(out) <- c('datetimestamp', parameters)
+
+  # add censored columns if present
+  if(cens_cols){
+  
+    cens_dat <- dat[, grep('^c_', names(dat)), drop = FALSE]
+    out <- data.frame(out, cens_dat)
+    
+    # sort columns  
+    inds <- seq(2, ncol(out), by = 2)
+    out[, inds] <- dat[, parameters]
+    out[, inds + 1] <- cens_dat
+      
+    # get correct names
+    names(out)[inds] <- parameters
+    names(out)[inds + 1] <- names(cens_dat)
+      
+  }
 
   # remove obviously bad values
   out <- within(out, {
@@ -273,7 +291,7 @@ cens_id.swmpr <- function(swmpr_in, flag_type = 'both', select = NULL, ...){
   # attributes
   qaqc_cols <- attr(swmpr_in, 'qaqc_cols')
   station <- attr(swmpr_in, 'station')
-  parms <- attr(swmpr_in, 'parameters')
+  parameters <- attr(swmpr_in, 'parameters')
   
   dat <- swmpr_in
   
@@ -323,18 +341,21 @@ cens_id.swmpr <- function(swmpr_in, flag_type = 'both', select = NULL, ...){
   # sort output column as in dat
   out <- data.frame(dat, cens_dat)
   inds <- seq(2, ncol(out), by = 3)
-  out[, inds] <- dat[, parms]
+  out[, inds] <- dat[, parameters]
   out[, inds + 1] <- dat[, qaqc_sel]
   out[, inds + 2] <- cens_dat
   
   # change names to correct order
-  names(out)[inds] <- parms
+  names(out)[inds] <- parameters
   names(out)[inds + 1] <- names(dat)[qaqc_sel]
   names(out)[inds + 2] <- names(cens_dat)
 
-  # subset columns if select not null
-  if(is.null(select)) return(out)
-  select <- c(select, paste0(c('f_', 'c_'), select))
+  # select all if NULL
+  if(is.null(select)) 
+    select <- parameters
+  
+  # subset columns
+  select <- c(select, paste0('f_', select), paste0('c_', select))
   out <- out[, names(out) %in% c('datetimestamp', select)]
 
   # create swmpr class
