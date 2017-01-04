@@ -23,7 +23,7 @@ swmpr <- function(stat_in, meta_in){
   if(any(grepl('^f_', names(stat_in)))) qaqc_cols <- TRUE
   
   # parameters attribute
-  parameters <- grep('datetimestamp|^f_', names(stat_in), invert = TRUE, value = TRUE)
+  parameters <- grep('datetimestamp|^f_|^c_', names(stat_in), invert = TRUE, value = TRUE)
   
   # get stations, param_types attribtues
   param_types <- param_names()

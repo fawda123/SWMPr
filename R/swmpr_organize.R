@@ -234,10 +234,9 @@ qaqcchk.swmpr <- function(swmpr_in){
 #' 
 #' @details 
 #' Censored observations are identified in swmpr objects using the CDMO flags -4 or -5, indicating outside the low or high sensor range, respectively.  Additional codes are identified including A (-2007) or SUL (2007-) for above and B (-2007), SBL (2007-), SCB (2007-, calculated) for below detection limits.   The QAQC columns are searched for all parameters and replaced with the appropriate value indicating the detection limit as defined by \code{flag_type}.  The default argument \code{flag_type = 'both'} will recode the QAQC columns as -1, 0, or 1 indicating below, within, or above the detection limit.  Setting \code{flag_type = 'below'} or \code{'above'} will convert the columns to \code{TRUE}/\code{FALSE} values indicating observations beyond the detection limit (either above or below, \code{TRUE}) or within the normal detection range \code{FALSE}. 
+#' The output includes additional columns similar to those for QAQC flags, such that the column names for censored flags include a \code{c_} prefix before the parameter name.  Note that the function will of course not work if already processed with \code{\link{qaqc}}.  QAQC columns are retaine for additional processing.
 #' 
-#' The \code{f_} prefix in the column names for the QAQC codes is changed to \code{c_} in the output to indicate censored flags.  Note that the function will of course not work if already processed with \code{\link{qaqc}}.
-#' 
-#' The detection limit for a parameter may change over time and the actual value is not stored in the metadata.  The data must be visually examined to identify the actual limit.  
+#' The user should refer to the metadata or visually examine the observed data to identify the actual limit, which may change over time.  
 #'
 #' @concept organize
 #' 
@@ -245,7 +244,7 @@ qaqcchk.swmpr <- function(swmpr_in){
 #' 
 #' @seealso \code{\link{qaqc}}
 #' 
-#' @return Returns a swmpr object with QAQC columns changed to censored flag columns and the appropriate flag type based on the input arguments.
+#' @return Returns a swmpr object with additional columns for censored flag values and the appropriate flag type based on the input arguments.  Censored flag columns are named with a \code{c_} prefix.
 #' 
 #' @examples
 #' ## get data
@@ -271,15 +270,16 @@ cens_id <- function(swmpr_in, ...) UseMethod('cens_id')
 #' @method cens_id swmpr
 cens_id.swmpr <- function(swmpr_in, flag_type = 'both', select = NULL, ...){ 
   
-  # sanity checks
+  # attributes
   qaqc_cols <- attr(swmpr_in, 'qaqc_cols')
   station <- attr(swmpr_in, 'station')
+  parms <- attr(swmpr_in, 'parameters')
   
   dat <- swmpr_in
   
+  # sanity checks
   # exit function if no qaqc columns
   if(!qaqc_cols) stop('No qaqc columns in input data')
-  
   if(!flag_type %in% c('both', 'above', 'below'))
     stop('flag_type must be one of both, above, or below')
   
@@ -287,8 +287,8 @@ cens_id.swmpr <- function(swmpr_in, flag_type = 'both', select = NULL, ...){
   qaqc_sel <- grepl('f_', names(dat))
   
   # get matrix of -1, 0, or 1 for below, within, or above detect limit
-  qaqc_vec <- dat[, qaqc_sel, drop = FALSE]
-  qaqc_vec <- apply(qaqc_vec, 2, 
+  cens_dat <- dat[, qaqc_sel, drop = FALSE]
+  cens_dat <- apply(cens_dat, 2, 
     function(x){
       
       x <- as.character(x)
@@ -311,27 +311,35 @@ cens_id.swmpr <- function(swmpr_in, flag_type = 'both', select = NULL, ...){
   
   # change flag type 
   if(flag_type == 'above')
-    qaqc_vec <- qaqc_vec == '1'
+    cens_dat <- cens_dat == '1'
     
   if(flag_type == 'below')
-    qaqc_vec <- qaqc_vec == '-1'
+    cens_dat <- cens_dat == '-1'
   
-  # reassign values, change names
-  dat[, qaqc_sel] <- qaqc_vec
-  names(dat)[qaqc_sel] <- gsub('^f_', 'c_', names(dat)[qaqc_sel])
+  # change names for cens_dat
+  cens_dat <- as.data.frame(cens_dat, stringsAsFactors = FALSE)
+  names(cens_dat) <- gsub('^f_', 'c_', names(cens_dat))
   
-  # prep output
-  out <- dat
+  # sort output column as in dat
+  out <- data.frame(dat, cens_dat)
+  inds <- seq(2, ncol(out), by = 3)
+  out[, inds] <- dat[, parms]
+  out[, inds + 1] <- dat[, qaqc_sel]
+  out[, inds + 2] <- cens_dat
   
-  # create swmpr class
-  out <- swmpr(out, station)
-  
+  # change names to correct order
+  names(out)[inds] <- parms
+  names(out)[inds + 1] <- names(dat)[qaqc_sel]
+  names(out)[inds + 2] <- names(cens_dat)
+
   # subset columns if select not null
   if(is.null(select)) return(out)
-  
-  select <- c(select, paste0('c_', select, collapse = ''))
+  select <- c(select, paste0(c('f_', 'c_'), select))
   out <- out[, names(out) %in% c('datetimestamp', select)]
-  
+
+  # create swmpr class
+  out <- swmpr(out, station)
+    
   return(out)
   
 }
