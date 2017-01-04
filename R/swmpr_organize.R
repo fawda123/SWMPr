@@ -133,7 +133,7 @@ qaqc.swmpr <- function(swmpr_in,
     
     # sort columns  
     inds <- seq(2, ncol(out), by = 2)
-    out[, inds] <- dat[, parameters]
+    out[, inds] <- out[, parameters]
     out[, inds + 1] <- cens_dat
       
     # get correct names
