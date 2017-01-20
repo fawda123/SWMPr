@@ -922,6 +922,13 @@ comb.default <- function(..., date_col, timestep = 15, differ= NULL, method = 'u
       
   }
 
+  # differ as half timestep if timestep is not a character
+  if(is.null(differ)) differ <- timestep/2
+ 
+  # sanity check
+  if(timestep/2 < differ) 
+    stop('Value for differ must be less than or equal to one half of timestep')
+
   ##
   # merge stations by date_vec
   out <- data.table::data.table(datetimestamp = date_vec, key = 'datetimestamp')
