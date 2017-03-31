@@ -446,6 +446,8 @@ metab_day.default <- function(dat_in, tz, lat, long, ...){
 #' 
 #' @export
 #' 
+#' @return Returns numeric value for oxygen mass transfer coefficient (m d-1).
+#' 
 #' @details
 #' This function is used within the \code{\link{ecometab}} function and should not be used explicitly.
 #' 
