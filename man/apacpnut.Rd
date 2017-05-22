@@ -33,4 +33,3 @@ An example nutrient dataset for Apalachicola Bay Cat Point station.  The data ar
 data(apacpnut)
 }
 \keyword{datasets}
-

@@ -18,4 +18,3 @@ Get gradient default colors for plots
 \details{
 This is a convenience function for retrieving a color palette.  Palettes from RColorBrewer will use the maximum number of colors.  The default palette is 'Spectral'.
 }
-

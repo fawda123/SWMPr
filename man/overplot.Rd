@@ -2,8 +2,8 @@
 % Please edit documentation in R/swmpr_analyze.R
 \name{overplot}
 \alias{overplot}
-\alias{overplot.default}
 \alias{overplot.swmpr}
+\alias{overplot.default}
 \title{Plot multiple SWMP time series on the same y-axis}
 \usage{
 overplot(dat_in, ...)
@@ -91,4 +91,3 @@ analyze
 
 analyze
 }
-

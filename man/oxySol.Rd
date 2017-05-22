@@ -27,4 +27,3 @@ Benson, B.B. and Krause, D. (1984) The concentration and isotopic fractionation 
 
 Green, E.J. and Carritt, D.E. (1967) New tables for oxygen saturation of seawater. \emph{Journal of Marine Research} \bold{25,} 140-147.
 }
-

@@ -45,4 +45,3 @@ An example water quality dataset for Apalachicola Bay Dry Bar station.  The data
 data(apadbwq)
 }
 \keyword{datasets}
-

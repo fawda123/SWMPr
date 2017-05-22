@@ -2,8 +2,8 @@
 % Please edit documentation in R/swmpr_analyze.R
 \name{decomp}
 \alias{decomp}
-\alias{decomp.default}
 \alias{decomp.swmpr}
+\alias{decomp.default}
 \title{Simple trend decomposition}
 \usage{
 decomp(dat_in, ...)
@@ -86,4 +86,3 @@ analyze
 
 analyze
 }
-
