@@ -14,7 +14,7 @@
 #' This function is a simple wrapper to \code{\link[base]{structure}} that is used internally within other functions to create a swmpr object.  The function does not have to be used explicitly.  Attributes of a swmpr object include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{cens_cols}, \code{date_rng}, \code{timezone}, \code{stamp_class}, \code{metabolism} (if present), and \code{metab_units} (if present). 
 #' 
 swmpr <- function(stat_in, meta_in){
-    
+  
   if(!is.data.frame(stat_in)) 
     stop('stat_in must be data.frame')
   
@@ -29,7 +29,7 @@ swmpr <- function(stat_in, meta_in){
   # parameters attribute
   parameters <- grep('datetimestamp|^f_|^c_', names(stat_in), invert = TRUE, value = TRUE)
   
-  # get stations, param_types attribtues
+  # get stations, param_types attributes
   param_types <- param_names()
   param_types <- unlist(lapply(param_types, function(x) any(x %in% parameters)))
   param_types <- names(param_names())[param_types]
