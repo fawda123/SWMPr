@@ -49,4 +49,3 @@ lines(dat)
 \concept{
 analyze
 }
-

@@ -18,4 +18,3 @@ Get parameter column names for each parameter type
 \details{
 This function is used internally within several functions to return a list of the expected parameters for a given parameter type: nutrients, water quality, or meteorological.  It does not need to be called explicitly.
 }
-

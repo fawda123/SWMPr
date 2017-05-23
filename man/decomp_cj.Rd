@@ -2,8 +2,8 @@
 % Please edit documentation in R/swmpr_analyze.R
 \name{decomp_cj}
 \alias{decomp_cj}
-\alias{decomp_cj.default}
 \alias{decomp_cj.swmpr}
+\alias{decomp_cj.default}
 \title{Simple trend decomposition of monthly swmpr data}
 \usage{
 decomp_cj(dat_in, ...)
@@ -81,4 +81,3 @@ analyze
 
 analyze
 }
-

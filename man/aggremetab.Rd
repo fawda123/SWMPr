@@ -60,4 +60,3 @@ aggremetab(res, by = 30, sides = 1)
 \concept{
 analyze
 }
-

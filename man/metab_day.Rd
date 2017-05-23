@@ -29,4 +29,3 @@ This function is only used within \code{\link{ecometab}} and should not be calle
 \seealso{
 \code{\link{ecometab}}, \code{\link[maptools]{sunriset}}
 }
-

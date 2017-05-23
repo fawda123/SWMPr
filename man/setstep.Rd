@@ -2,8 +2,8 @@
 % Please edit documentation in R/swmpr_organize.R
 \name{setstep}
 \alias{setstep}
-\alias{setstep.default}
 \alias{setstep.swmpr}
+\alias{setstep.default}
 \title{Format a swmpr time vector}
 \usage{
 setstep(dat_in, ...)
@@ -59,4 +59,3 @@ organize
 
 organize
 }
-
