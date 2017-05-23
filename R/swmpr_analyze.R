@@ -2009,7 +2009,7 @@ plot_wind.swmpr <- function(swmpr_in, years = NULL, angle = 45, width = 1.5, bre
 #' 
 #' A line for a single year is plotted over ribbons of historical data quantiles.
 #' 
-#' @param data Input data object.
+#' @param dat_in Input data object.
 #' @param paramtoplot Parameter of interest. Must be in quotation marks and 
 #' must exactly match the column name of the data frame.
 #' @param yr Year to feature as a line on the plot.
@@ -2051,10 +2051,10 @@ plot_wind.swmpr <- function(swmpr_in, years = NULL, angle = 45, width = 1.5, bre
 #' # change some of the defaults
 #' quant.plot(apacpwq, 'sal', yr = 2013, yrstart = 2012, yrend = 2013, bgcolor1 = "lightsteelblue2", bgcolor2 = "lightsteelblue4", yaxislab = "Salinity (psu)")
 #' 
-#' @rdname quant.plot
+#' @rdname plot_quants
 #'
-#' @method quant.plot swmpr
-quant.plot <- function(data, paramtoplot, 
+#' @method plot_quants swmpr
+plot_quants <- function(dat_in, paramtoplot, 
                        yr, yrstart, yrend, 
                        yaxislab = paramtoplot,
                        yrcolor = "red3",
@@ -2065,7 +2065,7 @@ quant.plot <- function(data, paramtoplot,
 {
     
     # pull out daily averages; name it 'dat2'
-    dat2 <- aggreswmp(data, by='days', FUN='mean')
+    dat2 <- aggreswmp(dat_in, by='days', FUN='mean')
     
     # make a column for just mm-dd, and another column for year
     # these commands are from the lubridate package
