@@ -2,68 +2,60 @@
 % Please edit documentation in R/swmpr_analyze.R
 \name{plot_quants}
 \alias{plot_quants}
-\title{Generate a plot where a single year's data is overlaid on historical data.}
+\alias{plot_quants.swmpr}
+\title{Create a plot of data for a single year overlaid on historical data.}
 \usage{
-\method{plot_quants}{swmpr}(dat_in, paramtoplot, yr, yrstart, yrend,
-  yaxislab = paramtoplot, yrcolor = "red3", bgcolor1 = "lightgray",
-  bgcolor2 = "gray65", maintitle = paste0(toupper(attributes(data)$station),
-  " ", yr, " Daily Average ", paste0(toupper(substr(paramtoplot, 1, 1)),
-  substr(paramtoplot, 2, nchar(paramtoplot))), "\\noverlaid on ", yrstart,
-  " - ", yrend, " daily averages"), ...)
+plot_quants(swmpr_in, ...)
+
+\method{plot_quants}{swmpr}(swmpr_in, paramtoplot, yr, yrstart, yrend,
+  yaxislab = NULL, yrcolor = "red3", bgcolor1 = "lightgray",
+  bgcolor2 = "gray65", maintitle = NULL, ...)
 }
 \arguments{
-\item{dat_in}{Input data object.}
+\item{swmpr_in}{input swmpr object.}
 
-\item{paramtoplot}{Parameter of interest. Must be in quotation marks and 
-must exactly match the column name of the data frame.}
+\item{...}{additional arguments passed to or from other methods}
 
-\item{yr}{Year to feature as a line on the plot.}
+\item{paramtoplot}{chr string of parameter to plot}
 
-\item{yrstart}{Year to begin range of comparison data}
+\item{yr}{numeric of year to feature as a line on the plot}
 
-\item{yrend}{Year to end range of comparison data}
+\item{yrstart}{numeric of year to begin range of comparison data}
 
-\item{yaxislab}{Label for y-axis. Default is name of \code{paramtoplot}.}
+\item{yrend}{numeric of year to end range of comparison data}
 
-\item{yrcolor}{Line color for year of interest. Default is red3.}
+\item{yaxislab}{chr string for y-axis albel. Default is \code{paramtoplot}.}
 
-\item{bgcolor1}{Color for outer 50\% of data range. Default is lightgray.}
+\item{yrcolor}{chr string of line color for year of interest}
 
-\item{bgcolor2}{Color for middle 50\% of data range. Default is gray65.}
+\item{bgcolor1}{chr string of color for outer 50\% of data range}
 
-\item{maintitle}{Plot title. Default pastes together site name, parameter name, year to feature, and range of years to use for comparison, e.g. "GNDBHWQ 2017 Daily Average Temp overlaid on 2006-2016 daily averages".}
+\item{bgcolor2}{chr string of color for middle 50\% of data range.}
 
-\item{...}{Additional arguments passed to \code{\link[ggplot2]{ggplot}}}
+\item{maintitle}{chr string of plot title. Default pastes together site name, parameter name, year to feature, and range of years to use for comparison, e.g. 'GNDBHWQ 2017 Daily Average Temp overlaid on 2006-2016 daily averages'.}
 }
 \value{
-An R plot created using ggplot2
+A a \code{\link[ggplot2]{ggplot2}} object.
 }
 \description{
-A line for a single year is plotted over ribbons of historical data quantiles.
+A line for a single year is plotted over ribbons ofquantiles for historical data.
 }
 \details{
-This function aggregates data into daily average values for the entire time 
-series. Then it generates quantiles (min, 25\%, 75\%, max) for each individual 
-calendar day (01/01, 01/02, ... 12/31). These quantiles make up a ribbon plot
-of historical data, and a line is plotted on top of this to represent data
-from a single year in this historical context.
+The plot is based on aggregates of daily average values for the entire time series. Quantiles (min, 25\%, 75\%, max) for each individual calendar day (01/01, 01/02, ... 12/31) are used to generate a ribbon plot of historical data and the selected year in \code{yr} is plotted as a line over the ribbon for historical context.
 
 required packages: dplyr, lubridate, ggplot2, tibble
-assuming data originally imported and processed with SWMPr
 }
 \examples{
-# use data from Apalachicola NERR's 
-# Cat Point water quality station 
-data(apacpwq)
-# qaqc the data
-apacpwq <- qaqc(apacpwq)
+# qaqc
+dat <- qaqc(apacpwq)
 
 # generate a plot of salinity for 2013 overlaid on 2012-2013 data
-quant.plot(apacpwq, 'sal', yr = 2013, yrstart = 2012, yrend = 2013)
+plot_quants(dat, 'sal', yr = 2013, yrstart = 2012, yrend = 2013)
 
 # change some of the defaults
-quant.plot(apacpwq, 'sal', yr = 2013, yrstart = 2012, yrend = 2013, bgcolor1 = "lightsteelblue2", bgcolor2 = "lightsteelblue4", yaxislab = "Salinity (psu)")
-
+plot_quants(dat, 'sal', yr = 2013, yrstart = 2012, yrend = 2013, 
+ bgcolor1 = 'lightsteelblue2', bgcolor2 = 'lightsteelblue4', 
+ yaxislab = 'Salinity (psu)')
 }
 \author{
 Kim Cressman, Marcus Beck
@@ -71,3 +63,4 @@ Kim Cressman, Marcus Beck
 \concept{
 analyze
 }
+

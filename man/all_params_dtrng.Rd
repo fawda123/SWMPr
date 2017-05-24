@@ -47,3 +47,4 @@ all_params_dtrng('apaebwq', c('01/01/2013', '02/01/2013'),
 \concept{
 retrieve
 }
+

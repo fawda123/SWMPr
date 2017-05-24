@@ -49,3 +49,4 @@ subset(dat, subset = c('2012-07-01 6:00', '2012-08-01 18:15'),
 \concept{
 organize
 }
+

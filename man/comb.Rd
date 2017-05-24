@@ -2,8 +2,8 @@
 % Please edit documentation in R/swmpr_organize.R
 \name{comb}
 \alias{comb}
-\alias{comb.swmpr}
 \alias{comb.default}
+\alias{comb.swmpr}
 \title{Combine swmpr data}
 \usage{
 comb(...)
@@ -56,3 +56,4 @@ organize
 
 organize
 }
+

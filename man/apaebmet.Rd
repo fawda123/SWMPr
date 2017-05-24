@@ -43,3 +43,4 @@ An example weather dataset for Apalachicola Bay East Bay station.  The data are 
 data(apaebmet)
 }
 \keyword{datasets}
+

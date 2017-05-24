@@ -20,3 +20,4 @@ Parsing function for objects returned from CDMO web services
 \details{
 This function parses XML objects returned from the CDMO server, which are further passed to \code{\link{swmpr}}.  It is used internally by the data retrieval functions, excluding \code{\link{import_local}}.  The function does not need to be called explicitly.
 }
+

@@ -2,8 +2,8 @@
 % Please edit documentation in R/swmpr_analyze.R
 \name{ecometab}
 \alias{ecometab}
-\alias{ecometab.swmpr}
 \alias{ecometab.default}
+\alias{ecometab.swmpr}
 \title{Ecosystem metabolism}
 \usage{
 ecometab(dat_in, ...)
@@ -112,3 +112,4 @@ analyze
 
 analyze
 }
+
