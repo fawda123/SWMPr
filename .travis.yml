@@ -22,6 +22,8 @@ notifications:
 
 sudo: required
 
+group: deprecated-2017Q1
+
 os:
   - linux
   - osx
