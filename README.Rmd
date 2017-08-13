@@ -18,13 +18,13 @@ Windows: [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/g
 
 [![Downloads from the RStudio CRAN mirror](http://cranlogs.r-pkg.org/badges/grand-total/SWMPr)](http://cran.rstudio.com/package=SWMPr)
 
-#Overview 
+# Overview 
 
 The System Wide Monitoring Program ([SWMP](http://nerrs.noaa.gov/RCDefault.aspx?ID=18)) was implemented by the National Estuarine Research Reserve System ([NERRS](http://nerrs.noaa.gov/)) in 1995 to provide continuous monitoring data at over 140 continuous monitoring stations in 28 estuaries across the United States.  SWMPr (pronounced "swamper") is an R package for retrieving, organizing, and analyzing estuary monitoring data from SWMP. Please cite the package as follows:
 
-*Beck MW. 2016. SWMPr: An R package for retrieving, organizing, and analyzing environmental data for estuaries.  The R Journal. 8(1):219-232. https://journal.r-project.org/archive/2016-1/beck.pdf*
+** Beck MW. 2016. SWMPr: An R package for retrieving, organizing, and analyzing environmental data for estuaries.  The R Journal. 8(1):219-232. https://journal.r-project.org/archive/2016-1/beck.pdf **
 
-#Installing the package
+# Installing the package
 
 Install the package from CRAN as follows:
 
@@ -42,7 +42,7 @@ install_github('fawda123/SWMPr', ref = 'development')
 library(SWMPr)
 ```
 
-#Using the package
+# Using the package
 
 A detailed manuscript describing full use of the package is available from the [R Journal](https://journal.r-project.org/archive/accepted/beck.pdf). All source materials for the manuscript are available [here](https://github.com/fawda123/swmpr_manu).  A brief description of the available functions is provided below. See help documentation for more details on each function (e.g., `?all_params`).  All functions are grouped into respective categories that describe their use: retrieve, organize, and analyze.  Help files for functions in each category can be viewed as follows:
 
