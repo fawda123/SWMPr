@@ -10,7 +10,7 @@ output:
 
 ![](swmpr_logo.png)
 
-#### *Marcus W. Beck, beck.marcus@epa.gov*
+#### *Marcus W. Beck, marcusb@sccwrp.org*
 
 Linux and OS X: [![Travis-CI Build Status](https://travis-ci.org/fawda123/SWMPr.png?branch=master)](https://travis-ci.org/fawda123/SWMPr)
 
