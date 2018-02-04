@@ -488,6 +488,12 @@ import_local <- function(path, station_code, trace = FALSE){
     out[, names(out) %in% nms], 
     row.names = seq(1, nrow(out))
     )
+ 
+  # make sure relevant columns are numeric
+  parameters <- grep('datetimestamp|^f_|^c_', names(out), invert = TRUE, value = TRUE)
+  out[, parameters] <- suppressWarnings(
+    lapply(out[, parameters], function(x) as.numeric(as.character(x)))
+    )
   
   # names as lower case
   names(out) <- tolower(names(out))

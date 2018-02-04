@@ -19,6 +19,9 @@ calckl(temp, sal, atemp, wspd, bp, height = 10)
 
 \item{height}{numeric for height of anemometer (meters)}
 }
+\value{
+Returns numeric value for oxygen mass transfer coefficient (m d-1).
+}
 \description{
 Calculate oxygen mass transfer coefficient using equations in Thiebault et al. 2008.  Output is used to estimate the volumetric reaeration coefficient for ecosystem metabolism.
 }
@@ -33,4 +36,3 @@ Thebault J, Schraga TS, Cloern JE, Dunlavey EG. 2008. Primary production and car
 \seealso{
 \code{\link{ecometab}}
 }
-

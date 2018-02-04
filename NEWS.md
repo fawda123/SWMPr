@@ -1,3 +1,17 @@
+#### SWMPr 2.3.0
+
+* Added informative error message if IP address not registered for using CDMO web services
+
+* Added `plot_quants` function to evaluate trends relative to long-term averages
+
+* All numeric columns are forced to numeric atomic vectors on input
+
+* Documentation updated to indicate a return value in the `calckl` function
+
+* Fixed bug with `comb` function if differ argument is incorrect
+
+* Added option in `qaqc` to included additional columns specifying censored values (via `cens_id` function)
+
 #### SWMPr 2.2.0
 
 * Added `plot_wind` function for wind roses from weather data

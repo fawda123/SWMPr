@@ -7,11 +7,11 @@
 oxySol(t, S, P = NULL)
 }
 \arguments{
-\item{t}{tem temperature, degrees C}
+\item{t}{numeric for temperature, degrees C}
 
-\item{S}{salinity, on the Practical Salinity Scale}
+\item{S}{numeric for salinity, on the Practical Salinity Scale}
 
-\item{P}{pressure, atm}
+\item{P}{numeric for pressure, atm}
 }
 \value{
 Dissolved oxygen concentration in mg/L at 100\% saturation. If \code{P = NULL}, saturation values at 1 atm are calculated.
@@ -27,4 +27,3 @@ Benson, B.B. and Krause, D. (1984) The concentration and isotopic fractionation 
 
 Green, E.J. and Carritt, D.E. (1967) New tables for oxygen saturation of seawater. \emph{Journal of Marine Research} \bold{25,} 140-147.
 }
-

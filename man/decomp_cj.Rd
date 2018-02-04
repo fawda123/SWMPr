@@ -2,8 +2,8 @@
 % Please edit documentation in R/swmpr_analyze.R
 \name{decomp_cj}
 \alias{decomp_cj}
-\alias{decomp_cj.default}
 \alias{decomp_cj.swmpr}
+\alias{decomp_cj.default}
 \title{Simple trend decomposition of monthly swmpr data}
 \usage{
 decomp_cj(dat_in, ...)
@@ -24,11 +24,11 @@ decomp_cj(dat_in, ...)
 
 \item{vals_out}{logical indicating of numeric output is returned, default is \code{FALSE} to return a plot.}
 
-\item{event}{logical indicating if an "events" component should be determined}
+\item{event}{logical indicating if an 'events' component should be determined}
 
-\item{type}{chr string indicating the type of decomposition, either additive (\code{"add"}) or multiplicative (\code{"mult"})}
+\item{type}{chr string indicating the type of decomposition, either additive (\code{'add'}) or multiplicative (\code{'mult'})}
 
-\item{center}{chr string indicating the method of centering, either \code{"mean"} or \code{"median"}}
+\item{center}{chr string indicating the method of centering, either \code{'mean'} or \code{'median'}}
 
 \item{date_col}{chr string indicating the name of the date column which should be a date or POSIX object.}
 }
@@ -81,4 +81,3 @@ analyze
 
 analyze
 }
-

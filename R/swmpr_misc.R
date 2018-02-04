@@ -11,10 +11,10 @@
 #' @return Returns a swmpr object to be used with S3 methods
 #' 
 #' @details 
-#' This function is a simple wrapper to \code{\link[base]{structure}} that is used internally within other functions to create a swmpr object.  The function does not have to be used explicitly.  Attributes of a swmpr object include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{date_rng}, \code{timezone}, \code{stamp_class}, \code{metabolism} (if present), and \code{metab_units} (if present). 
+#' This function is a simple wrapper to \code{\link[base]{structure}} that is used internally within other functions to create a swmpr object.  The function does not have to be used explicitly.  Attributes of a swmpr object include \code{names}, \code{row.names}, \code{class}, \code{station}, \code{parameters}, \code{qaqc_cols}, \code{cens_cols}, \code{date_rng}, \code{timezone}, \code{stamp_class}, \code{metabolism} (if present), and \code{metab_units} (if present). 
 #' 
 swmpr <- function(stat_in, meta_in){
-    
+  
   if(!is.data.frame(stat_in)) 
     stop('stat_in must be data.frame')
   
@@ -22,10 +22,14 @@ swmpr <- function(stat_in, meta_in){
   qaqc_cols <- FALSE
   if(any(grepl('^f_', names(stat_in)))) qaqc_cols <- TRUE
   
-  # parameters attribute
-  parameters <- grep('datetimestamp|^f_', names(stat_in), invert = TRUE, value = TRUE)
+  # cens attribute
+  cens_cols <- FALSE
+  if(any(grepl('^c_', names(stat_in)))) cens_cols <- TRUE
   
-  # get stations, param_types attribtues
+  # parameters attribute
+  parameters <- grep('datetimestamp|^f_|^c_', names(stat_in), invert = TRUE, value = TRUE)
+  
+  # get stations, param_types attributes
   param_types <- param_names()
   param_types <- unlist(lapply(param_types, function(x) any(x %in% parameters)))
   param_types <- names(param_names())[param_types]
@@ -54,6 +58,7 @@ swmpr <- function(stat_in, meta_in){
     station = station,
     parameters = parameters, 
     qaqc_cols = qaqc_cols,
+    cens_cols = cens_cols, 
     date_rng = range(stat_in$datetimestamp),
     timezone = timezone, 
     stamp_class = class(stat_in$datetimestamp),
@@ -97,6 +102,13 @@ parser <- function(resp_in, parent_in = 'data'){
   out <- do.call('rbind', out)
   out <- data.frame(out)
   names(out) <- tolower(names(out))
+
+  # error if ip address invalid
+  if(grepl('^Invalid ip', out[1,1])){
+    msg <- as.character(out[1,])
+    msg <- paste0(msg, ', is it registered? http://cdmo.baruch.sc.edu/web-services-request/')
+    stop(msg)
+  }
   
   # return output
   return(out)
@@ -441,6 +453,8 @@ metab_day.default <- function(dat_in, tz, lat, long, ...){
 #' 
 #' @export
 #' 
+#' @return Returns numeric value for oxygen mass transfer coefficient (m d-1).
+#' 
 #' @details
 #' This function is used within the \code{\link{ecometab}} function and should not be used explicitly.
 #' 
@@ -486,12 +500,14 @@ calckl <- function(temp, sal, atemp, wspd, bp, height = 10){
 #'
 #' Finds dissolved oxygen concentration in equilibrium with water-saturated air. Function and documentation herein are from archived wq package.
 #'
-#' @param t tem temperature, degrees C
-#' @param S salinity, on the Practical Salinity Scale
-#' @param P pressure, atm
+#' @param t numeric for temperature, degrees C
+#' @param S numeric for salinity, on the Practical Salinity Scale
+#' @param P numeric for pressure, atm
 #'
 #' @details Calculations are based on the approach of Benson and Krause (1984), using Green and Carritt's (1967) equation for dependence of water vapor partial pressure on \code{t} and \code{S}. Equations are valid for temperature in the range 0-40 C and salinity in the range 0-40.
 #'
+#' @export
+#' 
 #' @return Dissolved oxygen concentration in mg/L at 100\% saturation. If \code{P = NULL}, saturation values at 1 atm are calculated.
 #'
 #' @references
