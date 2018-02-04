@@ -102,6 +102,13 @@ parser <- function(resp_in, parent_in = 'data'){
   out <- do.call('rbind', out)
   out <- data.frame(out)
   names(out) <- tolower(names(out))
+
+  # error if ip address invalid
+  if(grepl('^Invalid ip', out[1,])){
+    msg <- as.character(out[1,])
+    msg <- paste0(msg, ', is it registered? http://cdmo.baruch.sc.edu/web-services-request/')
+    stop(msg)
+  }
   
   # return output
   return(out)
