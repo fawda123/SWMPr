@@ -1,24 +1,26 @@
 ## Resubmission 
 
-This is a resubmission for a version update.  I have also added a URL for the System Wide Monitoring Program website in the Description field of the DESCRIPTION file. 
+This is a resubmission for a version update to 2.3.0.
 
 ## Test environments
-* ubuntu 12.04 (on travis-ci), R 3.2.5
-* OS X (on travis-ci), R 3.3.2
-* local Windows 7 install, R 3.3.2 
-* local Windows 7 install, Current r-devel (2016-11-06 r71633)
-* Windows install (on AppVeyor), R 3.3.2 Patched (2016-11-04 r71626)
+* ubuntu 14.04.5 LTS (on travis-ci), R 3.4.2
+* OS X (on travis-ci), R 3.4.3
+* Windows install (on AppVeyor), R 3.4.3 Patched (2018-02-03 r74202)
 * win-builder [http://win-builder.r-project.org/](http://win-builder.r-project.org/) (devel and release)
+* local Windows 7 install, R 3.4.1
 
 ## R CMD check results
 There were no ERRORs or WARNINGs. 
 
-There was 1 NOTE: 
+There was 1 NOTE, related to a change in my contact email: 
 
-Possibly mis-spelled words in DESCRIPTION:
-  Estuarine (9:66)
-  
-This is not mis-spelled.
+* checking CRAN incoming feasibility ... NOTE
+Maintainer: 'Marcus W. Beck <marcusb@sccwrp.org>'
+
+New maintainer:
+  Marcus W. Beck <marcusb@sccwrp.org>
+Old maintainer(s):
+  Marcus W. Beck <mbafs2012@gmail.com>
   
 ## Downstream dependencies
 None.
