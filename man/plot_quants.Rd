@@ -58,7 +58,7 @@ plot_quants(dat, 'sal', yr = 2013, yrstart = 2012, yrend = 2013,
  yaxislab = 'Salinity (psu)')
 }
 \author{
-Kim Cressman, Marcus Beck
+Kimberly Cressman, Marcus Beck
 }
 \concept{
 analyze

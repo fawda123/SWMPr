@@ -34,7 +34,12 @@ Depends:
     zoo
 Suggests:
     colorspace
-Authors@R: person(given = "Marcus W.", family = "Beck",
+Authors@R: c(
+  person(given = "Marcus W.", family = "Beck",
     role = c("aut","cre"),
-    email = "marcusb@sccwrp.org")
+    email = "marcusb@sccwrp.org"),
+  person(given = "Kimberly", family = "Cressman", 
+    role = c("ctb"),
+    email = "kimberly.cressman@dmr.ms.gov")
+    )
 RoxygenNote: 6.0.1

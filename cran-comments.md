@@ -1,6 +1,6 @@
 ## Resubmission 
 
-This is a resubmission for a version update to 2.3.0.
+This is a resubmission for a version update to 2.3.0.  All contributing authors were added to the DESCRIPTION file.
 
 ## Test environments
 * ubuntu 14.04.5 LTS (on travis-ci), R 3.4.2
