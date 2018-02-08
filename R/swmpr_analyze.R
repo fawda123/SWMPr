@@ -1925,7 +1925,7 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
 #' 
 #' The \code{type} argument can be used for temporal divisions of the plot.  Options include the entire year (\code{type = "default"}), seasons (\code{type = "season"}), months (\code{type = "month"}), or weekdays (\code{type = "weekday"}).  Combinations are also possible (see \code{\link[openair]{windRose}}).
 #' 
-#' @author Kim Cressman, Marcus Beck
+#' @author Kimberly Cressman, Marcus Beck
 #' 
 #' @concept analyze
 #' 
@@ -2023,7 +2023,7 @@ plot_wind.swmpr <- function(swmpr_in, years = NULL, angle = 45, width = 1.5, bre
 #' 
 #' required packages: dplyr, lubridate, ggplot2, tibble
 #' 
-#' @author Kim Cressman, Marcus Beck
+#' @author Kimberly Cressman, Marcus Beck
 #' 
 #' @concept analyze
 #' 

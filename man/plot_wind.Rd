@@ -60,7 +60,7 @@ The \code{type} argument can be used for temporal divisions of the plot.  Option
 plot_wind(apaebmet)
 }
 \author{
-Kim Cressman, Marcus Beck
+Kimberly Cressman, Marcus Beck
 }
 \concept{
 analyze
