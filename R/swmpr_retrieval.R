@@ -307,6 +307,7 @@ single_param <- function(station_code, param, Max = 100, trace = TRUE){
 #' @param  path chr string of full path to .csv files with raw data, can be a zipped or unzipped directory where the former must include the .zip extension
 #' @param  station_code chr string of station to import, typically 7 or 8 characters including wq, nut, or met extensions, may include full name with year, excluding file extension
 #' @param  trace logical indicating if progress is sent to console, default \code{FALSE}
+#' @param collMethd chr string of nutrient data to subset. 1 indicates monthly, 2 indicates diel. Default is both diel and monthly data.
 #' 
 #' @concept retrieve
 #' 
@@ -480,6 +481,16 @@ import_local <- function(path, station_code, trace = FALSE){
   
   # remove rows with no datetimestamp
   out <- out[!is.na(out$datetimestamp), ]
+  
+  # if nut, filter for relevant nutrient data
+  if(parm == 'nut'){
+    if(length(unique(out$collmethd)) == 2){
+      out <- out[out$collmethd %in% collMethd, ]
+    }else{
+      warning('This station does not have diel sampling data. All data will be retained.', call. = FALSE)
+      out <- out
+    }
+  }
   
   # convert output to data frame
   # retain only relevant columns
