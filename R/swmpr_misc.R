@@ -41,7 +41,7 @@ swmpr <- function(stat_in, meta_in){
     fcols <- grep('^f_', names(stat_in),value = TRUE)
     stat_in[, fcols] <- sapply(fcols, function(x){
       
-      out <- gsub('\\s+$', '', stat_in[, x])
+      out <- trimws(stat_in[, x], which = 'right') #gsub('\\s+$', '', stat_in[, x])
       return(out)
       
     })
