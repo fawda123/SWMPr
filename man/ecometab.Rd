@@ -8,8 +8,8 @@
 \usage{
 ecometab(dat_in, ...)
 
-\method{ecometab}{swmpr}(dat_in, depth_val = NULL, metab_units = "mmol",
-  trace = FALSE, ...)
+\method{ecometab}{swmpr}(dat_in, depth_val = NULL,
+  metab_units = "mmol", trace = FALSE, ...)
 
 \method{ecometab}{default}(dat_in, tz, lat, long, depth_val = NULL,
   metab_units = "mmol", trace = FALSE, ...)
@@ -105,10 +105,4 @@ Thebault J, Schraga TS, Cloern JE, Dunlavey EG. 2008. Primary production and car
 \seealso{
 \code{\link{calckl}} for estimating the oxygen mass transfer coefficient used with the air-sea gas exchange model, \code{\link{comb}} for combining \code{swmpr} objects, \code{\link{metab_day}} for identifying the metabolic day for each observation in the time series, \code{\link{plot_metab}} for plotting the results, and \code{\link{aggremetab}} for aggregating the metabolism attribute.
 }
-\concept{
-analyze
-
-analyze
-
-analyze
-}
+\concept{analyze}

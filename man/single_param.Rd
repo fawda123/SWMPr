@@ -36,6 +36,4 @@ single_param('hudscwq', 'do_mgl')
 \seealso{
 \code{\link{all_params}}, \code{\link{all_params_dtrng}}
 }
-\concept{
-retrieve
-}
+\concept{retrieve}

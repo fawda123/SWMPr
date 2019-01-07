@@ -57,6 +57,4 @@ aggremetab(res, by = 30, sides = 1)
 \seealso{
 \code{\link[stats]{aggregate}}, \code{\link{aggreswmp}}, \code{\link{ecometab}}, \code{\link{plot_metab}}
 }
-\concept{
-analyze
-}
+\concept{analyze}

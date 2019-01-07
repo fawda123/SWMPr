@@ -9,12 +9,13 @@
 overplot(dat_in, ...)
 
 \method{overplot}{swmpr}(dat_in, select = NULL, subset = NULL,
-  operator = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL,
-  lwd = NULL, pch = NULL, type = NULL, ...)
+  operator = NULL, ylabs = NULL, xlab = NULL, cols = NULL,
+  lty = NULL, lwd = NULL, pch = NULL, type = NULL, ...)
 
-\method{overplot}{default}(dat_in, date_var, select = NULL, ylabs = NULL,
-  xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, inset = -0.15,
-  cex = 1, xloc = "top", yloc = NULL, pch = NULL, type = NULL, ...)
+\method{overplot}{default}(dat_in, date_var, select = NULL,
+  ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL, lwd = NULL,
+  inset = -0.15, cex = 1, xloc = "top", yloc = NULL, pch = NULL,
+  type = NULL, ...)
 }
 \arguments{
 \item{dat_in}{input data object}
@@ -84,10 +85,4 @@ overplot(dat, select = c('chla_n', 'atemp'), subset = c('2012-01-01 0:0', '2013-
 \seealso{
 \code{\link{subset}}
 }
-\concept{
-analyze
-
-analyze
-
-analyze
-}
+\concept{analyze}

@@ -60,6 +60,4 @@ plot_quants(dat, 'sal', yr = 2013, yrstart = 2012, yrend = 2013,
 \author{
 Kimberly Cressman, Marcus Beck
 }
-\concept{
-analyze
-}
+\concept{analyze}

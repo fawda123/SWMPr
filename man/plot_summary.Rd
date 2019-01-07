@@ -7,8 +7,8 @@
 \usage{
 plot_summary(swmpr_in, ...)
 
-\method{plot_summary}{swmpr}(swmpr_in, param, years = NULL, plt_sep = FALSE,
-  sum_out = FALSE, ...)
+\method{plot_summary}{swmpr}(swmpr_in, param, years = NULL,
+  plt_sep = FALSE, sum_out = FALSE, ...)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}
@@ -58,8 +58,4 @@ plot_summary(dat, param = 'chla_n', year = c(2007, 2013), sum_out = TRUE)
 \seealso{
 \code{\link[ggplot2]{ggplot}}
 }
-\concept{
-analyze
-
-analyze
-}
+\concept{analyze}

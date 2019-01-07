@@ -45,8 +45,4 @@ qaqc(dat, qaqc_keep = 'CSM')
 \seealso{
 \code{\link{qaqcchk}}
 }
-\concept{
-organize
-
-organize
-}
+\concept{organize}

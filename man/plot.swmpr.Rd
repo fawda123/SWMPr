@@ -44,8 +44,4 @@ lines(dat, col = 'red')
 \seealso{
 \code{\link[graphics]{plot}}
 }
-\concept{
-analyze
-
-analyze
-}
+\concept{analyze}

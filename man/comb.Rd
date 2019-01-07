@@ -8,7 +8,8 @@
 \usage{
 comb(...)
 
-\method{comb}{swmpr}(..., timestep = 15, differ = NULL, method = "union")
+\method{comb}{swmpr}(..., timestep = 15, differ = NULL,
+  method = "union")
 
 \method{comb}{default}(..., date_col, timestep = 15, differ = NULL,
   method = "union")
@@ -49,10 +50,4 @@ comb(swmp1, swmp2, timestep = 120, method = 'union')
 \seealso{
 \code{\link{setstep}}
 }
-\concept{
-organize
-
-organize
-
-organize
-}
+\concept{organize}

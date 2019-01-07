@@ -43,4 +43,4 @@ Authors@R: c(
     role = c("ctb"),
     email = "kimberly.cressman@dmr.ms.gov")
     )
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0

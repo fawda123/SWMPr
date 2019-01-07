@@ -44,6 +44,4 @@ all_params_dtrng('apaebwq', c('01/01/2013', '02/01/2013'),
 \seealso{
 \code{\link{all_params}}, \code{\link{single_param}}
 }
-\concept{
-retrieve
-}
+\concept{retrieve}

@@ -8,12 +8,13 @@
 \usage{
 decomp_cj(dat_in, ...)
 
-\method{decomp_cj}{swmpr}(dat_in, param, vals_out = FALSE, event = TRUE,
-  type = c("add", "mult"), center = c("mean", "median"), ...)
+\method{decomp_cj}{swmpr}(dat_in, param, vals_out = FALSE,
+  event = TRUE, type = c("add", "mult"), center = c("mean",
+  "median"), ...)
 
 \method{decomp_cj}{default}(dat_in, param, date_col, vals_out = FALSE,
-  event = TRUE, type = c("add", "mult"), center = c("mean", "median"),
-  ...)
+  event = TRUE, type = c("add", "mult"), center = c("mean",
+  "median"), ...)
 }
 \arguments{
 \item{dat_in}{input data object}
@@ -74,10 +75,4 @@ Cloern, J.E., Jassby, A.D. 2010. Patterns and scales of phytoplankton variabilit
 \seealso{
 \code{\link[stats]{ts}}
 }
-\concept{
-analyze
-
-analyze
-
-analyze
-}
+\concept{analyze}

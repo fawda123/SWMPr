@@ -343,7 +343,7 @@ single_param <- function(station_code, param, Max = 100, trace = TRUE){
 #' ## import, do not include file extension
 #' import_local(path, 'apaebmet') 
 #' }
-import_local <- function(path, station_code, trace = FALSE){
+import_local <- function(path, station_code, trace = FALSE, collMethd = c('1', '2')){
   
   # add .zip if not present
   if(file.exists(paste0(path, '.zip'))){

@@ -64,8 +64,4 @@ plot_metab(res, by = 30)
 \seealso{
 \code{\link{aggremetab}}, \code{\link{ecometab}}
 }
-\concept{
-analyze
-
-analyze
-}
+\concept{analyze}

@@ -41,6 +41,4 @@ map_reserve('gtmss', zoom = 15, map_type = 'satellite',
 \seealso{
 \code{\link[ggmap]{get_map}}, \code{\link[ggmap]{ggmap}}, \code{\link[ggplot2]{ggplot}}
 }
-\concept{
-analyze
-}
+\concept{analyze}

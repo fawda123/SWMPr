@@ -79,10 +79,4 @@ M. Kendall and A. Stuart (1983) The Advanced Theory of Statistics, Vol. 3, Griff
 \seealso{
 \code{\link[stats]{decompose}}, \code{\link[stats]{ts}}, \code{\link[stats]{stl}}
 }
-\concept{
-analyze
-
-analyze
-
-analyze
-}
+\concept{analyze}

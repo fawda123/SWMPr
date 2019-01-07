@@ -4,8 +4,8 @@
 \alias{subset.swmpr}
 \title{Subset a swmpr object}
 \usage{
-\method{subset}{swmpr}(x, subset = NULL, select = NULL, operator = NULL,
-  rem_rows = FALSE, rem_cols = FALSE, ...)
+\method{subset}{swmpr}(x, subset = NULL, select = NULL,
+  operator = NULL, rem_rows = FALSE, rem_cols = FALSE, ...)
 }
 \arguments{
 \item{x}{input swmpr object}
@@ -46,6 +46,4 @@ subset(dat, subset = c('2012-07-01 6:00', '2012-08-01 18:15'),
 \seealso{
 \code{\link[base]{subset}}
 }
-\concept{
-organize
-}
+\concept{organize}

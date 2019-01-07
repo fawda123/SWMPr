@@ -4,7 +4,8 @@
 \alias{import_local}
 \title{Import local CDMO data}
 \usage{
-import_local(path, station_code, trace = FALSE)
+import_local(path, station_code, trace = FALSE, collMethd = c("1",
+  "2"))
 }
 \arguments{
 \item{path}{chr string of full path to .csv files with raw data, can be a zipped or unzipped directory where the former must include the .zip extension}
@@ -12,6 +13,8 @@ import_local(path, station_code, trace = FALSE)
 \item{station_code}{chr string of station to import, typically 7 or 8 characters including wq, nut, or met extensions, may include full name with year, excluding file extension}
 
 \item{trace}{logical indicating if progress is sent to console, default \code{FALSE}}
+
+\item{collMethd}{chr string of nutrient data to subset. 1 indicates monthly, 2 indicates diel. Default is both diel and monthly data.}
 }
 \value{
 Returns a swmpr object with all parameters and QAQC columns for the station.  The full date range in the raw data are also imported.
@@ -47,6 +50,4 @@ import_local(path, 'apaebmet')
 \seealso{
 \code{\link{all_params}}, \code{\link{all_params_dtrng}}, \code{\link{rem_reps}}, \code{\link{single_param}}
 }
-\concept{
-retrieve
-}
+\concept{retrieve}

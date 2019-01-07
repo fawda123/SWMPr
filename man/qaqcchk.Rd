@@ -33,8 +33,4 @@ qaqcchk(dat)
 \seealso{
 \code{\link{qaqc}}
 }
-\concept{
-organize
-
-organize
-}
+\concept{organize}

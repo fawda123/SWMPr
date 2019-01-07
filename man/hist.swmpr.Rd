@@ -34,6 +34,4 @@ hist(dat$do_mgl)
 \seealso{
 \code{\link[graphics]{hist}}
 }
-\concept{
-analyze
-}
+\concept{analyze}

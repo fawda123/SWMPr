@@ -46,6 +46,4 @@ lines(dat)
 \seealso{
 \code{\link[zoo]{na.approx}}
 }
-\concept{
-analyze
-}
+\concept{analyze}
