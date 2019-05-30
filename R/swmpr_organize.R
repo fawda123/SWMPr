@@ -38,8 +38,6 @@ qaqc <- function(swmpr_in, ...) UseMethod('qaqc')
 #' @param qaqc_keep character string of qaqc flags to keep, default \code{'0'}, any number of flag codes can be supplied including three character error codes (see examples)
 #' @param trace logical for progress output on console, default \code{FALSE}
 #' 
-#' @concept organize
-#' 
 #' @export
 #' 
 #' @method qaqc swmpr
@@ -210,8 +208,6 @@ qaqcchk <- function(swmpr_in) UseMethod('qaqcchk')
 #' 
 #' @export
 #' 
-#' @concept organize
-#' 
 #' @method qaqcchk swmpr
 qaqcchk.swmpr <- function(swmpr_in){
   
@@ -282,8 +278,6 @@ cens_id <- function(swmpr_in, ...) UseMethod('cens_id')
 #' @rdname cens_id
 #' 
 #' @export
-#' 
-#' @concept organize
 #' 
 #' @method cens_id swmpr
 cens_id.swmpr <- function(swmpr_in, flag_type = 'both', select = NULL, ...){ 
@@ -403,8 +397,6 @@ rem_reps <- function(swmpr_in, ...) UseMethod('rem_reps')
 #' @rdname rem_reps
 #' 
 #' @export
-#' 
-#' @concept organize
 #' 
 #' @method rem_reps swmpr
 rem_reps.swmpr <- function(swmpr_in, FUN = function(x) mean(x, na.rm = TRUE), ...){
@@ -656,8 +648,6 @@ setstep <- function(dat_in, ...) UseMethod('setstep')
 #' 
 #' @export
 #' 
-#' @concept organize
-#' 
 #' @method setstep swmpr
 setstep.swmpr <- function(dat_in, timestep = 15, differ= NULL, ...){ 
   
@@ -677,8 +667,6 @@ setstep.swmpr <- function(dat_in, timestep = 15, differ= NULL, ...){
 #' @rdname setstep
 #' 
 #' @export
-#' 
-#' @concept organize
 #' 
 #' @method setstep default
 setstep.default <- function(dat_in, date_col, timestep = 15, differ= NULL, ...){ 
@@ -795,8 +783,6 @@ comb <- function(...) UseMethod('comb')
 #' 
 #' @export
 #' 
-#' @concept organize
-#' 
 #' @method comb swmpr
 comb.swmpr <- function(..., timestep = 15, differ= NULL, method = 'union'){
   
@@ -846,8 +832,6 @@ comb.swmpr <- function(..., timestep = 15, differ= NULL, method = 'union'){
 #' @rdname comb
 #' 
 #' @export
-#' 
-#' @concept organize
 #' 
 #' @method comb default
 comb.default <- function(..., date_col, timestep = 15, differ= NULL, method = 'union'){

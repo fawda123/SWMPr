@@ -1,0 +1,18 @@
+bibentry(bibtype = "Article",
+  title        = "{SWMPr: An R Package for Retrieving, Organizing, and Analyzing Environmental Data for Estuaries}",
+  author       = c(
+                  person(
+                    given = c("Marcus", "W."),
+                    family = "Beck",
+                    email = "marcusb@sccwrp.org"
+                    )
+                  ),
+  journal      = "{The R Journal}",
+  year         = "2016",
+  volume       = "8",
+  number       = "1",
+  pages        = "219-232",
+  doi          = "10.32614/RJ-2016-015",
+
+  header       = "To cite SWMPr in publications use:"
+)

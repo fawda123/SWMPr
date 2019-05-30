@@ -1,3 +1,11 @@
+#### SWMPr 2.3.1
+
+* Added `collMethd` argument to `import_local` function to specify diel or standard monthly sampling for nutrient samples
+
+* Minor fix to `swmpr` function if trailing white spaces found at end of each qaqc column
+
+* Minor fix to help files if searching by concept, e.g., `help.search('analyze', package = "SWMPr")`
+
 #### SWMPr 2.3.0
 
 * Added informative error message if IP address not registered for using CDMO web services

@@ -530,8 +530,6 @@ decomp <- function(dat_in, ...) UseMethod('decomp')
 #' @param frequency chr string or numeric vector indicating the periodic component of the input parameter.  Only \code{'daily'} or \code{'annual'} are accepted as chr strings.  Otherwise a numeric vector specifies the number of observations required for a full cycle of the input parameter.  Defaults to \code{'daily'} for a diurnal parameter.
 #' @param start numeric vector indicating the starting value for the time series given the frequency.  Only required if \code{frequency} is numeric. See \code{\link[stats]{ts}}.
 #' 
-#' @concept analyze
-#' 
 #' @export
 #' 
 #' @method decomp swmpr
@@ -555,8 +553,6 @@ decomp.swmpr <- function(dat_in, param, type = 'additive', frequency = 'daily', 
 #' @rdname decomp
 #' 
 #' @param date_col chr string of the name of the date column
-#' 
-#' @concept analyze
 #' 
 #' @export
 #' 
@@ -672,8 +668,6 @@ decomp_cj <- function(dat_in, ...) UseMethod('decomp_cj')
 #' 
 #' @export
 #' 
-#' @concept analyze
-#' 
 #' @method decomp_cj swmpr
 decomp_cj.swmpr <- function(dat_in, param, vals_out = FALSE, event = TRUE, type = c('add', 'mult'), center = c('mean', 'median'), ...){
   
@@ -693,8 +687,6 @@ decomp_cj.swmpr <- function(dat_in, param, vals_out = FALSE, event = TRUE, type 
 #' @rdname decomp_cj
 #' 
 #' @export
-#' 
-#' @concept analyze
 #' 
 #' @method decomp_cj default
 decomp_cj.default <- function(dat_in, param, date_col, vals_out = FALSE, event = TRUE, type = c('add', 'mult'), center = c('mean', 'median'), ...){
@@ -816,8 +808,6 @@ plot.swmpr <- function(x, type = 'l', ...) {
 #' @importFrom stats formula
 #' @importFrom graphics lines
 #' 
-#' @concept analyze
-#' 
 #' @method lines swmpr
 lines.swmpr <- function(x, ...) {
     
@@ -936,8 +926,6 @@ plot_summary <- function(swmpr_in, ...) UseMethod('plot_summary')
 #' @rdname plot_summary
 #' 
 #' @export
-#' 
-#' @concept analyze
 #' 
 #' @method plot_summary swmpr
 plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, sum_out = FALSE, ...){
@@ -1255,8 +1243,6 @@ overplot <- function(dat_in, ...) UseMethod('overplot')
 #' 
 #' @export
 #' 
-#' @concept analyze
-#' 
 #' @method overplot swmpr
 overplot.swmpr <- function(dat_in, select = NULL, subset = NULL, operator = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, pch = NULL, type = NULL, ...){
   
@@ -1280,8 +1266,6 @@ overplot.swmpr <- function(dat_in, select = NULL, subset = NULL, operator = NULL
 #' 
 #' @importFrom grDevices colorRampPalette
 #' @importFrom graphics axis axis.POSIXct legend mtext par
-#' 
-#' @concept analyze
 #' 
 #' @method overplot default
 overplot.default <- function(dat_in, date_var, select = NULL, ylabs = NULL, xlab = NULL, cols = NULL, lty = NULL, lwd = NULL, inset = -0.15, cex = 1, xloc = 'top', yloc = NULL, pch = NULL, type = NULL, ...){
@@ -1475,8 +1459,6 @@ ecometab <- function(dat_in, ...) UseMethod('ecometab')
 #' 
 #' @export
 #' 
-#' @concept analyze
-#' 
 #' @method ecometab swmpr
 ecometab.swmpr <- function(dat_in, depth_val = NULL, metab_units = 'mmol', trace = FALSE, ...){
   
@@ -1524,8 +1506,6 @@ ecometab.swmpr <- function(dat_in, depth_val = NULL, metab_units = 'mmol', trace
 #' @rdname ecometab
 #'
 #' @export
-#'
-#' @concept analyze
 #' 
 #' @method ecometab default
 ecometab.default <- function(dat_in, tz, lat, long, depth_val = NULL, metab_units = 'mmol', trace = FALSE, ...){
@@ -1775,8 +1755,6 @@ plot_metab <- function(swmpr_in, ...) UseMethod('plot_metab')
 #' @rdname plot_metab
 #'
 #' @export
-#'
-#' @concept analyze
 #'
 #' @method plot_metab swmpr
 plot_metab.swmpr <- function(swmpr_in, by = 'months', alpha = 0.05, width = 10, pretty = TRUE, ...){
