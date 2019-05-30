@@ -55,8 +55,6 @@ aggreswmp <- function(swmpr_in, ...) UseMethod('aggreswmp')
 
 #' @rdname aggreswmp
 #' 
-#' @concept analyze
-#' 
 #' @export
 #'
 #' @method aggreswmp swmpr
