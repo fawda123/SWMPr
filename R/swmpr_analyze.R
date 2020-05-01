@@ -1651,11 +1651,11 @@ ecometab.default <- function(dat_in, tz, lat, long, depth_val = NULL, metab_unit
       } else {
         #day
         DOF_d <- mean(with(x[x$solar_period == 'sunrise', ], ddo * H), na.rm = T)
-        D_d <- mean(with(x[x$solar_period == 'sunrise', ], D), na.rm = T)
+        D_d <- mean(with(x[x$solar_period == 'sunrise', ], D * H), na.rm = T)
         
         #night
         DOF_n <- mean(with(x[x$solar_period == 'sunset', ], ddo * H), na.rm = T)
-        D_n <- mean(with(x[x$solar_period == 'sunset', ], D), na.rm = T)
+        D_n <- mean(with(x[x$solar_period == 'sunset', ], D * H), na.rm = T)
         
       }
       
