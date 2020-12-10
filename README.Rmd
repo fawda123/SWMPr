@@ -12,9 +12,9 @@ output:
 
 #### *Marcus W. Beck, marcusb@sccwrp.org*
 
-Linux and OS X: [![Travis-CI Build Status](https://travis-ci.org/fawda123/SWMPr.png?branch=development)](https://travis-ci.org/fawda123/SWMPr)
+Linux and OS X: [![Build Status](https://travis-ci.org/fawda123/SWMPr.svg?branch=master)](https://travis-ci.org/fawda123/SWMPr)
 
-Windows: [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/fawda123/SWMPr?branch=development)](https://ci.appveyor.com/project/fawda123/SWMPr)
+Windows: [![Build status](https://ci.appveyor.com/api/projects/status/kouqfwfx6bnk13qq?svg=true)](https://ci.appveyor.com/project/fawda123/swmpr)
 
 [![Downloads from the RStudio CRAN mirror](http://cranlogs.r-pkg.org/badges/grand-total/SWMPr)](http://cran.rstudio.com/package=SWMPr)
 
