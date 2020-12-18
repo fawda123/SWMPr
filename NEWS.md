@@ -1,6 +1,6 @@
 ## SWMPr 2.4.0
 
-* Each function is now in it's own file instead of grouped by categories (thanks Kim!)
+* Each function is now in its own file instead of grouped by categories (thanks Kim!)
 
 * Fix to gas exchange estimate for correct units in `ecometab` function
 
