@@ -4,7 +4,7 @@ bibentry(bibtype = "Article",
                   person(
                     given = c("Marcus", "W."),
                     family = "Beck",
-                    email = "marcusb@sccwrp.org"
+                    email = "mbeck@tbep.org"
                     )
                   ),
   journal      = "{The R Journal}",

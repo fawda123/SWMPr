@@ -1,17 +1,17 @@
 Package: SWMPr
 Type: Package
 Title: Retrieving, Organizing, and Analyzing Estuary Monitoring Data
-Version: 2.3.2
-Date: 2020-05-06
+Version: 2.4.0
+Date: 2020-12-18
 Author: Marcus W. Beck [aut, cre],
   Kimberly Cressman [ctb]
-Maintainer: Marcus W. Beck <marcusb@sccwrp.org>
+Maintainer: Marcus W. Beck <mbeck@tbep.org>
 Description: Tools for retrieving, organizing, and analyzing environmental
     data from the System Wide Monitoring Program of the National Estuarine
     Research Reserve System <http://cdmo.baruch.sc.edu/>. These tools
     address common challenges associated with continuous time series data
     for environmental decision making.
-BugReports: http://github.com/fawda123/SWMPr/issues
+BugReports: https://github.com/fawda123/SWMPr/issues
 License: CC0
 Imports:
     data.table,
@@ -35,12 +35,12 @@ Depends:
 Suggests:
     colorspace,
     ggmap,
-    knitr,
+    knitr, 
     rmarkdown
 Authors@R: c(
   person(given = "Marcus W.", family = "Beck",
     role = c("aut","cre"),
-    email = "marcusb@sccwrp.org"),
+    email = "mbeck@tbep.org"),
   person(given = "Kimberly", family = "Cressman", 
     role = c("ctb"),
     email = "kimberly.cressman@dmr.ms.gov")

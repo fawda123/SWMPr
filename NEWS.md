@@ -1,3 +1,11 @@
+## SWMPr 2.4.0
+
+* Each function is now in it's own file instead of grouped by categories (thanks Kim!)
+
+* Fix to gas exchange estimate for correct units in `ecometab` function
+
+* Fixing broken URLs in vignette and package documentation
+
 ## SWMPr 2.3.1
 
 * Added `collMethd` argument to `import_local` function to specify diel or standard monthly sampling for nutrient samples
