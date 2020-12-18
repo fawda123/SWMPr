@@ -16,7 +16,6 @@ License: CC0
 Imports:
     data.table,
     httr,
-    ggmap,
     gridExtra,
     maptools,
     oce,
@@ -34,7 +33,8 @@ Depends:
     ggplot2,
     zoo
 Suggests:
-    colorspace
+    colorspace, 
+    ggmap
 Authors@R: c(
   person(given = "Marcus W.", family = "Beck",
     role = c("aut","cre"),

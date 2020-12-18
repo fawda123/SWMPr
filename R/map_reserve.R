@@ -8,7 +8,7 @@
 #' @param text_col chr string for text color of station names, passed to \code{\link[ggplot2]{geom_text}}
 #' @param map_type chr string indicating the type of base map obtained from Google maps, values are \code{terrain} (default), \code{satellite}, \code{roadmap}, or \code{hybrid} 
 #' 
-#' @import ggmap ggplot2
+#' @import ggplot2
 #' 
 #' @concept analyze
 #' 
@@ -41,26 +41,30 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
   stats <- paste(paste0('^', nerr_site_id), collapse = '|')
   stats <- dat_locs[grepl(stats, dat_locs$station_code), ]
   
-  # base map
-  mapImageData <- suppressMessages(
-    ggmap::get_map(
-      location = c(lon = mean(stats$longitude),lat = mean(stats$latitude)),
-      source = 'google',
-      maptype = map_type,
-      zoom = zoom,
-      messaging = FALSE
+  if(requireNamespace('ggmap', quietly = TRUE)){
+    
+    # base map
+    mapImageData <- suppressMessages(
+      ggmap::get_map(
+        location = c(lon = mean(stats$longitude),lat = mean(stats$latitude)),
+        source = 'google',
+        maptype = map_type,
+        zoom = zoom,
+        messaging = FALSE
+      )
     )
-  )
-  
-  # plot
-  p <- ggmap::ggmap(mapImageData,
-                    extent = 'panel'
-  ) + 
-    geom_text(data = stats, aes_string(x = 'longitude', y = 'latitude', 
-                                       label= 'station_code'), size = text_sz, colour = text_col
-    ) +
-    ylab('Latitude') +
-    xlab('Longitude')
+    
+    # plot
+    p <- ggmap::ggmap(mapImageData,
+                      extent = 'panel'
+    ) + 
+      geom_text(data = stats, aes_string(x = 'longitude', y = 'latitude', 
+                                         label= 'station_code'), size = text_sz, colour = text_col
+      ) +
+      ylab('Latitude') +
+      xlab('Longitude')
+    
+  }
   
   return(p)
   
