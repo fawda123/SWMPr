@@ -12,3 +12,4 @@
 ^cran-comments\.md$
 ^swmpr_logo.png$
 ^Thumbs.db$
+^\.github$

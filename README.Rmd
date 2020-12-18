@@ -6,10 +6,8 @@ output: github_document
 
 #### *Marcus W. Beck, marcusb@sccwrp.org*
 
-Linux and OS X: [![Build Status](https://travis-ci.org/fawda123/SWMPr.svg?branch=master)](https://travis-ci.org/fawda123/SWMPr)
-
-Windows: [![Build status](https://ci.appveyor.com/api/projects/status/kouqfwfx6bnk13qq?svg=true)](https://ci.appveyor.com/project/fawda123/swmpr)
-
+[![R-CMD-check](https://github.com/fawda123/SWMPr/workflows/R-CMD-check/badge.svg)](https://github.com/fawda123/SWMPr/actions)
+[![pkgdown](https://github.com/fawda123/SWMPr/workflows/pkgdown/badge.svg)](https://github.com/fawda123/SWMPr/actions)
 [![Downloads from the RStudio CRAN mirror](http://cranlogs.r-pkg.org/badges/grand-total/SWMPr)](http://cran.rstudio.com/package=SWMPr)
 
 # Overview 
