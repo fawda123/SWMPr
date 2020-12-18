@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1517782061353.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3861895596",
+    "id" : "B66662D3",
+    "lastKnownWriteTime" : 1517782207,
+    "last_content_update" : 1517782207641,
+    "path" : "C:/proj/swmpr/.travis.yml",
+    "project_path" : ".travis.yml",
+    "properties" : {
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "yaml"
+}

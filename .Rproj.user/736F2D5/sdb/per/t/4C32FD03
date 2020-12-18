@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "Package: SWMPr\nType: Package\nTitle: Retrieving, Organizing, and Analyzing Estuary Monitoring Data\nVersion: 2.3.0\nDate: 2018-02-04\nAuthor: Marcus W. Beck [aut, cre]\nMaintainer: Marcus W. Beck <marcusb@sccwrp.org>\nDescription: Tools for retrieving, organizing, and analyzing environmental\n    data from the System Wide Monitoring Program of the National Estuarine\n    Research Reserve System <http://cdmo.baruch.sc.edu/>. These tools\n    address common challenges associated with continuous time series data\n    for environmental decision making.\nBugReports: http://github.com/fawda123/SWMPr/issues\nLicense: CC0\nImports:\n    data.table,\n    httr,\n    ggmap,\n    gridExtra,\n    maptools,\n    oce,\n    dplyr,\n    lattice,\n    openair,\n    RColorBrewer,\n    reshape2,\n    tictoc,\n    tidyr,\n    XML\nLazyData: true\nDepends:\n    R (>= 3.2.0),\n    ggplot2,\n    zoo\nSuggests:\n    colorspace\nAuthors@R: person(given = \"Marcus W.\", family = \"Beck\",\n    role = c(\"aut\",\"cre\"),\n    email = \"marcusb@sccwrp.org\")\nRoxygenNote: 6.0.1\n",
+    "created" : 1517782541561.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "17384335",
+    "id" : "4C32FD03",
+    "lastKnownWriteTime" : 1517783452,
+    "last_content_update" : 1517783452951,
+    "path" : "C:/proj/swmpr/DESCRIPTION",
+    "project_path" : "DESCRIPTION",
+    "properties" : {
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "dcf"
+}

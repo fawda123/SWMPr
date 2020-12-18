@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1517776758089.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1825739278",
+    "id" : "651F3DC4",
+    "lastKnownWriteTime" : 1517777150,
+    "last_content_update" : 1517777150,
+    "path" : "C:/proj/swmpr/R/swmpr_retrieval.R",
+    "project_path" : "R/swmpr_retrieval.R",
+    "properties" : {
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

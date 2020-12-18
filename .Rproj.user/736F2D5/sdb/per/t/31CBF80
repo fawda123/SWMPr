@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "## Resubmission \n\nThis is a resubmission for a version update to 2.3.0.\n\n## Test environments\n* ubuntu 14.04.5 LTS (on travis-ci), R 3.4.2\n* OS X (on travis-ci), R 3.4.3\n* Windows install (on AppVeyor), R 3.4.3 Patched (2018-02-03 r74202)\n* win-builder [http://win-builder.r-project.org/](http://win-builder.r-project.org/) (devel and release)\n* local Windows 7 install, R 3.4.1\n\n## R CMD check results\nThere were no ERRORs or WARNINGs. \n\nThere was 1 NOTE, related to a change in my contact email: \n\n* checking CRAN incoming feasibility ... NOTE\nMaintainer: 'Marcus W. Beck <marcusb@sccwrp.org>'\n\nNew maintainer:\n  Marcus W. Beck <marcusb@sccwrp.org>\nOld maintainer(s):\n  Marcus W. Beck <mbafs2012@gmail.com>\n  \n## Downstream dependencies\nNone.\n",
+    "created" : 1517783517176.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1947462920",
+    "id" : "31CBF80",
+    "lastKnownWriteTime" : 1517784832,
+    "last_content_update" : 1517784832646,
+    "path" : "C:/proj/swmpr/cran-comments.md",
+    "project_path" : "cran-comments.md",
+    "properties" : {
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "markdown"
+}

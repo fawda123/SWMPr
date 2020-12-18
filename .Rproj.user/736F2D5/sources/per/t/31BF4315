@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1588337054008.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "887612626",
+    "id" : "31BF4315",
+    "lastKnownWriteTime" : 1588337744,
+    "last_content_update" : 1588337744,
+    "path" : "C:/proj/swmpr/R/swmpr_analyze.R",
+    "project_path" : "R/swmpr_analyze.R",
+    "properties" : {
+        "cursorPosition" : "1651,12",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 9,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

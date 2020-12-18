@@ -1,0 +1,24 @@
+{
+    "id": "D3DB93C4",
+    "path": "C:/proj/SWMPr/.github/workflows/render-rmarkdown.yaml",
+    "project_path": ".github/workflows/render-rmarkdown.yaml",
+    "type": "yaml",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1608297589900.0,
+    "source_on_save": false,
+    "relative_order": 4,
+    "properties": {
+        "cursorPosition": "21,52",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1608297599,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1608297599320,
+    "read_only": false,
+    "read_only_alternatives": []
+}
