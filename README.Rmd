@@ -36,7 +36,7 @@ library(SWMPr)
 
 # Using the package
 
-A detailed manuscript describing full use of the package is available from the [R Journal](https://journal.r-project.org/archive/accepted/beck.pdf). All source materials for the manuscript are available [here](https://github.com/fawda123/swmpr_manu).  A brief description of the available functions is provided below. See help documentation for more details on each function (e.g., `?all_params`).  All functions are grouped into respective categories that describe their use: retrieve, organize, and analyze.  Help files for functions in each category can be viewed as follows:
+A manuscript describing full use of the package is available from the [R Journal](https://journal.r-project.org/archive/accepted/beck.pdf). All source materials for the manuscript are available [here](https://github.com/fawda123/swmpr_manu).  A brief description of the available functions is provided below. See help documentation for more details on each function (e.g., `?all_params`).  All functions are grouped into respective categories that describe their use: retrieve, organize, and analyze.  Help files for functions in each category can be viewed as follows:
 
 ```{r eval = F, message = F}
 help.search('retrieve', package = 'SWMPr')
