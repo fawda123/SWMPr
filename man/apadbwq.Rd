@@ -4,7 +4,8 @@
 \name{apadbwq}
 \alias{apadbwq}
 \title{Example water quality data for Apalachicola Bay Dry Bar station.}
-\format{A \code{\link{swmpr}} object and \code{\link[base]{data.frame}} with 70176 rows and 25 variables:
+\format{
+A \code{\link{swmpr}} object and \code{\link[base]{data.frame}} with 70176 rows and 25 variables:
 \describe{
   \item{\code{datetimestamp}}{POSIXct}
   \item{\code{temp}}{num}
@@ -31,7 +32,8 @@
   \item{\code{f_turb}}{chr}
   \item{\code{chlfluor}}{num}
   \item{\code{f_chlfluor}}{chr}
-}}
+}
+}
 \source{
 \url{https://s3.amazonaws.com/swmpexdata/zip_ex.zip}
 }

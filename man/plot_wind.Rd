@@ -7,11 +7,24 @@
 \usage{
 plot_wind(swmpr_in, ...)
 
-\method{plot_wind}{swmpr}(swmpr_in, years = NULL, angle = 45,
-  width = 1.5, breaks = 5, paddle = FALSE, grid.line = 10,
-  max.freq = 30, cols = "GnBu", annotate = FALSE, main = NULL,
-  type = "default", between = list(x = 1, y = 1),
-  par.settings = NULL, strip = NULL, ...)
+\method{plot_wind}{swmpr}(
+  swmpr_in,
+  years = NULL,
+  angle = 45,
+  width = 1.5,
+  breaks = 5,
+  paddle = FALSE,
+  grid.line = 10,
+  max.freq = 30,
+  cols = "GnBu",
+  annotate = FALSE,
+  main = NULL,
+  type = "default",
+  between = list(x = 1, y = 1),
+  par.settings = NULL,
+  strip = NULL,
+  ...
+)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}

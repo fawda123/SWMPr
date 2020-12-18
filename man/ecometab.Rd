@@ -8,11 +8,18 @@
 \usage{
 ecometab(dat_in, ...)
 
-\method{ecometab}{swmpr}(dat_in, depth_val = NULL,
-  metab_units = "mmol", trace = FALSE, ...)
+\method{ecometab}{swmpr}(dat_in, depth_val = NULL, metab_units = "mmol", trace = FALSE, ...)
 
-\method{ecometab}{default}(dat_in, tz, lat, long, depth_val = NULL,
-  metab_units = "mmol", trace = FALSE, ...)
+\method{ecometab}{default}(
+  dat_in,
+  tz,
+  lat,
+  long,
+  depth_val = NULL,
+  metab_units = "mmol",
+  trace = FALSE,
+  ...
+)
 }
 \arguments{
 \item{dat_in}{Input data object, see details for required time series}

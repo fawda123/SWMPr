@@ -7,8 +7,7 @@
 \usage{
 cens_id(swmpr_in, ...)
 
-\method{cens_id}{swmpr}(swmpr_in, flag_type = "both", select = NULL,
-  ...)
+\method{cens_id}{swmpr}(swmpr_in, flag_type = "both", select = NULL, ...)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}

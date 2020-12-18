@@ -4,7 +4,8 @@
 \name{apacpnut}
 \alias{apacpnut}
 \title{Example nutrient data for Apalachicola Bay Cat Point station.}
-\format{A \code{\link{swmpr}} object and \code{\link[base]{data.frame}} with 215 rows and 13 variables:
+\format{
+A \code{\link{swmpr}} object and \code{\link[base]{data.frame}} with 215 rows and 13 variables:
 \describe{
   \item{\code{datetimestamp}}{POSIXct}
   \item{\code{po4f}}{num}
@@ -19,7 +20,8 @@
   \item{\code{f_no23f}}{chr}
   \item{\code{chla_n}}{num}
   \item{\code{f_chla_n}}{chr}
-}}
+}
+}
 \source{
 \url{https://s3.amazonaws.com/swmpexdata/zip_ex.zip}
 }

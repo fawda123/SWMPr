@@ -7,8 +7,14 @@
 \usage{
 plot_summary(swmpr_in, ...)
 
-\method{plot_summary}{swmpr}(swmpr_in, param, years = NULL,
-  plt_sep = FALSE, sum_out = FALSE, ...)
+\method{plot_summary}{swmpr}(
+  swmpr_in,
+  param,
+  years = NULL,
+  plt_sep = FALSE,
+  sum_out = FALSE,
+  ...
+)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}

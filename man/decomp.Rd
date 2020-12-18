@@ -8,11 +8,24 @@
 \usage{
 decomp(dat_in, ...)
 
-\method{decomp}{swmpr}(dat_in, param, type = "additive",
-  frequency = "daily", start = NULL, ...)
+\method{decomp}{swmpr}(
+  dat_in,
+  param,
+  type = "additive",
+  frequency = "daily",
+  start = NULL,
+  ...
+)
 
-\method{decomp}{default}(dat_in, param, date_col, type = "additive",
-  frequency = "daily", start = NULL, ...)
+\method{decomp}{default}(
+  dat_in,
+  param,
+  date_col,
+  type = "additive",
+  frequency = "daily",
+  start = NULL,
+  ...
+)
 }
 \arguments{
 \item{dat_in}{input data object}

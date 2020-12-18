@@ -4,13 +4,15 @@
 \name{stat_locs}
 \alias{stat_locs}
 \title{Locations of NERRS sites}
-\format{A \code{\link[base]{data.frame}} object with 161 rows and 4 variables:
+\format{
+A \code{\link[base]{data.frame}} object with 161 rows and 4 variables:
 \describe{
   \item{\code{station_code}}{chr}
   \item{\code{latitude}}{numeric}
   \item{\code{longitude}}{numeric}
   \item{\code{gmt_off}}{int}
-}}
+}
+}
 \usage{
 stat_locs
 }

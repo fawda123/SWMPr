@@ -7,9 +7,19 @@
 \usage{
 plot_quants(swmpr_in, ...)
 
-\method{plot_quants}{swmpr}(swmpr_in, paramtoplot, yr, yrstart, yrend,
-  yaxislab = NULL, yrcolor = "red3", bgcolor1 = "lightgray",
-  bgcolor2 = "gray65", maintitle = NULL, ...)
+\method{plot_quants}{swmpr}(
+  swmpr_in,
+  paramtoplot,
+  yr,
+  yrstart,
+  yrend,
+  yaxislab = NULL,
+  yrcolor = "red3",
+  bgcolor1 = "lightgray",
+  bgcolor2 = "gray65",
+  maintitle = NULL,
+  ...
+)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object.}

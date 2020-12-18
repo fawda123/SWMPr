@@ -7,9 +7,16 @@
 \usage{
 aggreswmp(swmpr_in, ...)
 
-\method{aggreswmp}{swmpr}(swmpr_in, by, FUN = function(x) mean(x, na.rm =
-  TRUE), params = NULL, aggs_out = FALSE, plot = FALSE,
-  na.action = na.pass, ...)
+\method{aggreswmp}{swmpr}(
+  swmpr_in,
+  by,
+  FUN = function(x) mean(x, na.rm = TRUE),
+  params = NULL,
+  aggs_out = FALSE,
+  plot = FALSE,
+  na.action = na.pass,
+  ...
+)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}

@@ -7,8 +7,7 @@
 \usage{
 rem_reps(swmpr_in, ...)
 
-\method{rem_reps}{swmpr}(swmpr_in, FUN = function(x) mean(x, na.rm =
-  TRUE), ...)
+\method{rem_reps}{swmpr}(swmpr_in, FUN = function(x) mean(x, na.rm = TRUE), ...)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}

@@ -7,8 +7,14 @@
 \usage{
 plot_metab(swmpr_in, ...)
 
-\method{plot_metab}{swmpr}(swmpr_in, by = "months", alpha = 0.05,
-  width = 10, pretty = TRUE, ...)
+\method{plot_metab}{swmpr}(
+  swmpr_in,
+  by = "months",
+  alpha = 0.05,
+  width = 10,
+  pretty = TRUE,
+  ...
+)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}

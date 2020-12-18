@@ -4,8 +4,7 @@
 \alias{all_params_dtrng}
 \title{Get CDMO records within a date range}
 \usage{
-all_params_dtrng(station_code, dtrng, param = NULL, trace = TRUE,
-  Max = NULL)
+all_params_dtrng(station_code, dtrng, param = NULL, trace = TRUE, Max = NULL)
 }
 \arguments{
 \item{station_code}{chr string of station, 7 or 8 characters}

@@ -10,8 +10,7 @@ setstep(dat_in, ...)
 
 \method{setstep}{swmpr}(dat_in, timestep = 15, differ = NULL, ...)
 
-\method{setstep}{default}(dat_in, date_col, timestep = 15,
-  differ = NULL, ...)
+\method{setstep}{default}(dat_in, date_col, timestep = 15, differ = NULL, ...)
 }
 \arguments{
 \item{dat_in}{input data object}

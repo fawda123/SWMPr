@@ -4,8 +4,13 @@
 \alias{map_reserve}
 \title{Map a reserve}
 \usage{
-map_reserve(nerr_site_id, zoom = 11, text_sz = 6, text_col = "black",
-  map_type = "terrain")
+map_reserve(
+  nerr_site_id,
+  zoom = 11,
+  text_sz = 6,
+  text_col = "black",
+  map_type = "terrain"
+)
 }
 \arguments{
 \item{nerr_site_id}{chr string of the reserve to map, first three characters used by NERRS or vector of stations to map using the first five characters}

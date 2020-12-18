@@ -8,11 +8,9 @@
 \usage{
 comb(...)
 
-\method{comb}{swmpr}(..., timestep = 15, differ = NULL,
-  method = "union")
+\method{comb}{swmpr}(..., timestep = 15, differ = NULL, method = "union")
 
-\method{comb}{default}(..., date_col, timestep = 15, differ = NULL,
-  method = "union")
+\method{comb}{default}(..., date_col, timestep = 15, differ = NULL, method = "union")
 }
 \arguments{
 \item{...}{input time series data objects, from one to many}

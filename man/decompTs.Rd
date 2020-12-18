@@ -4,8 +4,12 @@
 \alias{decompTs}
 \title{Decompose a time series}
 \usage{
-decompTs(x, event = TRUE, type = c("add", "mult"), center = c("mean",
-  "median"))
+decompTs(
+  x,
+  event = TRUE,
+  type = c("add", "mult"),
+  center = c("mean", "median")
+)
 }
 \arguments{
 \item{x}{a monthly time series vector}

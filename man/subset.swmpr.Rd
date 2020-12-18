@@ -4,8 +4,15 @@
 \alias{subset.swmpr}
 \title{Subset a swmpr object}
 \usage{
-\method{subset}{swmpr}(x, subset = NULL, select = NULL,
-  operator = NULL, rem_rows = FALSE, rem_cols = FALSE, ...)
+\method{subset}{swmpr}(
+  x,
+  subset = NULL,
+  select = NULL,
+  operator = NULL,
+  rem_rows = FALSE,
+  rem_cols = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{input swmpr object}

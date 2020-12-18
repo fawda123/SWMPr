@@ -7,8 +7,7 @@
 \usage{
 aggremetab(swmpr_in, ...)
 
-\method{aggremetab}{swmpr}(swmpr_in, by = "weeks", na.action = na.pass,
-  alpha = 0.05, ...)
+\method{aggremetab}{swmpr}(swmpr_in, by = "weeks", na.action = na.pass, alpha = 0.05, ...)
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}

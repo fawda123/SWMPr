@@ -8,13 +8,26 @@
 \usage{
 decomp_cj(dat_in, ...)
 
-\method{decomp_cj}{swmpr}(dat_in, param, vals_out = FALSE,
-  event = TRUE, type = c("add", "mult"), center = c("mean",
-  "median"), ...)
+\method{decomp_cj}{swmpr}(
+  dat_in,
+  param,
+  vals_out = FALSE,
+  event = TRUE,
+  type = c("add", "mult"),
+  center = c("mean", "median"),
+  ...
+)
 
-\method{decomp_cj}{default}(dat_in, param, date_col, vals_out = FALSE,
-  event = TRUE, type = c("add", "mult"), center = c("mean",
-  "median"), ...)
+\method{decomp_cj}{default}(
+  dat_in,
+  param,
+  date_col,
+  vals_out = FALSE,
+  event = TRUE,
+  type = c("add", "mult"),
+  center = c("mean", "median"),
+  ...
+)
 }
 \arguments{
 \item{dat_in}{input data object}

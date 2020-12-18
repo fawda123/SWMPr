@@ -4,8 +4,7 @@
 \alias{import_local}
 \title{Import local CDMO data}
 \usage{
-import_local(path, station_code, trace = FALSE, collMethd = c("1",
-  "2"))
+import_local(path, station_code, trace = FALSE, collMethd = c("1", "2"))
 }
 \arguments{
 \item{path}{chr string of full path to .csv files with raw data, can be a zipped or unzipped directory where the former must include the .zip extension}

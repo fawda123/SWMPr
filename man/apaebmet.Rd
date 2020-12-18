@@ -4,7 +4,8 @@
 \name{apaebmet}
 \alias{apaebmet}
 \title{Example weather data for Apalachicola Bay East Bay station.}
-\format{A \code{\link{swmpr}} object and \code{\link[base]{data.frame}} with 70176 rows and 23 variables:
+\format{
+A \code{\link{swmpr}} object and \code{\link[base]{data.frame}} with 70176 rows and 23 variables:
 \describe{
   \item{\code{datetimestamp}}{POSIXct}
   \item{\code{atemp}}{num}
@@ -29,7 +30,8 @@
   \item{\code{f_cumprcp}}{chr}
   \item{\code{totsorad}}{num}
   \item{\code{f_totsorad}}{chr}
-}}
+}
+}
 \source{
 \url{https://s3.amazonaws.com/swmpexdata/zip_ex.zip}
 }
