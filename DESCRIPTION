@@ -33,8 +33,10 @@ Depends:
     ggplot2,
     zoo
 Suggests:
-    colorspace, 
-    ggmap
+    colorspace,
+    ggmap,
+    knitr,
+    rmarkdown
 Authors@R: c(
   person(given = "Marcus W.", family = "Beck",
     role = c("aut","cre"),
@@ -44,3 +46,4 @@ Authors@R: c(
     email = "kimberly.cressman@dmr.ms.gov")
     )
 RoxygenNote: 7.1.1
+VignetteBuilder: knitr

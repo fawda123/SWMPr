@@ -1,14 +1,22 @@
 ---
-output: github_document
+title: "Overview"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Overview}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
-![](swmpr_logo.png)
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  comment = "#>"
+)
+```
 
 #### *Marcus W. Beck, marcusb@sccwrp.org*
-
-[![R-CMD-check](https://github.com/fawda123/SWMPr/workflows/R-CMD-check/badge.svg)](https://github.com/fawda123/SWMPr/actions)
-[![pkgdown](https://github.com/fawda123/SWMPr/workflows/pkgdown/badge.svg)](https://github.com/fawda123/SWMPr/actions)
-[![Downloads from the RStudio CRAN mirror](http://cranlogs.r-pkg.org/badges/grand-total/SWMPr)](http://cran.rstudio.com/package=SWMPr)
 
 # Overview 
 
