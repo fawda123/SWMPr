@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SWMPr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.4.0</span>
       </span>
     </div>
 
@@ -105,7 +105,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="http://github.com/fawda123/SWMPr/">
+  <a href="https://github.com/fawda123/SWMPr/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -124,7 +124,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Plot graphical summaries of SWMP data</h1>
-    <small class="dont-index">Source: <a href='http://github.com/fawda123/SWMPr/blob/master/R/plot_summary.R'><code>R/plot_summary.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/fawda123/SWMPr/blob/master/R/plot_summary.R'><code>R/plot_summary.R</code></a></small>
     <div class="hidden name"><code>plot_summary.Rd</code></div>
     </div>
 
@@ -178,7 +178,7 @@
     <p>A graphics object (Grob) of multiple <code><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></code> objects, otherwise a list of  individual <code><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></code> objects if <code>plt_sep = TRUE</code> or a list with data frames of the summarized data if <code>sum_out = TRUE</code>.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>This function creates several graphics showing seasonal and annual trends for a given swmp parameter.  Plots include monthly distributions, monthly anomalies, and annual anomalies in multiple formats.  Anomalies are defined as the difference between the monthly or annual average from the grand mean.  Monthly anomalies are in relation to the grand mean for the same month across all years.  All data are aggregated for quicker plotting.  Nutrient data are based on monthly averages, wheras weather and water quality data are based on daily averages.  Cumulative precipitation data are based on the daily maximum.  An interactive Shiny widget is available: <a href='https://beckmw.shinyapps.io/swmp_summary/'>https://beckmw.shinyapps.io/swmp_summary/</a></p>
+    <p>This function creates several graphics showing seasonal and annual trends for a given swmp parameter.  Plots include monthly distributions, monthly anomalies, and annual anomalies in multiple formats.  Anomalies are defined as the difference between the monthly or annual average from the grand mean.  Monthly anomalies are in relation to the grand mean for the same month across all years.  All data are aggregated for quicker plotting.  Nutrient data are based on monthly averages, wheras weather and water quality data are based on daily averages.  Cumulative precipitation data are based on the daily maximum.</p>
 <p>Individual plots can be obtained if <code>plt_sep = TRUE</code>.  Individual plots for elements one through six in the list correspond to those from top left to bottom right in the combined plot.</p>
 <p>Summary data for the plots can be obtained if <code>sum_out = TRUE</code>.  This returns a list with three data frames with names <code>sum_mo</code>, <code>sum_moyr</code>, and <code>sum_mo</code>.  The data frames match the plots as follows: <code>sum_mo</code> for the top left, bottom left, and center plots, <code>sum_moyr</code> for the top right and middle right plots, and <code>sum_yr</code> for the bottom right plot.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
