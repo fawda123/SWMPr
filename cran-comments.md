@@ -7,7 +7,7 @@ This is a version update to 2.4.0.
 * ubuntu 20.04 (on GitHub Actions), R devel
 * OS X (on GitHub Actions), R 4.0.3
 * win-builder [http://win-builder.r-project.org/](http://win-builder.r-project.org/) (devel and release)
-* local Windows 7 install, R 4.0.0
+* local Windows 7 install, R 4.0.2
 
 ## R CMD check results
 There were no ERRORs or WARNINGs. 
