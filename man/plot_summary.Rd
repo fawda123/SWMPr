@@ -10,6 +10,9 @@ plot_summary(swmpr_in, ...)
 \method{plot_summary}{swmpr}(
   swmpr_in,
   param,
+  colsleft = c("lightblue", "lightgreen"),
+  colsmid = "lightblue",
+  colsright = c("lightblue", "lightgreen", "tomato1"),
   years = NULL,
   plt_sep = FALSE,
   sum_out = FALSE,
@@ -22,6 +25,12 @@ plot_summary(swmpr_in, ...)
 \item{...}{additional arguments passed to other methods, currently not used}
 
 \item{param}{chr string of variable to plot}
+
+\item{colsleft}{chr string vector of length two indicating colors for left plots}
+
+\item{colsmid}{chr string vector of length one indicating colors for middle plots}
+
+\item{colsright}{chr string vector of length three indicating colors for right plots}
 
 \item{years}{numeric vector of starting and ending years to plot, default all}
 

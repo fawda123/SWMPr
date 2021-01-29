@@ -4,6 +4,9 @@
 #' 
 #' @param swmpr_in input swmpr object
 #' @param param chr string of variable to plot
+#' @param colsleft chr string vector of length two indicating colors for left plots
+#' @param colsmid chr string vector of length one indicating colors for middle plots
+#' @param colsright chr string vector of length three indicating colors for right plots
 #' @param years numeric vector of starting and ending years to plot, default all
 #' @param plt_sep logical if a list is returned with separate plot elements
 #' @param sum_out logical if summary data for the plots is returned
@@ -53,7 +56,9 @@ plot_summary <- function(swmpr_in, ...) UseMethod('plot_summary')
 #' @export
 #' 
 #' @method plot_summary swmpr
-plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, sum_out = FALSE, ...){
+plot_summary.swmpr <- function(swmpr_in, param, colsleft = c('lightblue', 'lightgreen'), colsmid = 'lightblue', 
+                               colsright = c('lightblue', 'lightgreen', 'tomato1'), 
+                               years = NULL, plt_sep = FALSE, sum_out = FALSE, ...){
   
   stat <- attr(swmpr_in, 'station')
   parameters <- attr(swmpr_in, 'parameters')
@@ -153,7 +158,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
   my_theme <- theme(axis.text = element_text(size = 8))
   
   # plot 1 - means and obs
-  cols <- colorRampPalette(c('lightblue', 'lightgreen'))(nrow(mo_agg))
+  cols <- colorRampPalette(colsleft)(nrow(mo_agg))
   cols <- cols[rank(mo_agg[, param])]
   p1 <- suppressWarnings({ggplot(dat_plo, aes_string(x = 'month', y = param)) +
       geom_point(size = 2, alpha = 0.5, 
@@ -168,7 +173,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
   })
   
   # box aggs, colored by median
-  cols <- colorRampPalette(c('lightblue', 'lightgreen'))(nrow(mo_agg_med))
+  cols <- colorRampPalette(colsleft)(nrow(mo_agg_med))
   cols <- cols[rank(mo_agg_med[, param])]
   p2 <- suppressWarnings({ggplot(dat_plo, aes_string(x = 'month', y = param)) + 
       geom_boxplot(fill = cols) +
@@ -182,14 +187,14 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
   to_plo <- dat_plo
   to_plo$month <- factor(to_plo$month, levels = rev(mo_levs), labels = rev(mo_labs))
   p3 <- suppressWarnings({ggplot(to_plo, aes_string(x = param)) + 
-      geom_histogram(aes_string(y = '..density..'), colour = 'lightblue', binwidth = diff(range(to_plo[, param], na.rm = T))/30) + 
+      geom_histogram(aes_string(y = '..density..'), colour = colsmid, binwidth = diff(range(to_plo[, param], na.rm = T))/30) + 
       facet_grid(month ~ .) + 
       xlab(ylab) +
       theme_bw(base_family = 'Times') + 
       theme(axis.title.y = element_blank(), axis.text.y = element_blank(), 
             axis.ticks.y = element_blank(), 
             strip.text.y = element_text(size = 8, angle = 90),
-            strip.background = element_rect(size = 0, fill = 'lightblue')) +
+            strip.background = element_rect(size = 0, fill = colsmid)) +
       my_theme
   })
   
@@ -209,7 +214,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
                 aes(x = year, y = month), fill = NA
       )  +
       scale_fill_gradient2(name = ylab,
-                           low = 'lightblue', mid = 'lightgreen', high = 'tomato', midpoint = midpt) +
+                           low = colsright[1], mid = colsright[2], high = colsright[3], midpoint = midpt) +
       theme_classic() +
       ylab('Monthly means') +
       xlab('') +
@@ -231,7 +236,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
                 aes(x = year, y = month), fill = NA
       ) +
       scale_fill_gradient2(name = ylab,
-                           low = 'lightblue', mid = 'lightgreen', high = 'tomato', midpoint = 0,
+                           low = colsright[1], mid = colsright[2], high = colsright[3], midpoint = 0,
                            limits = c(-1 * rngs, rngs)) +
       theme_classic() +
       ylab('Monthly anomalies') +
@@ -248,7 +253,7 @@ plot_summary.swmpr <- function(swmpr_in, param, years = NULL, plt_sep = FALSE, s
                                  aes_string(x = 'year', y = 'anom', group = '1', fill = 'anom')) +
       geom_bar(stat = 'identity') +
       scale_fill_gradient2(name = ylab,
-                           low = 'lightblue', mid = 'lightgreen', high = 'tomato', midpoint = 0
+                           low = colsright[1], mid = colsright[2], high = colsright[3], midpoint = 0
       ) +
       stat_smooth(method = 'lm', se = F, linetype = 'dashed', size = 1) +
       theme_classic() +
