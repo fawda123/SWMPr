@@ -16,19 +16,19 @@ time_vec <- function(chr_in = NULL, station_code, tz_only = FALSE){
   
   # lookup table for time zones based on gmt offset - no DST!
   gmt_tab <- data.frame(
-    gmt_off = c(-4,-5,-6,-8,-9),
+    gmt_off = c(-4,-5,-6,-8,-9,-10),
     tz = c('America/Virgin', 'America/Jamaica', 'America/Regina',
-           'Pacific/Pitcairn', 'Pacific/Gambier'),
+           'Pacific/Pitcairn', 'Pacific/Gambier', 'Pacific/Honolulu'),
     stringsAsFactors = FALSE
   )
   
   # hard-coded gmt offset for each site, from metadata direct from CDMO
   sites <- c('ace', 'apa', 'cbm', 'cbv', 'del', 'elk', 
-             'gnd', 'grb', 'gtm', 'hud', 'jac', 'job', 'kac', 
+             'gnd', 'grb', 'gtm', 'hee', 'hud', 'jac', 'job', 'kac', 
              'lks', 'mar', 'nar', 'niw', 'noc', 'owc', 'pdb', 
              'rkb', 'sap', 'sfb', 'sos', 'tjr', 'wel', 'wkb',
              'wqb')
-  gmt_offsets <- c(-5, -5, -5, -5, -5, -8, -6, -5, -5, -5, -5, -4, 
+  gmt_offsets <- c(-5, -5, -5, -5, -5, -8, -6, -5, -5, -10, -5, -5, -4, 
                    -9, -6, -6, -5, -5, -5, -5, -8, -5, -5, -8, -8, -8,
                    -5, -6, -5)  
   
