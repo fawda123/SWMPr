@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SWMPr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.4.1</span>
       </span>
     </div>
 
@@ -215,15 +215,13 @@
 
 <span class='co'># generate a plot of salinity for 2013 overlaid on 2012-2013 data</span>
 <span class='fu'>plot_quants</span><span class='op'>(</span><span class='va'>dat</span>, <span class='st'>'sal'</span>, yr <span class='op'>=</span> <span class='fl'>2013</span>, yrstart <span class='op'>=</span> <span class='fl'>2012</span>, yrend <span class='op'>=</span> <span class='fl'>2013</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='warning'>Warning: `select_()` is deprecated as of dplyr 0.7.0.</span>
-#&gt; <span class='warning'>Please use `select()` instead.</span>
-#&gt; <span class='warning'><span style='color: #555555;'>This warning is displayed once every 8 hours.</span><span></span>
-#&gt; <span class='warning'></span><span style='color: #555555;'>Call `lifecycle::last_warnings()` to see where this warning was generated.</span><span></span></div><div class='img'><img src='plot_quants-1.png' alt='' width='700' height='433' /></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: `select_()` was deprecated in dplyr 0.7.0.</span>
+#&gt; <span class='warning'>Please use `select()` instead.</span></div><div class='img'><img src='plot_quants-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># change some of the defaults</span>
 <span class='fu'>plot_quants</span><span class='op'>(</span><span class='va'>dat</span>, <span class='st'>'sal'</span>, yr <span class='op'>=</span> <span class='fl'>2013</span>, yrstart <span class='op'>=</span> <span class='fl'>2012</span>, yrend <span class='op'>=</span> <span class='fl'>2013</span>, 
  bgcolor1 <span class='op'>=</span> <span class='st'>'lightsteelblue2'</span>, bgcolor2 <span class='op'>=</span> <span class='st'>'lightsteelblue4'</span>, 
  yaxislab <span class='op'>=</span> <span class='st'>'Salinity (psu)'</span><span class='op'>)</span>
-</div><div class='img'><img src='plot_quants-2.png' alt='' width='700' height='433' /></div></span></pre>
+</div><div class='img'><img src='plot_quants-2.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SWMPr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.4.1</span>
       </span>
     </div>
 
@@ -132,13 +132,7 @@
     <p>Create a map of all the stations in a reserve</p>
     </div>
 
-    <pre class="usage"><span class='fu'>map_reserve</span><span class='op'>(</span>
-  <span class='va'>nerr_site_id</span>,
-  zoom <span class='op'>=</span> <span class='fl'>11</span>,
-  text_sz <span class='op'>=</span> <span class='fl'>6</span>,
-  text_col <span class='op'>=</span> <span class='st'>"black"</span>,
-  map_type <span class='op'>=</span> <span class='st'>"terrain"</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>map_reserve</span><span class='op'>(</span><span class='va'>nerr_site_id</span>, text_sz <span class='op'>=</span> <span class='fl'>6</span>, text_col <span class='op'>=</span> <span class='st'>"black"</span>, f <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -146,10 +140,6 @@
     <tr>
       <th>nerr_site_id</th>
       <td><p>chr string of the reserve to map, first three characters used by NERRS or vector of stations to map using the first five characters</p></td>
-    </tr>
-    <tr>
-      <th>zoom</th>
-      <td><p>numeric value for map zoom, passed to <code><a href='https://rdrr.io/pkg/ggmap/man/get_map.html'>get_map</a></code></p></td>
     </tr>
     <tr>
       <th>text_sz</th>
@@ -160,8 +150,8 @@
       <td><p>chr string for text color of station names, passed to <code><a href='https://ggplot2.tidyverse.org/reference/geom_text.html'>geom_text</a></code></p></td>
     </tr>
     <tr>
-      <th>map_type</th>
-      <td><p>chr string indicating the type of base map obtained from Google maps, values are <code>terrain</code> (default), <code>satellite</code>, <code>roadmap</code>, or <code>hybrid</code></p></td>
+      <th>f</th>
+      <td><p>numeric passed to <code><a href='https://rdrr.io/pkg/ggmap/man/make_bbox.html'>make_bbox</a></code> as expansion around the bounding box for stations at a NERR site, increase to expand map zoom chr</p></td>
     </tr>
     </table>
 
@@ -170,20 +160,14 @@
     <p>A <code><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></code> object for plotting.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>This function is a simple wrapper to functions in the ggmap package which returns a map of all of the stations at a NERRS reserve.  The <code>zoom</code> argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  A local data file included with the package is used to get the latitude and longitude values of each station.  The files includes only active stations as of January 2015.</p>
+    <p>This function is a simple wrapper to functions in the ggmap package which returns a map of all of the stations at a NERRS reserve.  The <code>f</code> argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  A local data file included with the package is used to get the latitude and longitude values of each station.  The files includes only active stations as of January 2015.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/ggmap/man/get_map.html'>get_map</a></code>, <code><a href='https://rdrr.io/pkg/ggmap/man/ggmap.html'>ggmap</a></code>, <code><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='co'>## defaults</span>
 <span class='fu'>map_reserve</span><span class='op'>(</span><span class='st'>'jac'</span><span class='op'>)</span>
-
-<span class='co'>## change defaults, map a single site</span>
-
-<span class='fu'>map_reserve</span><span class='op'>(</span><span class='st'>'gtmss'</span>, zoom <span class='op'>=</span> <span class='fl'>15</span>, map_type <span class='op'>=</span> <span class='st'>'satellite'</span>, 
- text_col <span class='op'>=</span> <span class='st'>'lightblue'</span><span class='op'>)</span>
 <span class='op'>}</span>
 </div></pre>
   </div>
