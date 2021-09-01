@@ -3,10 +3,9 @@
 #' Create a map of all the stations in a reserve
 #' 
 #' @param nerr_site_id chr string of the reserve to map, first three characters used by NERRS or vector of stations to map using the first five characters
-#' @param zoom numeric value for map zoom, passed to \code{\link[ggmap]{get_map}}
 #' @param text_sz numeric value for text size of station names, passed to \code{\link[ggplot2]{geom_text}}
 #' @param text_col chr string for text color of station names, passed to \code{\link[ggplot2]{geom_text}}
-#' @param map_type chr string indicating the type of base map obtained from Google maps, values are \code{terrain} (default), \code{satellite}, \code{roadmap}, or \code{hybrid} 
+#' @param f numeric passed to \code{\link[ggmap]{make_bbox}} as expansion around the bounding box for stations at a NERR site, increase to expand map zoom chr 
 #' 
 #' @import ggplot2
 #' 
@@ -14,7 +13,7 @@
 #' 
 #' @export
 #' 
-#' @details This function is a simple wrapper to functions in the ggmap package which returns a map of all of the stations at a NERRS reserve.  The \code{zoom} argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  A local data file included with the package is used to get the latitude and longitude values of each station.  The files includes only active stations as of January 2015.
+#' @details This function is a simple wrapper to functions in the ggmap package which returns a map of all of the stations at a NERRS reserve.  The \code{f} argument may have to be chosen through trial and error depending on the spatial extent of the reserve.  A local data file included with the package is used to get the latitude and longitude values of each station.  The files includes only active stations as of January 2015.
 #' 
 #' @return A \code{\link[ggplot2]{ggplot}} object for plotting.
 #' 
@@ -22,20 +21,14 @@
 #' 
 #' @examples
 #' \dontrun{
-#' ## defaults
 #' map_reserve('jac')
-#' 
-#' ## change defaults, map a single site
-#' 
-#' map_reserve('gtmss', zoom = 15, map_type = 'satellite', 
-#'  text_col = 'lightblue')
 #'}
-map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black', map_type = 'terrain'){
+map_reserve <- function(nerr_site_id, text_sz = 6, text_col = 'black', f = 0.2){
   
   # sanity check
-  if(!any(c(3, 5) %in% nchar(nerr_site_id)))
-    stop('nerr_site_id must be three or five characters')
-  
+  if(nchar(nerr_site_id) != 3)
+    stop('nerr_site_id must be three characters')
+
   # subset stat_locs by reserve
   dat_locs <- get('stat_locs')
   stats <- paste(paste0('^', nerr_site_id), collapse = '|')
@@ -46,11 +39,8 @@ map_reserve <- function(nerr_site_id, zoom = 11, text_sz = 6, text_col = 'black'
     # base map
     mapImageData <- suppressMessages(
       ggmap::get_map(
-        location = c(lon = mean(stats$longitude),lat = mean(stats$latitude)),
-        source = 'google',
-        maptype = map_type,
-        zoom = zoom,
-        messaging = FALSE
+        location = ggmap::make_bbox(lon = stats$longitude ,lat = stats$latitude, f = f),
+        maptype = 'terrain'
       )
     )
     
