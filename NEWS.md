@@ -1,3 +1,13 @@
+## SWMPr 2.4.1
+
+* Fix to `map_reserve` function for updates to ggmap
+
+* Added Pacific/Honolulu time zone and `'hee'` site code to `time_vec` function for He'eia reserve
+
+* Added `colsleft`, `colsmid`, and `colsright` arguments to `pot_summary` for separate colors on left, mid, right portions of plot
+
+* URL fix to `metab_day` documentation
+
 ## SWMPr 2.4.0
 
 * Each function is now in its own file instead of grouped by categories (thanks Kim!)
