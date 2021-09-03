@@ -4,7 +4,7 @@
 
 * Added Pacific/Honolulu time zone and `'hee'` site code to `time_vec` function for He'eia reserve
 
-* Added `colsleft`, `colsmid`, and `colsright` arguments to `pot_summary` for separate colors on left, mid, right portions of plot
+* Added `colsleft`, `colsmid`, and `colsright` arguments to `plot_summary` for separate colors on left, mid, right portions of plot
 
 * URL fix to `metab_day` documentation
 
