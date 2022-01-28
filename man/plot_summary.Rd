@@ -16,6 +16,7 @@ plot_summary(swmpr_in, ...)
   years = NULL,
   plt_sep = FALSE,
   sum_out = FALSE,
+  fill = FALSE,
   ...
 )
 }
@@ -37,6 +38,8 @@ plot_summary(swmpr_in, ...)
 \item{plt_sep}{logical if a list is returned with separate plot elements}
 
 \item{sum_out}{logical if summary data for the plots is returned}
+
+\item{fill}{logical indicating if missing monthly values are replaced by long term monthly averages}
 }
 \value{
 A graphics object (Grob) of multiple \code{\link[ggplot2]{ggplot}} objects, otherwise a list of  individual \code{\link[ggplot2]{ggplot}} objects if \code{plt_sep = TRUE} or a list with data frames of the summarized data if \code{sum_out = TRUE}.
