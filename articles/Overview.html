@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SWMPr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.1.9000</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -64,7 +60,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/fawda123/SWMPr/">
+  <a href="https://github.com/fawda123/SWMPr/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -85,49 +81,50 @@
       <h1 data-toc-skip>Overview</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/fawda123/SWMPr/blob/master/vignettes/Overview.Rmd"><code>vignettes/Overview.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/fawda123/SWMPr/blob/HEAD/vignettes/Overview.Rmd" class="external-link"><code>vignettes/Overview.Rmd</code></a></small>
       <div class="hidden name"><code>Overview.Rmd</code></div>
 
     </div>
 
     
     
-<div id="marcus-w--beck-mbecktbep-org" class="section level4">
-<h4 class="hasAnchor">
-<a href="#marcus-w--beck-mbecktbep-org" class="anchor"></a><em>Marcus W. Beck, <a href="mailto:mbeck@tbep.org" class="email">mbeck@tbep.org</a></em>
-</h4>
+<div class="section level5">
+<h5 id="marcus-w--beck-mbecktbep-org">
+<em>Marcus W. Beck, <a href="mailto:mbeck@tbep.org" class="email">mbeck@tbep.org</a></em><a class="anchor" aria-label="anchor" href="#marcus-w--beck-mbecktbep-org"></a>
+</h5>
 </div>
-<div id="overview" class="section level1">
-<h1 class="hasAnchor">
-<a href="#overview" class="anchor"></a>Overview</h1>
-<p>The System Wide Monitoring Program (<a href="https://coast.noaa.gov/digitalcoast/data/nerr.html">SWMP</a>) was implemented by the National Estuarine Research Reserve System (<a href="https://coast.noaa.gov/nerrs/">NERRS</a>) in 1995 to provide continuous monitoring data at over 140 continuous monitoring stations in 28 estuaries across the United States. SWMPr (pronounced “swamper”) is an R package for retrieving, organizing, and analyzing estuary monitoring data from SWMP. Please cite the package as follows:</p>
-<p><em>Beck MW. 2016. SWMPr: An R package for retrieving, organizing, and analyzing environmental data for estuaries. The R Journal. 8(1):219-232. <a href="https://journal.r-project.org/archive/2016-1/beck.pdf" class="uri">https://journal.r-project.org/archive/2016-1/beck.pdf</a></em></p>
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
+<p>The System Wide Monitoring Program (<a href="https://coast.noaa.gov/digitalcoast/data/nerr.html" class="external-link">SWMP</a>) was implemented by the National Estuarine Research Reserve System (<a href="https://coast.noaa.gov/nerrs/" class="external-link">NERRS</a>) in 1995 to provide continuous monitoring data at over 140 continuous monitoring stations in 28 estuaries across the United States. SWMPr (pronounced “swamper”) is an R package for retrieving, organizing, and analyzing estuary monitoring data from SWMP. Please cite the package as follows:</p>
+<p><em>Beck MW. 2016. SWMPr: An R package for retrieving, organizing, and analyzing environmental data for estuaries. The R Journal. 8(1):219-232. <a href="https://journal.r-project.org/archive/2016-1/beck.pdf" class="external-link uri">https://journal.r-project.org/archive/2016-1/beck.pdf</a></em></p>
 </div>
-<div id="installing-the-package" class="section level1">
-<h1 class="hasAnchor">
-<a href="#installing-the-package" class="anchor"></a>Installing the package</h1>
+<div class="section level2">
+<h2 id="installing-the-package">Installing the package<a class="anchor" aria-label="anchor" href="#installing-the-package"></a>
+</h2>
 <p>Install the package from CRAN as follows:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'SWMPr'</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">SWMPr</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'SWMPr'</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SWMPr</span><span class="op">)</span></code></pre></div>
 <p>The development (unstable) version of this package can be installed from Github:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'devtools'</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">devtools</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'devtools'</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span>
 <span class="fu">install_github</span><span class="op">(</span><span class="st">'fawda123/SWMPr'</span>, ref <span class="op">=</span> <span class="st">'development'</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">SWMPr</span><span class="op">)</span></code></pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SWMPr</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="using-the-package" class="section level1">
-<h1 class="hasAnchor">
-<a href="#using-the-package" class="anchor"></a>Using the package</h1>
-<p>A manuscript describing full use of the package is available from the <a href="https://journal.r-project.org/archive/2016/RJ-2016-015/index.html">R Journal</a>. All source materials for the manuscript are available <a href="https://github.com/fawda123/swmpr_manu">here</a>. A brief description of the available functions is provided below. See help documentation for more details on each function (e.g., <code><a href="../reference/all_params.html">?all_params</a></code>). All functions are grouped into respective categories that describe their use: retrieve, organize, and analyze. Help files for functions in each category can be viewed as follows:</p>
+<div class="section level2">
+<h2 id="using-the-package">Using the package<a class="anchor" aria-label="anchor" href="#using-the-package"></a>
+</h2>
+<p>A manuscript describing full use of the package is available from the <a href="https://journal.r-project.org/archive/2016/RJ-2016-015/index.html" class="external-link">R Journal</a>. All source materials for the manuscript are available <a href="https://github.com/fawda123/swmpr_manu" class="external-link">here</a>. A brief description of the available functions is provided below. See help documentation for more details on each function (e.g., <code><a href="../reference/all_params.html">?all_params</a></code>). All functions are grouped into respective categories that describe their use: retrieve, organize, and analyze. Help files for functions in each category can be viewed as follows:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/help.search.html">help.search</a></span><span class="op">(</span><span class="st">'retrieve'</span>, package <span class="op">=</span> <span class="st">'SWMPr'</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/help.search.html">help.search</a></span><span class="op">(</span><span class="st">'organize'</span>, package <span class="op">=</span> <span class="st">'SWMPr'</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/help.search.html">help.search</a></span><span class="op">(</span><span class="st">'analyze'</span>, package <span class="op">=</span> <span class="st">'SWMPr'</span><span class="op">)</span></code></pre></div>
-<h3>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/help.search.html" class="external-link">help.search</a></span><span class="op">(</span><span class="st">'retrieve'</span>, package <span class="op">=</span> <span class="st">'SWMPr'</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/help.search.html" class="external-link">help.search</a></span><span class="op">(</span><span class="st">'organize'</span>, package <span class="op">=</span> <span class="st">'SWMPr'</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/help.search.html" class="external-link">help.search</a></span><span class="op">(</span><span class="st">'analyze'</span>, package <span class="op">=</span> <span class="st">'SWMPr'</span><span class="op">)</span></code></pre></div>
+<h4 id="using-the-package-1">
 Retrieve
-</h3>
+<a class="anchor" aria-label="anchor" href="#using-the-package-1"></a>
+</h4>
 <table class="table">
 <tr>
 <td>
@@ -150,7 +147,7 @@ Retrieve records of all parameters within a given date range for a station. Opti
 <code>import_local</code>
 </td>
 <td>
-Import files from a local path. The files must be in a specific format, specifically those returned from the CDMO using the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> option for a reserve.
+Import files from a local path. The files must be in a specific format, specifically those returned from the CDMO using the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm" class="external-link">zip downloads</a> option for a reserve.
 </td>
 </tr>
 <tr>
@@ -186,9 +183,10 @@ Metadata for all stations at a single site, wrapper to <code>NERRFilterStationCo
 </td>
 </tr>
 </table>
-<h3>
+<h4 id="using-the-package-2">
 Organize
-</h3>
+<a class="anchor" aria-label="anchor" href="#using-the-package-2"></a>
+</h4>
 <table class="table">
 <tr>
 <td>
@@ -247,9 +245,10 @@ Subset by dates and/or columns for a swmpr object. This is a method passed to th
 </td>
 </tr>
 </table>
-<h3>
+<h4 id="using-the-package-3">
 Analyze
-</h3>
+<a class="anchor" aria-label="anchor" href="#using-the-package-3"></a>
+</h4>
 <table class="table">
 <tr>
 <td>
@@ -372,9 +371,10 @@ Smooth swmpr objects with a moving window average. Window size and sides can be 
 </td>
 </tr>
 </table>
-<h3>
+<h4 id="using-the-package-4">
 Miscellaneous
-</h3>
+<a class="anchor" aria-label="anchor" href="#using-the-package-4"></a>
+</h4>
 <table class="table">
 <tr>
 <td>
@@ -439,11 +439,13 @@ Converts time vectors to POSIX objects with correct time zone for a site/station
 
 
       <footer><div class="copyright">
-  <p>Developed by Marcus W. Beck.</p>
+  <p></p>
+<p>Developed by Marcus W. Beck.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -451,6 +453,8 @@ Converts time vectors to POSIX objects with correct time zone for a site/station
 
   
 
+
+  
 
   </body>
 </html>
