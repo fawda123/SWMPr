@@ -10,6 +10,7 @@
 #' @param years numeric vector of starting and ending years to plot, default all
 #' @param plt_sep logical if a list is returned with separate plot elements
 #' @param sum_out logical if summary data for the plots is returned
+#' @param fill logical indicating if missing monthly values are replaced by long term monthly averages
 #' @param ... additional arguments passed to other methods, currently not used
 #' 
 #' @import ggplot2 gridExtra
@@ -58,7 +59,7 @@ plot_summary <- function(swmpr_in, ...) UseMethod('plot_summary')
 #' @method plot_summary swmpr
 plot_summary.swmpr <- function(swmpr_in, param, colsleft = c('lightblue', 'lightgreen'), colsmid = 'lightblue', 
                                colsright = c('lightblue', 'lightgreen', 'tomato1'), 
-                               years = NULL, plt_sep = FALSE, sum_out = FALSE, ...){
+                               years = NULL, plt_sep = FALSE, sum_out = FALSE, fill = FALSE, ...){
   
   stat <- attr(swmpr_in, 'station')
   parameters <- attr(swmpr_in, 'parameters')
@@ -109,6 +110,28 @@ plot_summary.swmpr <- function(swmpr_in, param, colsleft = c('lightblue', 'light
   # select years to plot
   dat_plo <- data.frame(dat[dat$year %in% seq(years[1], years[2]), ])
   
+  # remove datetimestamp
+  dat_plo <- dat_plo[, !names(dat_plo) %in% 'datetimestamp']
+  
+  # fill missing plots if true
+  if(fill){
+    
+    names(dat_plo)[names(dat_plo) %in% param] <- 'toest'
+    
+    dat_plo <- tidyr::complete(dat_plo, year, month, fill = list(toest = NA))
+    dat_plo <- dplyr::group_by(dat_plo, month)
+    dat_plo <- dplyr::mutate(dat_plo, 
+                             toest = dplyr::case_when(
+                               is.na(toest) ~ mean(toest, na.rm = T), 
+                               T ~ toest
+                             ))
+    dat_plo <- dplyr::ungroup(dat_plo)
+    dat_plo <- as.data.frame(dat_plo, stringsAsFactors = F)
+    
+    names(dat_plo)[names(dat_plo) %in% 'toest'] <- param
+    
+  }
+  
   # label lookups
   lab_look <- list(
     temp = 'Temperature (C)', 
@@ -146,10 +169,10 @@ plot_summary.swmpr <- function(swmpr_in, param, colsleft = c('lightblue', 'light
   # monthly, annual aggs
   agg_fun <- function(x) mean(x, na.rm = T)
   form_in <- formula(paste0(param, ' ~ month'))
-  mo_agg <- aggregate(form_in, data = dat_plo[, !names(dat_plo) %in% c('datetimestamp', 'year')], FUN = agg_fun)
-  mo_agg_med <- aggregate(form_in, data = dat_plo[, !names(dat_plo) %in% c('datetimestamp', 'year')], FUN = function(x) median(x, na.rm = T))
+  mo_agg <- aggregate(form_in, data = dat_plo[, !names(dat_plo) %in% c('year')], FUN = agg_fun)
+  mo_agg_med <- aggregate(form_in, data = dat_plo[, !names(dat_plo) %in% c('year')], FUN = function(x) median(x, na.rm = T))
   form_in <- formula(paste0(param, ' ~ year'))
-  yr_agg <- aggregate(form_in, data = dat_plo[, !names(dat_plo) %in% c('datetimestamp', 'month')], FUN = agg_fun, na.action = na.pass)
+  yr_agg <- aggregate(form_in, data = dat_plo[, !names(dat_plo) %in% c('month')], FUN = agg_fun, na.action = na.pass)
   
   ##
   # plots
