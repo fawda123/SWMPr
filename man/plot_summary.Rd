@@ -16,14 +16,14 @@ plot_summary(swmpr_in, ...)
   years = NULL,
   plt_sep = FALSE,
   sum_out = FALSE,
-  fill = FALSE,
+  fill = c("none", "monoclim", "interp"),
   ...
 )
 }
 \arguments{
 \item{swmpr_in}{input swmpr object}
 
-\item{...}{additional arguments passed to other methods, currently not used}
+\item{...}{additional arguments passed to other methods}
 
 \item{param}{chr string of variable to plot}
 
@@ -39,7 +39,7 @@ plot_summary(swmpr_in, ...)
 
 \item{sum_out}{logical if summary data for the plots is returned}
 
-\item{fill}{logical indicating if missing monthly values are replaced by long term monthly averages}
+\item{fill}{chr string indicating if missing monthly values are left as is (\code{'none'}, default), replaced by long term monthly averages (\code{'monoclim'}), or linearly interpolated using \code{\link[zoo]{na.approx}}}
 }
 \value{
 A graphics object (Grob) of multiple \code{\link[ggplot2]{ggplot}} objects, otherwise a list of  individual \code{\link[ggplot2]{ggplot}} objects if \code{plt_sep = TRUE} or a list with data frames of the summarized data if \code{sum_out = TRUE}.
@@ -52,7 +52,9 @@ This function creates several graphics showing seasonal and annual trends for a 
 
 Individual plots can be obtained if \code{plt_sep = TRUE}.  Individual plots for elements one through six in the list correspond to those from top left to bottom right in the combined plot.
 
-Summary data for the plots can be obtained if \code{sum_out = TRUE}.  This returns a list with three data frames with names \code{sum_mo}, \code{sum_moyr}, and \code{sum_mo}.  The data frames match the plots as follows: \code{sum_mo} for the top left, bottom left, and center plots, \code{sum_moyr} for the top right and middle right plots, and \code{sum_yr} for the bottom right plot.
+Summary data for the plots can be obtained if \code{sum_out = TRUE}.  This returns a list with three data frames with names \code{sum_mo}, \code{sum_moyr}, and \code{sum_mo}.  The data frames match the plots as follows: \code{sum_mo} for the top left, bottom left, and center plots, \code{sum_moyr} for the top right and middle right plots, and \code{sum_yr} for the bottom right plot. 
+
+Missing values can be filled using the long-term average across years for each month (\code{fill = 'monoclim'}) or as a linear interpolation between missing values using \code{\link[zoo]{na.approx}} (\code{fill = 'interp'}).  The monthly average works well for long gaps, but may not be an accurate representation of long-term trends, i.e., real averages may differ early vs late in the time series if a trend exists. The linear interpolation option is preferred for small gaps.
 }
 \examples{
 ## import data
