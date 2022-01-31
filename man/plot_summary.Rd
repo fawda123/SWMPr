@@ -13,6 +13,7 @@ plot_summary(swmpr_in, ...)
   colsleft = c("lightblue", "lightgreen"),
   colsmid = "lightblue",
   colsright = c("lightblue", "lightgreen", "tomato1"),
+  base_size = 11,
   years = NULL,
   plt_sep = FALSE,
   sum_out = FALSE,
@@ -32,6 +33,8 @@ plot_summary(swmpr_in, ...)
 \item{colsmid}{chr string vector of length one indicating colors for middle plots}
 
 \item{colsright}{chr string vector of length three indicating colors for right plots}
+
+\item{base_size}{numeric for text size}
 
 \item{years}{numeric vector of starting and ending years to plot, default all}
 

@@ -8,6 +8,7 @@
 #' @param colsmid chr string vector of length one indicating colors for middle plots
 #' @param colsright chr string vector of length three indicating colors for right plots
 #' @param years numeric vector of starting and ending years to plot, default all
+#' @param base_size numeric for text size
 #' @param plt_sep logical if a list is returned with separate plot elements
 #' @param sum_out logical if summary data for the plots is returned
 #' @param fill chr string indicating if missing monthly values are left as is (\code{'none'}, default), replaced by long term monthly averages (\code{'monoclim'}), or linearly interpolated using \code{\link[zoo]{na.approx}}
@@ -60,7 +61,7 @@ plot_summary <- function(swmpr_in, ...) UseMethod('plot_summary')
 #' 
 #' @method plot_summary swmpr
 plot_summary.swmpr <- function(swmpr_in, param, colsleft = c('lightblue', 'lightgreen'), colsmid = 'lightblue', 
-                               colsright = c('lightblue', 'lightgreen', 'tomato1'), 
+                               colsright = c('lightblue', 'lightgreen', 'tomato1'), base_size = 11,
                                years = NULL, plt_sep = FALSE, sum_out = FALSE, fill = c('none', 'monoclim', 'interp'), ...){
   
   fill <- match.arg(fill)
@@ -216,7 +217,7 @@ plot_summary.swmpr <- function(swmpr_in, param, colsleft = c('lightblue', 'light
   # plots
   
   # universal plot setting
-  my_theme <- theme(axis.text = element_text(size = 8))
+  my_theme <- theme()#axis.text = element_text(size = 8))
   
   # plot 1 - means and obs
   cols <- colorRampPalette(colsleft)(nrow(mo_agg))
@@ -225,7 +226,7 @@ plot_summary.swmpr <- function(swmpr_in, param, colsleft = c('lightblue', 'light
       geom_point(size = 2, alpha = 0.5, 
                  position=position_jitter(width=0.1)
       ) +
-      theme_classic() +
+      theme_classic(base_size = base_size) +
       ylab(ylab) + 
       xlab('Monthly distributions and means') +
       geom_point(data = mo_agg, aes_string(x = 'month', y = param), 
@@ -238,7 +239,7 @@ plot_summary.swmpr <- function(swmpr_in, param, colsleft = c('lightblue', 'light
   cols <- cols[rank(mo_agg_med[, param])]
   p2 <- suppressWarnings({ggplot(dat_plo, aes_string(x = 'month', y = param)) + 
       geom_boxplot(fill = cols) +
-      theme_classic() +
+      theme_classic(base_size = base_size) +
       ylab(ylab) + 
       xlab('Monthly distributions and medians') +
       my_theme
@@ -251,7 +252,7 @@ plot_summary.swmpr <- function(swmpr_in, param, colsleft = c('lightblue', 'light
       geom_histogram(aes_string(y = '..density..'), colour = colsmid, binwidth = diff(range(to_plo[, param], na.rm = T))/30) + 
       facet_grid(month ~ .) + 
       xlab(ylab) +
-      theme_bw(base_family = 'Times') + 
+      theme_bw(base_family = 'Times', base_size = base_size) + 
       theme(axis.title.y = element_blank(), axis.text.y = element_blank(), 
             axis.ticks.y = element_blank(), 
             strip.text.y = element_text(size = 8, angle = 90),
@@ -276,7 +277,7 @@ plot_summary.swmpr <- function(swmpr_in, param, colsleft = c('lightblue', 'light
       )  +
       scale_fill_gradient2(name = ylab,
                            low = colsright[1], mid = colsright[2], high = colsright[3], midpoint = midpt) +
-      theme_classic() +
+      theme_classic(base_size = base_size) +
       ylab('Monthly means') +
       xlab('') +
       theme(legend.position = 'top', legend.title = element_blank()) +
@@ -299,7 +300,7 @@ plot_summary.swmpr <- function(swmpr_in, param, colsleft = c('lightblue', 'light
       scale_fill_gradient2(name = ylab,
                            low = colsright[1], mid = colsright[2], high = colsright[3], midpoint = 0,
                            limits = c(-1 * rngs, rngs)) +
-      theme_classic() +
+      theme_classic(base_size = base_size) +
       ylab('Monthly anomalies') +
       xlab('') +
       theme(legend.position = 'top', legend.title = element_blank()) +
@@ -317,7 +318,7 @@ plot_summary.swmpr <- function(swmpr_in, param, colsleft = c('lightblue', 'light
                            low = colsright[1], mid = colsright[2], high = colsright[3], midpoint = 0
       ) +
       stat_smooth(method = 'lm', se = F, linetype = 'dashed', size = 1) +
-      theme_classic() +
+      theme_classic(base_size = base_size) +
       ylab('Annual anomalies') +
       xlab('') +
       theme(legend.position = 'none') +
