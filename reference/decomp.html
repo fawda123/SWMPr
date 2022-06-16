@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -91,22 +91,37 @@
     <h2>Arguments</h2>
     <dl><dt>dat_in</dt>
 <dd><p>input data object</p></dd>
+
+
 <dt>...</dt>
 <dd><p>arguments passed to <code>decompose</code>, <code>ts</code>, and other methods</p></dd>
+
+
 <dt>param</dt>
 <dd><p>chr string of swmpr parameter to decompose</p></dd>
+
+
 <dt>type</dt>
 <dd><p>chr string of <code>'additive'</code> or <code>'multiplicative'</code> indicating the type of decomposition, default <code>'additive'</code>.</p></dd>
+
+
 <dt>frequency</dt>
 <dd><p>chr string or numeric vector indicating the periodic component of the input parameter.  Only <code>'daily'</code> or <code>'annual'</code> are accepted as chr strings.  Otherwise a numeric vector specifies the number of observations required for a full cycle of the input parameter.  Defaults to <code>'daily'</code> for a diurnal parameter.</p></dd>
+
+
 <dt>start</dt>
 <dd><p>numeric vector indicating the starting value for the time series given the frequency.  Only required if <code>frequency</code> is numeric. See <code><a href="https://rdrr.io/r/stats/ts.html" class="external-link">ts</a></code>.</p></dd>
+
+
 <dt>date_col</dt>
 <dd><p>chr string of the name of the date column</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Returns a decomposed.ts object</p>
+    
+
+<p>Returns a decomposed.ts object</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -172,7 +187,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

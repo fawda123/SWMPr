@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -85,30 +85,53 @@
     <h2>Arguments</h2>
     <dl><dt>swmpr_in</dt>
 <dd><p>input swmpr object</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional arguments passed to other methods</p></dd>
+
+
 <dt>param</dt>
 <dd><p>chr string of variable to plot</p></dd>
+
+
 <dt>colsleft</dt>
 <dd><p>chr string vector of length two indicating colors for left plots</p></dd>
+
+
 <dt>colsmid</dt>
 <dd><p>chr string vector of length one indicating colors for middle plots</p></dd>
+
+
 <dt>colsright</dt>
 <dd><p>chr string vector of length three indicating colors for right plots</p></dd>
+
+
 <dt>base_size</dt>
 <dd><p>numeric for text size</p></dd>
+
+
 <dt>years</dt>
 <dd><p>numeric vector of starting and ending years to plot, default all</p></dd>
+
+
 <dt>plt_sep</dt>
 <dd><p>logical if a list is returned with separate plot elements</p></dd>
+
+
 <dt>sum_out</dt>
 <dd><p>logical if summary data for the plots is returned</p></dd>
+
+
 <dt>fill</dt>
 <dd><p>chr string indicating if missing monthly values are left as is (<code>'none'</code>, default), replaced by long term monthly averages (<code>'monoclim'</code>), or linearly interpolated using <code><a href="https://rdrr.io/pkg/zoo/man/na.approx.html" class="external-link">na.approx</a></code></p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A graphics object (Grob) of multiple <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></code> objects, otherwise a list of  individual <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></code> objects if <code>plt_sep = TRUE</code> or a list with data frames of the summarized data if <code>sum_out = TRUE</code>.</p>
+    
+
+<p>A graphics object (Grob) of multiple <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></code> objects, otherwise a list of  individual <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></code> objects if <code>plt_sep = TRUE</code> or a list with data frames of the summarized data if <code>sum_out = TRUE</code>.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -271,7 +294,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

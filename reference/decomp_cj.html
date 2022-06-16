@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -93,24 +93,41 @@
     <h2>Arguments</h2>
     <dl><dt>dat_in</dt>
 <dd><p>input data object</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional arguments passed to or from other methods</p></dd>
+
+
 <dt>param</dt>
 <dd><p>chr string of variable to decompose</p></dd>
+
+
 <dt>vals_out</dt>
 <dd><p>logical indicating of numeric output is returned, default is <code>FALSE</code> to return a plot.</p></dd>
+
+
 <dt>event</dt>
 <dd><p>logical indicating if an 'events' component should be determined</p></dd>
+
+
 <dt>type</dt>
 <dd><p>chr string indicating the type of decomposition, either additive (<code>'add'</code>) or multiplicative (<code>'mult'</code>)</p></dd>
+
+
 <dt>center</dt>
 <dd><p>chr string indicating the method of centering, either <code>'mean'</code> or <code>'median'</code></p></dd>
+
+
 <dt>date_col</dt>
 <dd><p>chr string indicating the name of the date column which should be a date or POSIX object.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></code> object if <code>vals_out = FALSE</code> (default), otherwise a monthly time series matrix of class <code><a href="https://rdrr.io/r/stats/ts.html" class="external-link">ts</a></code>.</p>
+    
+
+<p>A <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></code> object if <code>vals_out = FALSE</code> (default), otherwise a monthly time series matrix of class <code><a href="https://rdrr.io/r/stats/ts.html" class="external-link">ts</a></code>.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -317,7 +334,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

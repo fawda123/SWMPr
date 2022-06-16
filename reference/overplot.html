@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -105,42 +105,77 @@
     <h2>Arguments</h2>
     <dl><dt>dat_in</dt>
 <dd><p>input data object</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional arguments passed to <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></code></p></dd>
+
+
 <dt>select</dt>
 <dd><p>chr string of variable(s) to plot, passed to <code><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></code>.  This is a required argument for the default method.</p></dd>
+
+
 <dt>subset</dt>
 <dd><p>chr string of form 'YYYY-mm-dd HH:MM' to subset a date range. Input can be one (requires operator or two values (a range).  Passed to <code><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></code>.</p></dd>
+
+
 <dt>operator</dt>
 <dd><p>chr string specifiying binary operator (e.g., '&gt;', '&lt;=') if subset is one date value, passed to <code><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></code></p></dd>
+
+
 <dt>ylabs</dt>
 <dd><p>chr string of labels for y-axes, default taken from <code>select</code> argument</p></dd>
+
+
 <dt>xlab</dt>
 <dd><p>chr string of label for x-axis</p></dd>
+
+
 <dt>cols</dt>
 <dd><p>chr string of colors to use for lines</p></dd>
+
+
 <dt>lty</dt>
 <dd><p>numeric indicating line types, one value for all or values for each parameter</p></dd>
+
+
 <dt>lwd</dt>
 <dd><p>numeric indicating line widths, one value for all or values for each parameter, used as <code>cex</code> for point size if <code>type = 'p'</code></p></dd>
+
+
 <dt>pch</dt>
 <dd><p>numeric for point type of points are used</p></dd>
+
+
 <dt>type</dt>
 <dd><p>character string indicating <code>'p'</code> or <code>'l'</code> for points or lines, as a single value for all parameters or a combined vector equal in length to the number of parameters</p></dd>
+
+
 <dt>date_var</dt>
 <dd><p>chr string of the name for the datetimestamp column, not required for <code><a href="swmpr.html">swmpr</a></code> objects</p></dd>
+
+
 <dt>inset</dt>
 <dd><p>numeric of relative location of legend, passed to <code><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></code></p></dd>
+
+
 <dt>cex</dt>
 <dd><p>numeric of scale factor for legend, passed to <code><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></code></p></dd>
+
+
 <dt>xloc</dt>
 <dd><p>x location of legend, passed to <code><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></code></p></dd>
+
+
 <dt>yloc</dt>
 <dd><p>y location of legend, passed to <code><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></code></p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An R plot created using base graphics</p>
+    
+
+<p>An R plot created using base graphics</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -188,7 +223,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

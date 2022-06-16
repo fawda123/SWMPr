@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -70,18 +70,29 @@
     <h2>Arguments</h2>
     <dl><dt>station_code</dt>
 <dd><p>chr string of station, 7 or 8 characters</p></dd>
+
+
 <dt>dtrng</dt>
 <dd><p>two element chr string, each of format MM/DD/YYYY</p></dd>
+
+
 <dt>param</dt>
 <dd><p>chr string for a single parameter to return, defaults to all parameters for a station type.</p></dd>
+
+
 <dt>trace</dt>
 <dd><p>logical indicating if import progress is printed in console</p></dd>
+
+
 <dt>Max</dt>
 <dd><p>numeric indicating maximum number of records to return</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Returns a swmpr object, all parameters for a station type (nutrients, water quality, or meteorological) or a single parameter if specified.  QAQC columns are not provided for single parameters.</p>
+    
+
+<p>Returns a swmpr object, all parameters for a station type (nutrients, water quality, or meteorological) or a single parameter if specified.  QAQC columns are not provided for single parameters.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -120,7 +131,7 @@ Download time may be excessive for large requests.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

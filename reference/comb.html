@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -76,18 +76,29 @@
     <h2>Arguments</h2>
     <dl><dt>...</dt>
 <dd><p>input time series data objects, from one to many</p></dd>
+
+
 <dt>timestep</dt>
 <dd><p>numeric value of time step to use in minutes, passed to <code>setstep</code></p></dd>
+
+
 <dt>differ</dt>
 <dd><p>numeric value defining buffer for merging time stamps to standardized time series, passed to <code>setstep</code></p></dd>
+
+
 <dt>method</dt>
 <dd><p>chr string indicating method of combining data.  Use <code>'union'</code> for all dates as continuous time series or <code>'intersect'</code> for only areas of overlap. If input is a  <code>swmpr</code> object, a <code>'station'</code> name can be used to combine by the date range of a given station, assuming there is overlap with the second station.  A numeric value can be supplied for the default method that specifies which data object to use for the date range based on order of execution in the function call.</p></dd>
+
+
 <dt>date_col</dt>
 <dd><p>chr string indicating name of the date column</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Returns a combined swmpr object</p>
+    
+
+<p>Returns a combined swmpr object</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -124,7 +135,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

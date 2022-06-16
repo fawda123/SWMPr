@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -70,16 +70,25 @@
     <h2>Arguments</h2>
     <dl><dt>path</dt>
 <dd><p>chr string of full path to .csv files with raw data, can be a zipped or unzipped directory where the former must include the .zip extension</p></dd>
+
+
 <dt>station_code</dt>
 <dd><p>chr string of station to import, typically 7 or 8 characters including wq, nut, or met extensions, may include full name with year, excluding file extension</p></dd>
+
+
 <dt>trace</dt>
 <dd><p>logical indicating if progress is sent to console, default <code>FALSE</code></p></dd>
+
+
 <dt>collMethd</dt>
 <dd><p>chr string of nutrient data to subset. 1 indicates monthly, 2 indicates diel. Default is both diel and monthly data.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Returns a swmpr object with all parameters and QAQC columns for the station.  The full date range in the raw data are also imported.</p>
+    
+
+<p>Returns a swmpr object with all parameters and QAQC columns for the station.  The full date range in the raw data are also imported.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -123,7 +132,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

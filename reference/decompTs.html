@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -75,24 +75,37 @@
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a monthly time series vector</p></dd>
+
+
 <dt>event</dt>
 <dd><p>whether or not an "events" component should be determined</p></dd>
+
+
 <dt>type</dt>
 <dd><p>the type of decomposition, either multiplicative ("mult") or additive ("add")</p></dd>
+
+
 <dt>center</dt>
 <dd><p>the method of centering, either median or mean</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A monthly time series matrix with the following individual time series:</p>
+    
+
+<p>A monthly time series matrix with the following individual time series:</p>
 <dl><dt>original </dt>
 <dd><p>original time series</p></dd>
+
 <dt>annual </dt>
 <dd><p>annual mean series</p></dd>
+
 <dt>seasonal </dt>
 <dd><p>repeating seasonal component</p></dd>
+
 <dt>events </dt>
 <dd><p>optionally, the residual or "events" series</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -121,7 +134,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

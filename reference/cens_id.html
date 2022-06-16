@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -73,16 +73,25 @@
     <h2>Arguments</h2>
     <dl><dt>swmpr_in</dt>
 <dd><p>input swmpr object</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional arguments passed to or from other methods</p></dd>
+
+
 <dt>flag_type</dt>
 <dd><p>chr string indicating the flag type to return, must be one of <code>'below'</code>, <code>'above'</code>, or <code>'both'</code>, see details</p></dd>
+
+
 <dt>select</dt>
 <dd><p>chr string of parameters to keep, defaults to all, <code>'datetimestamp'</code> will always be kept</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Returns a swmpr object with additional columns for censored flag values and the appropriate flag type based on the input arguments.  Censored flag columns are named with a <code>c_</code> prefix.</p>
+    
+
+<p>Returns a swmpr object with additional columns for censored flag values and the appropriate flag type based on the input arguments.  Censored flag columns are named with a <code>c_</code> prefix.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -2067,7 +2076,7 @@ The output includes additional columns similar to those for QAQC flags, such tha
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

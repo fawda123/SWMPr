@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -79,22 +79,37 @@
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>input swmpr object</p></dd>
+
+
 <dt>subset</dt>
 <dd><p>chr string of form 'YYYY-mm-dd HH:MM' to subset a date range.  Input can be one (requires <code>operator</code> or two values (a range).</p></dd>
+
+
 <dt>select</dt>
 <dd><p>chr string of parameters to keep, <code>'datetimestamp'</code> will always be kept</p></dd>
+
+
 <dt>operator</dt>
 <dd><p>chr string specifiying binary operator (e.g., <code>'&gt;'</code>, <code>'&lt;='</code>) if subset is one date value</p></dd>
+
+
 <dt>rem_rows</dt>
 <dd><p>logical indicating if rows with no data are removed, default <code>FALSE</code></p></dd>
+
+
 <dt>rem_cols</dt>
 <dd><p>is logical indicating if cols with no data are removed, default <code>FALSE</code></p></dd>
+
+
 <dt>...</dt>
 <dd><p>arguments passed to other methods</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Returns a swmpr object as a subset of the input.  The original object will be returned if no arguments are specified.</p>
+    
+
+<p>Returns a swmpr object as a subset of the input.  The original object will be returned if no arguments are specified.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -16203,7 +16218,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

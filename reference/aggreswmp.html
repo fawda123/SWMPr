@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -82,24 +82,41 @@
     <h2>Arguments</h2>
     <dl><dt>swmpr_in</dt>
 <dd><p>input swmpr object</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional arguments passed to other methods</p></dd>
+
+
 <dt>by</dt>
 <dd><p>chr string of time period for aggregation one of <code>'years'</code>, <code>'quarters'</code>, <code>'months'</code>, <code>'weeks'</code>, <code>'days'</code>, or <code>'hours'</code></p></dd>
+
+
 <dt>FUN</dt>
 <dd><p>aggregation function, default <code>mean</code> with <code>na.rm = TRUE</code></p></dd>
+
+
 <dt>params</dt>
 <dd><p>names of parameters to aggregate, default all</p></dd>
+
+
 <dt>aggs_out</dt>
 <dd><p>logical indicating if <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></code> is returned of raw data with datetimestamp formatted as aggregation period, default <code>FALSE</code></p></dd>
+
+
 <dt>plot</dt>
 <dd><p>logical to return a plot of the summarized data, default <code>FALSE</code></p></dd>
+
+
 <dt>na.action</dt>
 <dd><p>function for treating missing data, default <code>na.pass</code>.  See the documentation for <code><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></code> for options.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Returns an aggregated swmpr object. QAQC columns are removed if included with input object.  If <code>aggs_out = TRUE</code>, the original <code>swmpr</code> object is returned with the <code>datetimestamp</code> column formatted for the first day of the aggregation period from <code>by</code>.  A <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></code> object of boxplot summaries is returned if <code>plot = TRUE</code>.</p>
+    
+
+<p>Returns an aggregated swmpr object. QAQC columns are removed if included with input object.  If <code>aggs_out = TRUE</code>, the original <code>swmpr</code> object is returned with the <code>datetimestamp</code> column formatted for the first day of the aggregation period from <code>by</code>.  A <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></code> object of boxplot summaries is returned if <code>plot = TRUE</code>.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -150,7 +167,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

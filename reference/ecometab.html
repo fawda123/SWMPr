@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -85,24 +85,41 @@
     <h2>Arguments</h2>
     <dl><dt>dat_in</dt>
 <dd><p>Input data object, see details for required time series</p></dd>
+
+
 <dt>...</dt>
 <dd><p>arguments passed to other methods</p></dd>
+
+
 <dt>depth_val</dt>
 <dd><p>numeric value for station depth (m) if time series is not available</p></dd>
+
+
 <dt>metab_units</dt>
 <dd><p>chr indicating desired units of output for oxygen, either as mmol or grams</p></dd>
+
+
 <dt>trace</dt>
 <dd><p>logical indicating if progress is shown in the console</p></dd>
+
+
 <dt>tz</dt>
 <dd><p>chr string for timezone, e.g., 'America/Chicago'</p></dd>
+
+
 <dt>lat</dt>
 <dd><p>numeric for latitude</p></dd>
+
+
 <dt>long</dt>
 <dd><p>numeric for longitude (negative west of prime meridian)</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <code>data.frame</code> of daily integrated metabolism estimates is returned. If a <code><a href="swmpr.html">swmpr</a></code> object is passed to the function, this <code>data.frame</code> is added to the <code>metab</code> attribute and the original object is returned.  See the examples for retrieval from a <code>swmpr</code> object.  The metabolism <code>data.frame</code> contains the following:</p><dl><dt><code>date</code></dt>
+    
+
+<p>A <code>data.frame</code> of daily integrated metabolism estimates is returned. If a <code><a href="swmpr.html">swmpr</a></code> object is passed to the function, this <code>data.frame</code> is added to the <code>metab</code> attribute and the original object is returned.  See the examples for retrieval from a <code>swmpr</code> object.  The metabolism <code>data.frame</code> contains the following:</p><dl><dt><code>date</code></dt>
 <dd><p>The metabolic day, defined as the 24 hour period starting at sunrise (calculated using <code><a href="metab_day.html">metab_day</a></code>)</p></dd>
 
  <dt><code>DOF_d</code></dt>
@@ -195,7 +212,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>
