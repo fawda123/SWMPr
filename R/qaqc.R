@@ -80,11 +80,25 @@ qaqc.swmpr <- function(swmpr_in,
     
   } else {
     
-    #matrix of TF values for those that don't pass qaqc
+    # qaqc columns
     qaqc_vec <- dat[, names(dat) %in% qaqc_sel, drop = FALSE]
+    
+    # add angle brackets if not present
+    qaqc_vec <- apply(qaqc_vec, 2, function(x){
+
+      x <- gsub('<|>', '', x)
+      x <- gsub('^(.*\\d)', '<\\1', x)
+      x <- gsub('^(.*\\d)', '\\1>', x)
+
+      return(x)
+
+    })
+
+    #matrix of TF values for those that don't pass qaqc
     qaqc_vec <- apply(qaqc_vec, 2, 
                       function(x) !grepl(paste(qaqc_keep, collapse = '|'), x)
     )
+    
     #replace T values with NA
     #qaqc is corrected
     qaqc_sel <- gsub('f_', '', qaqc_sel)
