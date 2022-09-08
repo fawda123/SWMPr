@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SWMPr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.1.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.1.9003</span>
       </span>
     </div>
 
@@ -63,22 +63,22 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">ecometab</span><span class="op">(</span><span class="va">dat_in</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for swmpr</span>
-<span class="fu">ecometab</span><span class="op">(</span><span class="va">dat_in</span>, depth_val <span class="op">=</span> <span class="cn">NULL</span>, metab_units <span class="op">=</span> <span class="st">"mmol"</span>, trace <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for default</span>
-<span class="fu">ecometab</span><span class="op">(</span>
-  <span class="va">dat_in</span>,
-  <span class="va">tz</span>,
-  <span class="va">lat</span>,
-  <span class="va">long</span>,
-  depth_val <span class="op">=</span> <span class="cn">NULL</span>,
-  metab_units <span class="op">=</span> <span class="st">"mmol"</span>,
-  trace <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ecometab</span><span class="op">(</span><span class="va">dat_in</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for swmpr</span></span>
+<span><span class="fu">ecometab</span><span class="op">(</span><span class="va">dat_in</span>, depth_val <span class="op">=</span> <span class="cn">NULL</span>, metab_units <span class="op">=</span> <span class="st">"mmol"</span>, trace <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for default</span></span>
+<span><span class="fu">ecometab</span><span class="op">(</span></span>
+<span>  <span class="va">dat_in</span>,</span>
+<span>  <span class="va">tz</span>,</span>
+<span>  <span class="va">lat</span>,</span>
+<span>  <span class="va">long</span>,</span>
+<span>  depth_val <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  metab_units <span class="op">=</span> <span class="st">"mmol"</span>,</span>
+<span>  trace <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -169,35 +169,35 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="co">## import water quality and weather data, qaqc</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">apadbwq</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">apaebmet</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">wq</span> <span class="op">&lt;-</span> <span class="fu"><a href="qaqc.html">qaqc</a></span><span class="op">(</span><span class="va">apadbwq</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">met</span> <span class="op">&lt;-</span> <span class="fu"><a href="qaqc.html">qaqc</a></span><span class="op">(</span><span class="va">apaebmet</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## combine</span></span>
-<span class="r-in"><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="comb.html">comb</a></span><span class="op">(</span><span class="va">wq</span>, <span class="va">met</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## output units in grams of oxygen</span></span>
-<span class="r-in"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">ecometab</span><span class="op">(</span><span class="va">dat</span>, metab_units <span class="op">=</span> <span class="st">'grams'</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">res</span>, <span class="st">'metabolism'</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## manual input of integration depth</span></span>
-<span class="r-in"><span class="co">## NA values must be filled</span></span>
-<span class="r-in"><span class="va">dat_fill</span> <span class="op">&lt;-</span> <span class="fu">na.approx</span><span class="op">(</span><span class="va">dat</span>, params <span class="op">=</span> <span class="st">'depth'</span>, maxgap <span class="op">=</span> <span class="fl">1e6</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">depth</span> <span class="op">&lt;-</span> <span class="va">dat_fill</span><span class="op">$</span><span class="va">depth</span></span>
-<span class="r-in"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">ecometab</span><span class="op">(</span><span class="va">dat</span>, metab_units <span class="op">=</span> <span class="st">'grams'</span>, depth_val <span class="op">=</span> <span class="va">depth</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">res</span>, <span class="st">'metabolism'</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## use the default method for ecometab with a generic data frame</span></span>
-<span class="r-in"><span class="co">## first recreate a generic object from the sample data</span></span>
-<span class="r-in"><span class="va">cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'datetimestamp'</span>, <span class="st">'do_mgl'</span>, <span class="st">'depth'</span>, <span class="st">'atemp'</span>, <span class="st">'sal'</span>, <span class="st">'temp'</span>, <span class="st">'wspd'</span>, <span class="st">'bp'</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">dat</span><span class="op">[</span>, <span class="va">cols</span><span class="op">]</span></span>
-<span class="r-in"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">ecometab</span><span class="op">(</span><span class="va">dat</span>, tz <span class="op">=</span> <span class="st">'America/Jamaica'</span>, lat <span class="op">=</span> <span class="fl">29.67</span>, long <span class="op">=</span> <span class="op">-</span><span class="fl">85.06</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">res</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co">## import water quality and weather data, qaqc</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">apadbwq</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">apaebmet</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">wq</span> <span class="op">&lt;-</span> <span class="fu"><a href="qaqc.html">qaqc</a></span><span class="op">(</span><span class="va">apadbwq</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">met</span> <span class="op">&lt;-</span> <span class="fu"><a href="qaqc.html">qaqc</a></span><span class="op">(</span><span class="va">apaebmet</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## combine</span></span></span>
+<span class="r-in"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="comb.html">comb</a></span><span class="op">(</span><span class="va">wq</span>, <span class="va">met</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## output units in grams of oxygen</span></span></span>
+<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">ecometab</span><span class="op">(</span><span class="va">dat</span>, metab_units <span class="op">=</span> <span class="st">'grams'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">res</span>, <span class="st">'metabolism'</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## manual input of integration depth</span></span></span>
+<span class="r-in"><span><span class="co">## NA values must be filled</span></span></span>
+<span class="r-in"><span><span class="va">dat_fill</span> <span class="op">&lt;-</span> <span class="fu">na.approx</span><span class="op">(</span><span class="va">dat</span>, params <span class="op">=</span> <span class="st">'depth'</span>, maxgap <span class="op">=</span> <span class="fl">1e6</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">depth</span> <span class="op">&lt;-</span> <span class="va">dat_fill</span><span class="op">$</span><span class="va">depth</span></span></span>
+<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">ecometab</span><span class="op">(</span><span class="va">dat</span>, metab_units <span class="op">=</span> <span class="st">'grams'</span>, depth_val <span class="op">=</span> <span class="va">depth</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">res</span>, <span class="st">'metabolism'</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## use the default method for ecometab with a generic data frame</span></span></span>
+<span class="r-in"><span><span class="co">## first recreate a generic object from the sample data</span></span></span>
+<span class="r-in"><span><span class="va">cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'datetimestamp'</span>, <span class="st">'do_mgl'</span>, <span class="st">'depth'</span>, <span class="st">'atemp'</span>, <span class="st">'sal'</span>, <span class="st">'temp'</span>, <span class="st">'wspd'</span>, <span class="st">'bp'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">dat</span><span class="op">[</span>, <span class="va">cols</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">ecometab</span><span class="op">(</span><span class="va">dat</span>, tz <span class="op">=</span> <span class="st">'America/Jamaica'</span>, lat <span class="op">=</span> <span class="fl">29.67</span>, long <span class="op">=</span> <span class="op">-</span><span class="fl">85.06</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">res</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -212,7 +212,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

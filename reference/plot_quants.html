@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SWMPr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.1.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.1.9003</span>
       </span>
     </div>
 
@@ -63,22 +63,22 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">plot_quants</span><span class="op">(</span><span class="va">swmpr_in</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for swmpr</span>
-<span class="fu">plot_quants</span><span class="op">(</span>
-  <span class="va">swmpr_in</span>,
-  <span class="va">paramtoplot</span>,
-  <span class="va">yr</span>,
-  <span class="va">yrstart</span>,
-  <span class="va">yrend</span>,
-  yaxislab <span class="op">=</span> <span class="cn">NULL</span>,
-  yrcolor <span class="op">=</span> <span class="st">"red3"</span>,
-  bgcolor1 <span class="op">=</span> <span class="st">"lightgray"</span>,
-  bgcolor2 <span class="op">=</span> <span class="st">"gray65"</span>,
-  maintitle <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plot_quants</span><span class="op">(</span><span class="va">swmpr_in</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for swmpr</span></span>
+<span><span class="fu">plot_quants</span><span class="op">(</span></span>
+<span>  <span class="va">swmpr_in</span>,</span>
+<span>  <span class="va">paramtoplot</span>,</span>
+<span>  <span class="va">yr</span>,</span>
+<span>  <span class="va">yrstart</span>,</span>
+<span>  <span class="va">yrend</span>,</span>
+<span>  yaxislab <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  yrcolor <span class="op">=</span> <span class="st">"red3"</span>,</span>
+<span>  bgcolor1 <span class="op">=</span> <span class="st">"lightgray"</span>,</span>
+<span>  bgcolor2 <span class="op">=</span> <span class="st">"gray65"</span>,</span>
+<span>  maintitle <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -145,21 +145,21 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># qaqc</span></span>
-<span class="r-in"><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="qaqc.html">qaqc</a></span><span class="op">(</span><span class="va">apacpwq</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># generate a plot of salinity for 2013 overlaid on 2012-2013 data</span></span>
-<span class="r-in"><span class="fu">plot_quants</span><span class="op">(</span><span class="va">dat</span>, <span class="st">'sal'</span>, yr <span class="op">=</span> <span class="fl">2013</span>, yrstart <span class="op">=</span> <span class="fl">2012</span>, yrend <span class="op">=</span> <span class="fl">2013</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># qaqc</span></span></span>
+<span class="r-in"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="qaqc.html">qaqc</a></span><span class="op">(</span><span class="va">apacpwq</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># generate a plot of salinity for 2013 overlaid on 2012-2013 data</span></span></span>
+<span class="r-in"><span><span class="fu">plot_quants</span><span class="op">(</span><span class="va">dat</span>, <span class="st">'sal'</span>, yr <span class="op">=</span> <span class="fl">2013</span>, yrstart <span class="op">=</span> <span class="fl">2012</span>, yrend <span class="op">=</span> <span class="fl">2013</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`select_()` was deprecated in dplyr 0.7.0.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Please use `select()` instead.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</span></span>
 <span class="r-plt img"><img src="plot_quants-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># change some of the defaults</span></span>
-<span class="r-in"><span class="fu">plot_quants</span><span class="op">(</span><span class="va">dat</span>, <span class="st">'sal'</span>, yr <span class="op">=</span> <span class="fl">2013</span>, yrstart <span class="op">=</span> <span class="fl">2012</span>, yrend <span class="op">=</span> <span class="fl">2013</span>, </span>
-<span class="r-in"> bgcolor1 <span class="op">=</span> <span class="st">'lightsteelblue2'</span>, bgcolor2 <span class="op">=</span> <span class="st">'lightsteelblue4'</span>, </span>
-<span class="r-in"> yaxislab <span class="op">=</span> <span class="st">'Salinity (psu)'</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># change some of the defaults</span></span></span>
+<span class="r-in"><span><span class="fu">plot_quants</span><span class="op">(</span><span class="va">dat</span>, <span class="st">'sal'</span>, yr <span class="op">=</span> <span class="fl">2013</span>, yrstart <span class="op">=</span> <span class="fl">2012</span>, yrend <span class="op">=</span> <span class="fl">2013</span>, </span></span>
+<span class="r-in"><span> bgcolor1 <span class="op">=</span> <span class="st">'lightsteelblue2'</span>, bgcolor2 <span class="op">=</span> <span class="st">'lightsteelblue4'</span>, </span></span>
+<span class="r-in"><span> yaxislab <span class="op">=</span> <span class="st">'Salinity (psu)'</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot_quants-2.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
@@ -175,7 +175,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

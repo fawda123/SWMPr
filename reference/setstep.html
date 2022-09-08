@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SWMPr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.1.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.1.9003</span>
       </span>
     </div>
 
@@ -63,13 +63,13 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">setstep</span><span class="op">(</span><span class="va">dat_in</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for swmpr</span>
-<span class="fu">setstep</span><span class="op">(</span><span class="va">dat_in</span>, timestep <span class="op">=</span> <span class="fl">15</span>, differ <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for default</span>
-<span class="fu">setstep</span><span class="op">(</span><span class="va">dat_in</span>, <span class="va">date_col</span>, timestep <span class="op">=</span> <span class="fl">15</span>, differ <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">setstep</span><span class="op">(</span><span class="va">dat_in</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for swmpr</span></span>
+<span><span class="fu">setstep</span><span class="op">(</span><span class="va">dat_in</span>, timestep <span class="op">=</span> <span class="fl">15</span>, differ <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for default</span></span>
+<span><span class="fu">setstep</span><span class="op">(</span><span class="va">dat_in</span>, <span class="va">date_col</span>, timestep <span class="op">=</span> <span class="fl">15</span>, differ <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -111,13 +111,13 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co">## import data</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">apaebmet</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">apaebmet</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## convert time series to two hour invervals</span></span>
-<span class="r-in"><span class="co">## tolerance of +/- 30 minutes for matching existing data</span></span>
-<span class="r-in"><span class="fu">setstep</span><span class="op">(</span><span class="va">dat</span>, timestep <span class="op">=</span> <span class="fl">120</span>, differ <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## import data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">apaebmet</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">apaebmet</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## convert time series to two hour invervals</span></span></span>
+<span class="r-in"><span><span class="co">## tolerance of +/- 30 minutes for matching existing data</span></span></span>
+<span class="r-in"><span><span class="fu">setstep</span><span class="op">(</span><span class="va">dat</span>, timestep <span class="op">=</span> <span class="fl">120</span>, differ <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            datetimestamp atemp    f_atemp  rh       f_rh   bp       f_bp wspd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1    2011-12-31 23:00:00    NA       &lt;NA&gt;  NA       &lt;NA&gt;   NA       &lt;NA&gt;   NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2    2012-01-01 01:00:00  11.8        &lt;0&gt;  99        &lt;0&gt; 1022        &lt;0&gt;  0.8</span>
@@ -13163,13 +13163,13 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4346       &lt;-3&gt; [SSR]     0.0        &lt;0&gt;     0.0        &lt;0&gt;       NA       &lt;-1&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4347       &lt;-3&gt; [SSR]     0.0        &lt;0&gt;     0.0        &lt;0&gt;       NA       &lt;-1&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [ reached 'max' / getOption("max.print") -- omitted 4426 rows ]</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## convert a nutrient time series to a continuous time series</span></span>
-<span class="r-in"><span class="co">## then remove empty rows and columns</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">apacpnut</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">dat_nut</span> <span class="op">&lt;-</span> <span class="va">apacpnut</span></span>
-<span class="r-in"><span class="va">dat_nut</span> <span class="op">&lt;-</span> <span class="fu">setstep</span><span class="op">(</span><span class="va">dat_nut</span>, timestep <span class="op">=</span> <span class="fl">60</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">dat_nut</span>, rem_rows <span class="op">=</span> <span class="cn">TRUE</span>, rem_cols <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## convert a nutrient time series to a continuous time series</span></span></span>
+<span class="r-in"><span><span class="co">## then remove empty rows and columns</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">apacpnut</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dat_nut</span> <span class="op">&lt;-</span> <span class="va">apacpnut</span></span></span>
+<span class="r-in"><span><span class="va">dat_nut</span> <span class="op">&lt;-</span> <span class="fu">setstep</span><span class="op">(</span><span class="va">dat_nut</span>, timestep <span class="op">=</span> <span class="fl">60</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">dat_nut</span>, rem_rows <span class="op">=</span> <span class="cn">TRUE</span>, rem_cols <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           datetimestamp  po4f     f_po4f   nh4f     f_nh4f  no2f f_no2f  no3f</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1   2002-04-02 12:00:00 0.004        &lt;4&gt; 0.0290        &lt;4&gt; 0.002    &lt;4&gt; 0.046</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2   2002-04-30 11:00:00 0.014        &lt;4&gt; 0.1380        &lt;4&gt; 0.005    &lt;4&gt; 0.115</span>
@@ -13458,7 +13458,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

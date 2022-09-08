@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SWMPr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.1.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.1.9003</span>
       </span>
     </div>
 
@@ -63,10 +63,10 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">rem_reps</span><span class="op">(</span><span class="va">swmpr_in</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for swmpr</span>
-<span class="fu">rem_reps</span><span class="op">(</span><span class="va">swmpr_in</span>, FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">rem_reps</span><span class="op">(</span><span class="va">swmpr_in</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for swmpr</span></span>
+<span><span class="fu">rem_reps</span><span class="op">(</span><span class="va">swmpr_in</span>, FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -100,12 +100,12 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co">## get nutrient data</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">apacpnut</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">swmp1</span> <span class="op">&lt;-</span> <span class="va">apacpnut</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># remove replicate nutrient data</span></span>
-<span class="r-in"><span class="fu">rem_reps</span><span class="op">(</span><span class="va">swmp1</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## get nutrient data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">apacpnut</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">swmp1</span> <span class="op">&lt;-</span> <span class="va">apacpnut</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># remove replicate nutrient data</span></span></span>
+<span class="r-in"><span><span class="fu">rem_reps</span><span class="op">(</span><span class="va">swmp1</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>QAQC columns present, removed from output</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           datetimestamp        po4f       nh4f   no2f   no3f       no23f</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1   2002-04-02 11:55:30 0.004000000 0.02800000 0.0020 0.0470 0.049000000</span>
@@ -389,10 +389,10 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 138  7.400000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 139  2.700000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 140  5.900000</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># use different function to aggregate replicates</span></span>
-<span class="r-in"><span class="va">func</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">rem_reps</span><span class="op">(</span><span class="va">swmp1</span>, FUN <span class="op">=</span> <span class="va">func</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># use different function to aggregate replicates</span></span></span>
+<span class="r-in"><span><span class="va">func</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">rem_reps</span><span class="op">(</span><span class="va">swmp1</span>, FUN <span class="op">=</span> <span class="va">func</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>QAQC columns present, removed from output</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           datetimestamp  po4f   nh4f  no2f  no3f  no23f chla_n</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1   2002-04-02 11:55:30 0.004 0.0290 0.002 0.048 0.0500  1.800</span>
@@ -549,7 +549,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
