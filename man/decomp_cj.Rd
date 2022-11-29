@@ -72,6 +72,7 @@ decomp_cj(dat, param = 'chla_n')
 ## decomposition changing arguments passed to decompTs
 decomp_cj(dat, param = 'chla_n', type = 'mult')
 
+\dontrun{
 ## monthly decomposition of continuous data
 data(apacpwq)
 dat2 <- qaqc(apacpwq)
@@ -81,6 +82,7 @@ decomp_cj(dat2, param = 'do_mgl')
 ## using the default method with a data frame
 dat <- data.frame(dat)
 decomp_cj(dat, param = 'chla_n', date_col = 'datetimestamp')
+}
 }
 \references{
 Cloern, J.E., Jassby, A.D. 2010. Patterns and scales of phytoplankton variability in estuarine-coastal ecosystems. Estuaries and Coasts. 33:230-241.

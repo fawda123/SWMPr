@@ -48,6 +48,7 @@
 #' ## decomposition changing arguments passed to decompTs
 #' decomp_cj(dat, param = 'chla_n', type = 'mult')
 #' 
+#' \dontrun{
 #' ## monthly decomposition of continuous data
 #' data(apacpwq)
 #' dat2 <- qaqc(apacpwq)
@@ -57,6 +58,7 @@
 #' ## using the default method with a data frame
 #' dat <- data.frame(dat)
 #' decomp_cj(dat, param = 'chla_n', date_col = 'datetimestamp')
+#' }
 decomp_cj <- function(dat_in, ...) UseMethod('decomp_cj') 
 
 #' @rdname decomp_cj
