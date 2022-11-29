@@ -8,8 +8,6 @@
 #' @param alpha numeric indicating alpha level of confidence interval for aggregated data
 #' @param ... additional arguments passed to other methods
 #' 
-#' @import data.table
-#' 
 #' @importFrom stats na.omit na.pass qt sd
 #' 
 #' @concept analyze

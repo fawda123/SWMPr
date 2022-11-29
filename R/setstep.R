@@ -10,9 +10,9 @@
 #' 
 #' @export
 #' 
-#' @concept organize
+#' @importFrom data.table data.table
 #' 
-#' @import data.table
+#' @concept organize
 #' 
 #' @return Returns a data object for the specified time step
 #' 
@@ -117,7 +117,7 @@ setstep.default <- function(dat_in, date_col, timestep = 15, differ= NULL, ...){
   mrg_dat$time_dum <- mrg_dat[, date_col]
   mrg_dat <- data.table::data.table(mrg_dat, key = date_col)
   mrg_std <- data.table::data.table(dts_std, key = date_col)
-  
+
   # merge all the data  using  mrg_std as master
   mrg <- mrg_dat[mrg_std, roll = 'nearest']
   mrg <- data.frame(mrg)

@@ -13,7 +13,7 @@
 #' 
 #' @concept analyze
 #' 
-#' @import data.table ggplot2
+#' @import ggplot2
 #' 
 #' @importFrom stats aggregate formula na.pass
 #' 

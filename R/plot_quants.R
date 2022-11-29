@@ -79,16 +79,16 @@ plot_quants.swmpr <- function(swmpr_in, paramtoplot, yr, yrstart, yrend, yaxisla
   dat_backdrop <- dplyr::filter(dat, year >= yrstart & year <= yrend)
   
   # work with quantiles ----
-  
+
   # do some subsetting and sorting on backdrop data (using dplyr)
   # need to pull this out so a column can be named 'paramtoplot'
   # which makes later coding easier
-  dat_quantiles <- dplyr::select_(dat_backdrop, paramtoplot = paramtoplot, 'monthday', 'year')
+  dat_quantiles <- dplyr::select(dat_backdrop, paramtoplot = paramtoplot, monthday, year)
   
   # by_doy <- group_by(dat_quantiles, monthday)
   
   # subset featured data (using dplyr)
-  dat_feature <- dplyr::select_(dat_feature, paramtoplot = paramtoplot, 'monthday', 'year')
+  dat_feature <- dplyr::select(dat_feature, paramtoplot = paramtoplot, monthday, year)
   
   # generate a summary table (using dplyr and tibble) ----
   
