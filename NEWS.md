@@ -1,3 +1,15 @@
+## SWMPr 2.4.2
+
+* Added `fill` argument to `plot_summary` as option to fill missing values with long term monthly averages or linear interpolation
+
+* Added `base_size` argument for global text size in `plot_summary`
+
+* Fix to annual anomalies in `plot_summary` as average of monthly sums
+
+* Enhancement to `qaqc` to work if angle brackets not included in qualifier codes
+
+* Only required functions from data.table dependency imported
+
 ## SWMPr 2.4.1
 
 * Fix to `map_reserve` function for updates to ggmap
