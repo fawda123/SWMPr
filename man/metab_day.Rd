@@ -21,11 +21,11 @@ metab_day(dat_in, ...)
 \item{long}{numeric for longitude (negative west of prime meridian)}
 }
 \description{
-Identify metabolic days in a time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.  The function calls the \code{\link[maptools]{sunriset}} function from the maptools package, which uses algorithms from the National Oceanic and Atmospheric Administration (\url{https://gml.noaa.gov/grad/solcalc/}).
+Identify metabolic days in a time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.  The function calls the \code{\link[suncalc]{getSunlightTimes}} function from the suncalc package.
 }
 \details{
 This function is only used within \code{\link{ecometab}} and should not be called explicitly.
 }
 \seealso{
-\code{\link{ecometab}}, \code{\link[maptools]{sunriset}}
+\code{\link{ecometab}}, \code{\link[suncalc]{getSunlightTimes}}
 }

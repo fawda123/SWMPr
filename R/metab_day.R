@@ -1,6 +1,6 @@
 #' Identify metabolic days in a time series
 #'
-#' Identify metabolic days in a time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.  The function calls the \code{\link[maptools]{sunriset}} function from the maptools package, which uses algorithms from the National Oceanic and Atmospheric Administration (\url{https://gml.noaa.gov/grad/solcalc/}).
+#' Identify metabolic days in a time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.  The function calls the \code{\link[suncalc]{getSunlightTimes}} function from the suncalc package.
 #' 
 #' @param dat_in data.frame
 #' @param tz chr string for timezone, e.g., 'America/Chicago'
@@ -8,14 +8,12 @@
 #' @param long numeric for longitude (negative west of prime meridian)
 #' @param ... arguments passed to or from other methods
 #' 
-#' @import maptools
-#' 
 #' @export 
 #' 
 #' @details This function is only used within \code{\link{ecometab}} and should not be called explicitly.
 #' 
 #' @seealso 
-#' \code{\link{ecometab}}, \code{\link[maptools]{sunriset}}
+#' \code{\link{ecometab}}, \code{\link[suncalc]{getSunlightTimes}}
 #' 
 metab_day <- function(dat_in, ...) UseMethod('metab_day')
 
@@ -35,13 +33,9 @@ metab_day.default <- function(dat_in, tz, lat, long, ...){
     to = as.POSIXct(end_day, tz = tz),
     by = "days"
   )
-  sunrise <- sunriset(lat.long, sequence, direction = "sunrise", 
-                      POSIXct = TRUE)
-  sunset <- sunriset(lat.long, sequence, direction = "sunset", 
-                     POSIXct = TRUE)
-  ss_dat <- data.frame(sunrise, sunset)
-  ss_dat <- ss_dat[, -c(1, 3)]
-  colnames(ss_dat) <- c("sunrise", "sunset")
+
+  ss_dat <- suncalc::getSunlightTimes(date = as.Date(sequence, tz = tz), lat = lat, lon = long, tz = tz, keep = c('sunrise', 'sunset'))
+  ss_dat <- ss_dat2[, c('sunrise', 'sunset')]
   
   # remove duplicates, if any
   ss_dat <- ss_dat[!duplicated(strftime(ss_dat[, 1], format = '%Y-%m_%d')), ]
