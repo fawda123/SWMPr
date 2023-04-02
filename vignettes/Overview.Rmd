@@ -56,7 +56,7 @@ help.search('analyze', package = 'SWMPr')
 <table>
 <tr><td><code>all_params</code></td><td>Retrieve any number of records starting with the most recent at a given station, all parameters. Wrapper to <code>exportAllParamsXMLNew</code> function on web services.</td></tr>
 <tr><td><code>all_params_dtrng</code></td><td> Retrieve records of all parameters within a given date range for a station. Optional argument for a single parameter. Wrapper to <code>exportAllParamsDateRangeXMLNew</code>.</td></tr>
-<tr><td><code>import_local</code></td><td> Import files from a local path. The files must be in a specific format, specifically those returned from the CDMO using the <a href="http://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> option for a reserve.</td></tr>
+<tr><td><code>import_local</code></td><td> Import files from a local path. The files must be in a specific format, specifically those returned from the CDMO using the <a href="https://cdmo.baruch.sc.edu/aqs/zips.cfm">zip downloads</a> option for a reserve.</td></tr>
 <tr><td><code>import_remote</code></td><td> Import SWMP site data from a remote independent server. These files have been downloaded from CDMO, processed using functions in this package, and uploaded to an Amazon server for quicker import into R.</td></tr>
 <tr><td><code>single_param</code></td><td> Retrieve any number of records for a single parameter starting with the most recent at a given station. Wrapper to <code>exportSingleParamXMLNew</code> function on web services.</td></tr>
 <tr><td><code>site_codes</code></td><td> Metadata for all stations, wrapper to <code>exportStationCodesXMLNew</code> function on web services.</td></tr>

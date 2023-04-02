@@ -22,7 +22,7 @@ Returns a swmpr object, all available parameters including QAQC columns
 Import current station records from the CDMO starting with the most current date
 }
 \details{
-This function retrieves data from the CDMO through the web services URL.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{http://cdmo.baruch.sc.edu/webservices.cfm}.  Function is the CDMO equivalent of \code{exportAllParamsXMLNew} but actually uses \code{\link{all_params_dtrng}}, which is a direct call to \code{exportAllParamsDateRangeXMLNew}.
+This function retrieves data from the CDMO through the web services URL.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{https://cdmo.baruch.sc.edu/webservices.cfm}.  Function is the CDMO equivalent of \code{exportAllParamsXMLNew} but actually uses \code{\link{all_params_dtrng}}, which is a direct call to \code{exportAllParamsDateRangeXMLNew}.
 }
 \examples{
 

@@ -22,7 +22,7 @@ Returns a swmpr object with one parameter.  QAQC columns are not provided.
 Get stations records from the CDMO for a single parameter starting with the most current date
 }
 \details{
-This function retrieves data from the CDMO through the web services URL. The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{http://cdmo.baruch.sc.edu/webservices.cfm}.  This function is the CDMO equivalent of \code{exportSingleParamXML}.
+This function retrieves data from the CDMO through the web services URL. The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{https://cdmo.baruch.sc.edu/webservices.cfm}.  This function is the CDMO equivalent of \code{exportSingleParamXML}.
 }
 \examples{
 

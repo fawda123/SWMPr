@@ -13,7 +13,7 @@
 #' @return Returns a \code{\link[base]{data.frame}} with columns for swmpr parameters and row counts indicating the number of observations in each parameter assigned to a flag value.
 #' 
 #' @details
-#' Viewing the number of observations for each parameter that are assigned to a QAQC flag may be useful for deciding how to process the data qith qaqc. The \code{qaqcchk} function can be used to view this information. Consult the online documentation for a description of each QAQC flag: \url{http://cdmo.baruch.sc.edu/data/qaqc.cfm}
+#' Viewing the number of observations for each parameter that are assigned to a QAQC flag may be useful for deciding how to process the data qith qaqc. The \code{qaqcchk} function can be used to view this information. Consult the online documentation for a description of each QAQC flag: \url{https://cdmo.baruch.sc.edu/data/qaqc.cfm}
 #' 
 #' @examples
 #' ## get data

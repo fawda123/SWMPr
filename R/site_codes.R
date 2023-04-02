@@ -8,7 +8,7 @@
 #' 
 #' @concept retrieve
 #' 
-#' @details This function retrieves data from the CDMO web services.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{http://cdmo.baruch.sc.edu/webservices.cfm}. This is the CDMO equivalent of \code{exportStationCodesXML}.
+#' @details This function retrieves data from the CDMO web services.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{https://cdmo.baruch.sc.edu/webservices.cfm}. This is the CDMO equivalent of \code{exportStationCodesXML}.
 #' 
 #' @examples
 #' \dontrun{
@@ -20,7 +20,7 @@
 site_codes <- function(){
   
   # access CDMO web services
-  serv <- "http://cdmo.baruch.sc.edu/webservices2/requests.cfc?wsdl"
+  serv <- "https://cdmo.baruch.sc.edu/webservices2/requests.cfc?wsdl"
   
   # get all station codes
   reply <- httr::GET(

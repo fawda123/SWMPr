@@ -15,7 +15,7 @@
 #' @return Returns a swmpr object, all parameters for a station type (nutrients, water quality, or meteorological) or a single parameter if specified.  QAQC columns are not provided for single parameters.
 #' 
 #' @details 
-#' This function retrieves data from the CDMO through the web services URL.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{http://cdmo.baruch.sc.edu/webservices.cfm}.  This function is the CDMO equivalent of \code{exportAllParamsDateRangeXMLNew}.
+#' This function retrieves data from the CDMO through the web services URL.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{https://cdmo.baruch.sc.edu/webservices.cfm}.  This function is the CDMO equivalent of \code{exportAllParamsDateRangeXMLNew}.
 #' Download time may be excessive for large requests.
 #' 
 #' @seealso \code{\link{all_params}}, \code{\link{single_param}}
@@ -41,7 +41,7 @@ all_params_dtrng <- function(station_code, dtrng, param = NULL, trace = TRUE, Ma
   tictoc::tic()
   
   # url
-  serv <- "http://cdmo.baruch.sc.edu/webservices2/requests.cfc?wsdl"
+  serv <- "https://cdmo.baruch.sc.edu/webservices2/requests.cfc?wsdl"
   
   # for initializing while loop
   tz <- time_vec(station_code = station_code, tz_only = TRUE)

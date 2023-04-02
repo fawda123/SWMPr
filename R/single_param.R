@@ -16,7 +16,7 @@
 #' @return Returns a swmpr object with one parameter.  QAQC columns are not provided.
 #' 
 #' @details 
-#' This function retrieves data from the CDMO through the web services URL. The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{http://cdmo.baruch.sc.edu/webservices.cfm}.  This function is the CDMO equivalent of \code{exportSingleParamXML}.
+#' This function retrieves data from the CDMO through the web services URL. The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{https://cdmo.baruch.sc.edu/webservices.cfm}.  This function is the CDMO equivalent of \code{exportSingleParamXML}.
 #' 
 #' @seealso \code{\link{all_params}}, \code{\link{all_params_dtrng}}
 #' 
@@ -34,7 +34,7 @@ single_param <- function(station_code, param, Max = 100, trace = TRUE){
   # access CDMO web services
   
   # url
-  serv <- "http://cdmo.baruch.sc.edu/webservices2/requests.cfc?wsdl"
+  serv <- "https://cdmo.baruch.sc.edu/webservices2/requests.cfc?wsdl"
   
   # request data
   dat <- try({

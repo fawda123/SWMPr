@@ -35,7 +35,7 @@ parser <- function(resp_in, parent_in = 'data'){
   # error if ip address invalid
   if(grepl('^Invalid ip', out[1,1])){
     msg <- as.character(out[1,])
-    msg <- paste0(msg, ', is it registered? http://cdmo.baruch.sc.edu/web-services-request/')
+    msg <- paste0(msg, ', is it registered? https://cdmo.baruch.sc.edu/web-services-request/')
     stop(msg)
   }
   

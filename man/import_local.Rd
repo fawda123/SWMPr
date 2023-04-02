@@ -26,7 +26,7 @@ The function is designed to import local data that were downloaded from the CDMO
 
 Occasionally, duplicate time stamps are present in the raw data.  The function handles duplicate entries differently depending on the data type (water quality,  weather, or nutrients).  For water quality and nutrient data, duplicate time stamps are simply removed.  Note that nutrient data often contain replicate samples with similar but not duplicated time stamps within a few minutes of each other.  Replicates with unique time stamps are not removed but can be further processed using \code{\link{rem_reps}}.  Weather data prior to 2007 may contain duplicate time stamps at frequencies for 60 (hourly) and 144 (daily) averages, in addition to 15 minute frequencies.  Duplicate values that correspond to the smallest value in the frequency column (15 minutes) are retained.  
 
-Zip download request through CDMO: \url{http://cdmo.baruch.sc.edu/aqs/zips.cfm}
+Zip download request through CDMO: \url{https://cdmo.baruch.sc.edu/aqs/zips.cfm}
 
 Example dataset: \url{https://s3.amazonaws.com/swmpexdata/zip_ex.zip}
 }

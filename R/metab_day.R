@@ -35,7 +35,7 @@ metab_day.default <- function(dat_in, tz, lat, long, ...){
   )
 
   ss_dat <- suncalc::getSunlightTimes(date = as.Date(sequence, tz = tz), lat = lat, lon = long, tz = tz, keep = c('sunrise', 'sunset'))
-  ss_dat <- ss_dat2[, c('sunrise', 'sunset')]
+  ss_dat <- ss_dat[, c('sunrise', 'sunset')]
   
   # remove duplicates, if any
   ss_dat <- ss_dat[!duplicated(strftime(ss_dat[, 1], format = '%Y-%m_%d')), ]

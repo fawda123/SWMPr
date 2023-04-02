@@ -1,3 +1,7 @@
+## SWMPr 2.4.3
+
+* Removed maptools dependency, replaced with `getSunlightTimes()` function from suncalc package to estimate metabolic days in `metab_day()` function
+
 ## SWMPr 2.4.2
 
 * Added `fill` argument to `plot_summary` as option to fill missing values with long term monthly averages or linear interpolation

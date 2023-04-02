@@ -13,7 +13,7 @@ A \code{data.frame} of SWMP metadata
 Obtain a \code{\link[base]{data.frame}} of metadata for all SWMP stations.
 }
 \details{
-This function retrieves data from the CDMO web services.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{http://cdmo.baruch.sc.edu/webservices.cfm}. This is the CDMO equivalent of \code{exportStationCodesXML}.
+This function retrieves data from the CDMO web services.  The computer making the request must have a registered IP address.  Visit the CDMO web services page for more information: \url{https://cdmo.baruch.sc.edu/webservices.cfm}. This is the CDMO equivalent of \code{exportStationCodesXML}.
 }
 \examples{
 \dontrun{
