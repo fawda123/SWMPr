@@ -13,3 +13,6 @@
 ^swmpr_logo.png$
 ^Thumbs.db$
 ^\.github$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
