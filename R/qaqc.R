@@ -51,7 +51,7 @@ qaqc.swmpr <- function(swmpr_in,
   cens_cols <- attr(swmpr_in, 'cens_cols')
   station <- attr(swmpr_in, 'station')
   parameters <- attr(swmpr_in, 'parameters')
-  
+
   # exit function if no qaqc columns
   if(!qaqc_cols){
     warning('No qaqc columns in input data')

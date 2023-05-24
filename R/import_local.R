@@ -6,6 +6,7 @@
 #' @param  station_code chr string of station to import, typically 7 or 8 characters including wq, nut, or met extensions, may include full name with year, excluding file extension
 #' @param  trace logical indicating if progress is sent to console, default \code{FALSE}
 #' @param collMethd chr string of nutrient data to subset. 1 indicates monthly, 2 indicates diel. Default is both diel and monthly data.
+#' @param keep_qaqcstatus logical indicating if the \code{historical} and \code{provisionalplus} columns are retained in the output (default \code{FALSE}), see details
 #' 
 #' @concept retrieve
 #' 
@@ -19,6 +20,8 @@
 #' The function is designed to import local data that were downloaded from the CDMO outside of R. This approach works best for larger data requests, specifically those from the zip downloads feature in the advanced query section of the CDMO. The function may also work using data from the data export system, but this feature has not been extensively tested. The downloaded data will be in a compressed folder that includes multiple .csv files by year for a given data type (e.g., apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.). The import_local function can be used to import files directly from the compressed folder or after the folder is decompressed.  In the former case, the requested files are extracted to a temporary directory and then deleted after they are loaded into the current session.  An example dataset is available online to illustrate the format of the data provided through the zip downloads feature.  See the link below to access these data.  All example datasets included with the package were derived from these raw data.
 #' 
 #' Occasionally, duplicate time stamps are present in the raw data.  The function handles duplicate entries differently depending on the data type (water quality,  weather, or nutrients).  For water quality and nutrient data, duplicate time stamps are simply removed.  Note that nutrient data often contain replicate samples with similar but not duplicated time stamps within a few minutes of each other.  Replicates with unique time stamps are not removed but can be further processed using \code{\link{rem_reps}}.  Weather data prior to 2007 may contain duplicate time stamps at frequencies for 60 (hourly) and 144 (daily) averages, in addition to 15 minute frequencies.  Duplicate values that correspond to the smallest value in the frequency column (15 minutes) are retained.  
+#' 
+#' If \code{keep_qaqcstatus = TRUE}, the \code{historical} and \code{provisionalplus} columns are retained in the output.  These two columns include integer values as 0 or 1.  From the CDMO web page, a value of 0 in the \code{historical} column indicates that the data have not been through final QAQC by the CDMO. A value of 1 indicates that the data have been through final tertiary review at the CDMO and posted as the final authoritative data. A value of 0 in the \code{provisionalplus} column indicates that the data have been through the automated flagging process (primary QAQC) only and have not been checked by the Reserve. A value of 1 in the \code{provisionalplus} column indicates that the data have been through secondary QAQC at the Reserve using Excel macros (provided by the CDMO) to further QAQC the data.
 #' 
 #' Zip download request through CDMO: \url{https://cdmo.baruch.sc.edu/aqs/zips.cfm}
 #' 
@@ -41,7 +44,7 @@
 #' ## import, do not include file extension
 #' import_local(path, 'apaebmet') 
 #' }
-import_local <- function(path, station_code, trace = FALSE, collMethd = c('1', '2')){
+import_local <- function(path, station_code, trace = FALSE, collMethd = c('1', '2'), keep_qaqcstatus = FALSE){
   
   # add .zip if not present
   if(file.exists(paste0(path, '.zip'))){
@@ -154,6 +157,10 @@ import_local <- function(path, station_code, trace = FALSE, collMethd = c('1', '
   parm <- gsub('[0-9.*]', '', parm)
   nms <- param_names(parm)[[parm]]
   
+  # add provisionalplus and historical to nms
+  if(keep_qaqcstatus)
+    nms <- c(nms, 'provisionalplus', 'historical')
+  
   ##
   # deal with duplicate time stamps depending on data type
   
@@ -211,7 +218,7 @@ import_local <- function(path, station_code, trace = FALSE, collMethd = c('1', '
   station_code <- gsub('[0-9]*$', '', station_code)
   out <- swmpr(out, station_code)
   
-  if(trace) cat('\n\nData imported...')
+  if(trace) cat('\n\nData imported...\n')
   
   # return data frame
   return(out)

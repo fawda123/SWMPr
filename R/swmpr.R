@@ -26,7 +26,7 @@ swmpr <- function(stat_in, meta_in){
   if(any(grepl('^c_', names(stat_in)))) cens_cols <- TRUE
   
   # parameters attribute
-  parameters <- grep('datetimestamp|^f_|^c_', names(stat_in), invert = TRUE, value = TRUE)
+  parameters <- grep('datetimestamp|^f_|^c_|^provisionalplus$|^historical$', names(stat_in), invert = TRUE, value = TRUE)
   
   # get stations, param_types attributes
   param_types <- param_names()
