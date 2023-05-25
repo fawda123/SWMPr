@@ -34,9 +34,11 @@ Depends:
     zoo
 Suggests:
     colorspace,
+    covr,
     ggmap,
-    knitr, 
-    rmarkdown
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
 Authors@R: c(
   person(given = "Marcus W.", family = "Beck",
     role = c("aut","cre"),
@@ -48,3 +50,4 @@ Authors@R: c(
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 URL: http://fawda123.github.io/SWMPr/
+Config/testthat/edition: 3
