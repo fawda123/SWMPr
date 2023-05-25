@@ -63,7 +63,7 @@ cens_id.swmpr <- function(swmpr_in, flag_type = 'both', select = NULL, ...){
   cens_dat <- dat[, qaqc_sel, drop = FALSE]
   cens_dat <- apply(cens_dat, 2, 
                     function(x){
-                      
+                     
                       x <- as.character(x)
                       
                       # within
