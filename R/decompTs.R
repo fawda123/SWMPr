@@ -25,8 +25,7 @@
 #' 
 #' @references
 #' Cloern, J.E. and Jassby, A.D. (2010) Patterns and scales of phytoplankton variability in estuarine-coastal ecosystems. \emph{Estuaries and Coasts} \bold{33,} 230--241.
-decompTs <-
-  function(x, event = TRUE, type = c("add", "mult"),
+decompTs <- function(x, event = TRUE, type = c("add", "mult"),
            center = c("mean", "median")) {
     
     # Validate input
