@@ -1,4 +1,5 @@
 library(SWMPr)
+library(ggmap)
 
 ## qaqc, combine
 wq <- qaqc(apadbwq)
