@@ -1,3 +1,6 @@
+key <- Sys.getenv('GGMAP_GOOGLE_API_KEY')
+register_google(key = key, write = TRUE)
+
 test_that("map_reserve returns a ggplot object", {
   # Call the function
   plot <- map_reserve("apa")
