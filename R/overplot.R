@@ -5,7 +5,7 @@
 #' @param dat_in input data object
 #' @param date_var chr string of the name for the datetimestamp column, not required for \code{\link{swmpr}} objects 
 #' @param select chr string of variable(s) to plot, passed to \code{\link{subset}}.  This is a required argument for the default method.
-#' @param subset chr string of form 'YYYY-mm-dd HH:MM' to subset a date range. Input can be one (requires operator or two values (a range).  Passed to \code{\link{subset}}.
+#' @param subset chr string of form 'YYYY-mm-dd HH:MM' to subset a date range. Input can be one (requires operator) or two values (a range).  Passed to \code{\link{subset}}.
 #' @param operator chr string specifiying binary operator (e.g., '>', '<=') if subset is one date value, passed to \code{\link{subset}}
 #' @param ylabs chr string of labels for y-axes, default taken from \code{select} argument
 #' @param xlab chr string of label for x-axis

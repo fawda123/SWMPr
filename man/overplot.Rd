@@ -48,7 +48,7 @@ overplot(dat_in, ...)
 
 \item{select}{chr string of variable(s) to plot, passed to \code{\link{subset}}.  This is a required argument for the default method.}
 
-\item{subset}{chr string of form 'YYYY-mm-dd HH:MM' to subset a date range. Input can be one (requires operator or two values (a range).  Passed to \code{\link{subset}}.}
+\item{subset}{chr string of form 'YYYY-mm-dd HH:MM' to subset a date range. Input can be one (requires operator) or two values (a range).  Passed to \code{\link{subset}}.}
 
 \item{operator}{chr string specifiying binary operator (e.g., '>', '<=') if subset is one date value, passed to \code{\link{subset}}}
 

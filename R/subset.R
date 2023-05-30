@@ -21,7 +21,7 @@
 #' @seealso \code{\link[base]{subset}}
 #'
 #' @details
-#' This function is used to subset swmpr data by date and/or a selected parameter. The date can be a single value or as two dates to select records within the range. The former case requires a binary operator input as a character string passed to the argument, such as \code{>} or \code{<}. The subset argument for the date(s) must also be a character string of the format YYYY-mm-dd HH:MM for each element (i.e., `%Y-%m%-%d %H:%M' in POSIX standards). Be aware that an error may be returned using this function if the subset argument is in the correct format but the calendar date does not exist, e.g. \code{'2012-11-31 12:00'}.  The function can also be used to remove rows and columns that do not contain data, which may be useful after processing with other functions.
+#' This function is used to subset swmpr data by date and/or a selected parameter. The date can be a single value or as two dates to select records within the range. The former case requires a binary operator input as a character string passed to the argument, such as \code{>} or \code{<}. The subset argument for the date(s) must also be a character string of the format YYYY-mm-dd HH:MM for each element (i.e., \code{\%Y-\%m-\%d \%H:\%M} in POSIX standards). Be aware that an error may be returned using this function if the subset argument is in the correct format but the calendar date does not exist, e.g. \code{'2012-11-31 12:00'}.  The function can also be used to remove rows and columns that do not contain data, which may be useful after processing with other functions.
 #' 
 #' @examples
 #' ## get data
