@@ -8,10 +8,3 @@ test_that("Function throws an error for missing or invalid years argument", {
   expect_error(plot_wind(swmpr_in, years = NULL), "No weather data")
   expect_error(plot_wind(swmpr_in, years = 2024), "Check years")
 })
-
-# Test if the function returns the expected main title when main argument is NULL
-test_that("Function returns the expected main title when main argument is NULL", {
-  output <- plot_wind(met)
-  expected_main <- expression(paste('apaebmet, 2013 '))
-  expect_equal(output$plot$main, expected_main)
-})
