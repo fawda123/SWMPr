@@ -36,7 +36,7 @@ test_that("plot_summary function returns separate plots", {
   plot <- plot_summary(wq, param = "do_mgl", years = 2012, plt_sep = T)
   
   # Check if the plot object is of class "gtable"
-  expect_s3_class(plot, 'list')
+  expect_type(plot, 'list')
   
 })
 

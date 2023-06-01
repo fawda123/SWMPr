@@ -12,5 +12,6 @@ test_that("Function throws an error for missing or invalid years argument", {
 # Test if the function returns the expected main title when main argument is NULL
 test_that("Function returns the expected main title when main argument is NULL", {
   output <- plot_wind(met)
+  expected_main <- expression(paste('apaebmet, 2013 '))
   expect_equal(output$plot$main, expected_main)
 })
