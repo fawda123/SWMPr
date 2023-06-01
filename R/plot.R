@@ -33,7 +33,7 @@
 #' ## plot using formula method
 #' plot(do_mgl ~ datetimestamp, dat)
 #' 
-#' ## plot using defualt, add lines
+#' ## plot using default, add lines
 #' plot(dat, type = 'n')
 #' lines(dat, col = 'red')
 plot.swmpr <- function(x, type = 'l', ...) {
