@@ -3,7 +3,8 @@ library(ggmap)
 
 ## qaqc, combine
 wq <- qaqc(apadbwq)
-met <- qaqc(apaebmet)
+met <- qaqc(apaebmet) 
+nut <- qaqc(apacpnut)
 dat <- comb(wq, met)
 
 ## estimate metabolism
