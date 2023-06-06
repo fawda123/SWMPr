@@ -92,19 +92,20 @@ decomp.swmpr <- function(dat_in, param, type = 'additive', frequency = 'daily', 
 #' 
 #' @method decomp default
 decomp.default <- function(dat_in, param, date_col, type = 'additive', frequency = 'daily', start = NULL, ...){
-  
+
   # stop if param not in input data names
   if(!param %in% names(dat_in))
     stop('Params argument must name input columns')
-  
+
   # stop if frequency or start are incorrect
-  if(!is.numeric(frequency) & !any(frequency %in% c('daily', 'annual'))){
+  if(!is.numeric(frequency) & !any(frequency %in% c('daily', 'annual')))
     stop("Chr string input for frequency must be 'daily' or 'annual'")
-  } else {
-    if(!is.null(start))
-      stop('Start argument required if frequency is numeric')
-  }
   
+  # stop if frequency is numeric and start not provided
+  if(is.null(start) & is.numeric(frequency))
+    stop('Start argument required if frequency is numeric')
+  
+
   # stop if time series is not standardized
   chk_step <- unique(diff(dat_in[, date_col]))
   if(length(chk_step) > 1)
