@@ -1,5 +1,5 @@
 # Unit tests
-test_that("aggremetab.swmpr aggregates metabolism data by weeks", {
+test_that("aggremetab aggregates metabolism data by weeks", {
   result <- aggremetab(resmet, by = "weeks")
   
   # Check if the result is a data frame
@@ -13,7 +13,7 @@ test_that("aggremetab.swmpr aggregates metabolism data by weeks", {
   expect_equal(colnames(result), expected_columns)
 })
 
-test_that("aggremetab.swmpr aggregates metabolism data by months", {
+test_that("aggremetab aggregates metabolism data by months", {
   result <- aggremetab(resmet, by = "months")
   
   # Check if the result is a data frame
@@ -27,7 +27,7 @@ test_that("aggremetab.swmpr aggregates metabolism data by months", {
   expect_equal(colnames(result), expected_columns)
 })
 
-test_that("aggremetab.swmpr aggregates metabolism data using a moving window average", {
+test_that("aggremetab aggregates metabolism data using a moving window average", {
   result <- aggremetab(resmet, by = 30)
   
   # Check if the result is a data frame
@@ -36,4 +36,12 @@ test_that("aggremetab.swmpr aggregates metabolism data using a moving window ave
   # Check the column names in the result
   expected_columns <- c("date", "Estimate", "val")
   expect_equal(colnames(result), expected_columns)
+})
+
+test_that("aggrematab returns appropriate errors", {
+  
+  expect_error(aggremetab(resmet, by = 'asdf'), 'Unknown value for by, see help documentation')
+  expect_error(aggremetab(wq, by = 'years'), 'No metabolism data, use the ecometab function')
+  expect_error(aggremetab(resmet, by = T), 'By argument must be character string of aggregation period or numeric indicating number of days')
+  
 })

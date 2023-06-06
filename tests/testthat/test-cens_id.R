@@ -18,32 +18,39 @@ create_mock_swmpr <- function() {
 swmpr_obj <- create_mock_swmpr()
 
 # Unit tests
-test_that("cens_id.swmpr returns correct results for flag_type = 'both'", {
+test_that("cens_id returns correct results for flag_type = 'both'", {
 
   flag_type <- "both"
   expected_output <- c('-1', '1')
   
-  result <- cens_id.swmpr(swmpr_obj, flag_type)$c_parameter1
+  result <- cens_id(swmpr_obj, flag_type)$c_parameter1
   
   expect_equal(result, expected_output)
 })
 
-test_that("cens_id.swmpr returns correct results for flag_type = 'above'", {
+test_that("cens_id returns correct results for flag_type = 'above'", {
 
   flag_type <- "above"
   expected_output <- c(T, F)
   
-  result <- cens_id.swmpr(swmpr_obj, flag_type)$c_parameter2
+  result <- cens_id(swmpr_obj, flag_type)$c_parameter2
   
   expect_equal(result, expected_output)
 })
 
-test_that("cens_id.swmpr returns correct results for flag_type = 'below'", {
+test_that("cens_id returns correct results for flag_type = 'below'", {
 
   flag_type <- "below"
   expected_output <- c(T, T)
   
-  result <- cens_id.swmpr(swmpr_obj, flag_type)$c_parameter3
+  result <- cens_id(swmpr_obj, flag_type)$c_parameter3
   
   expect_equal(result, expected_output)
+})
+
+test_that("Check errors for cens_id", {
+  
+  expect_error(cens_id(wq), 'No qaqc columns in input data')
+  expect_error(cens_id(apacpwq, flag = 'asdf'), 'flag_type must be one of both, above, or below')
+  
 })
