@@ -26,3 +26,11 @@ test_that("decomp_cj.swmpr decomposes a SWMP object with specified arguments", {
   expect_s3_class(result, "data.frame")  # Check if the result is of class "data.frame"
   
 })
+
+# check error
+test_that("decomp_cj.swmpr returns incorrect parameters error", {
+  
+  # Perform assertions to check the output
+  expect_error(decomp_cj(wq, 'asdf'), 'Selected parameter not in data')
+  
+})

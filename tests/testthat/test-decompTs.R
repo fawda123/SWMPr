@@ -5,6 +5,8 @@ test_that("decompTs validates input and returns the expected class", {
   
   # Test if decompTs returns the expected class
   expect_s3_class(decompTs(x), "mts")
+  expect_s3_class(decompTs(x, event = T), "mts")
+  
 })
 
 test_that("decompTs throws an error for non-monthly 'ts' object", {
