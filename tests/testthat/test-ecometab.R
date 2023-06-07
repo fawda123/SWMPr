@@ -43,4 +43,5 @@ test_that("check ecometab errors", {
   expect_error(ecometab(dat, depth_val = sample(c(1, NA), size = nrow(dat), replace = T)), 'NA values for depth_val not permitted')
   
   expect_error(ecometab(dat[sample(1:nrow(dat), nrow(dat)), ]), 'datetimestamp is unsorted')
+  
 })
