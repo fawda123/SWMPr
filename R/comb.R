@@ -147,28 +147,15 @@ comb.default <- function(..., date_col, timestep = 15, differ= NULL, method = 'u
     chr_stp <- c('years', 'quarters', 'months', 'weeks', 'days', 'hours')
     mul_fac <- c(525600, 131400, 44640, 10080, 1440, 60)
     
-    # stop if chr_stp is wrong
-    if(!timestep %in% chr_stp){
-      
-      stop(paste(
-        'Character input for timestep must be one of of the following:', 
-        paste(chr_stp, collapse = ', ')
-      ))
-      
-    }
-    
     # otherwise lookup
     differ <- mul_fac[which(timestep == chr_stp)]/2
     
   }
   
-  # differ as half timestep if timestep is not a character
-  if(is.null(differ)) differ <- timestep/2
-  
-  # sanity check
-  if(timestep/2 < differ) 
-    stop('Value for differ must be less than or equal to one half of timestep')
-  
+  # get differ if not provided and timestep is numeric
+  if(!is.character(timestep) & is.null(differ))
+    differ <- timestep/2
+    
   ##
   # merge stations by date_vec
   out <- data.table::data.table(datetimestamp = date_vec, key = 'datetimestamp')
