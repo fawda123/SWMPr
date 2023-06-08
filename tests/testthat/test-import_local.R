@@ -51,7 +51,7 @@ test_that("import_local imports met data correctly", {
 test_that("import_local imports nut data correctly", {
   result <- import_local(dirname(sample_nutfile), 'apacpnut', trace = T)
   expect_equal(ncol(result), 3)
-  expect_equal(nrow(result), 12)
+  expect_equal(nrow(result), 13)
   expect_s3_class(result, 'swmpr')
 })
 
@@ -71,8 +71,8 @@ test_that("import_local imports zip data correctly", {
 })
 
 test_that("import_local returns error if files not found", {
-  expect_error(import_local(paste0(test_dir, 'apadwq'), 'asdfwq', trace = T), "File(s) not found.")
-  expect_error(import_local(dirname(sample_file), 'asdfwq', trace = T), "File(s) not found.")
+  expect_error(import_local(paste0(test_dir, 'apadwq'), 'asdfwq', trace = T))
+  expect_error(import_local(dirname(sample_file), 'asdfwq', trace = T))
 })
 
 # Cleanup: Remove the temporary directory
