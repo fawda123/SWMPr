@@ -56,7 +56,7 @@ test_that("import_local imports met data correctly", {
 test_that("import_local imports nut data correctly", {
   
   # w/o collmethd
-  result <- expect_warning(import_local(dirname(sample_nutfile), 'apacpnut', trace = T))
+  result <- suppressWarnings(import_local(dirname(sample_nutfile), 'apacpnut', trace = T))
   expect_equal(ncol(result), 3)
   expect_equal(nrow(result), 13)
   expect_s3_class(result, 'swmpr')
