@@ -11,6 +11,17 @@ test_that("na.approx.swmpr returns the expected output", {
   expect_true("datetimestamp" %in% names(output))
   expect_true('do_mgl' %in% names(output))
   
+  # coverage for try-error in interp
+  swmpr_data <- wq
+  swmpr_data$temp <- 'a'
+  
+  # Call the function
+  output <- suppressWarnings(na.approx(swmpr_data, params = 'temp', maxgap = 1))
+  
+  # Check output is the same
+  result <- unique(output$temp)
+  expect_equal(result, 'a')
+  
 })
 
 test_that("na.approx returns warning if qaqc present", {
