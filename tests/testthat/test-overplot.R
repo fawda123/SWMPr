@@ -2,7 +2,7 @@ test_that("Check overplot class", {
 
   # Perform assertions on the plot object
   expect_type(overplot(apacpwq), 'list')
-  expect_type(overplot(wq, cols = 'red'))
+  expect_type(overplot(wq, cols = 'red'), 'list')
   expect_type(overplot(wq, lwd = 2, lty = 2, pch = 2, type = 'l'), 'list')
 
 })
