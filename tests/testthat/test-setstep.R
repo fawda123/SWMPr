@@ -49,3 +49,10 @@ test_that("Check error datetimestep is date class", {
   expect_error(setstep(dat_in), 'Cannot use setstep with date class')
   
 })
+
+test_that("Check error timestep character input is incorrect", {
+  
+  expect_error(setstep(apaebmet, timestep = 'asfd'), 
+               'Character input for timestep must be one of of the following: years, quarters, months, weeks, days, hours' )
+  
+})

@@ -19,8 +19,8 @@ sample_metdata <- data.frame(
   rh = runif(217, 0, 10),
   frequency = 60
 )
-sample_metdata <- rbind(sample_metdata, sample_metdata[nrow(sample_metdata), ])
 sample_metdata$datetimestamp <- strftime(sample_metdata$datetimestamp, format = '%m/%d/%Y %H:%M')
+sample_metdata <- rbind(sample_metdata, sample_metdata[nrow(sample_metdata), ])
 sample_metfile <- file.path(test_dir, "apaebmet.csv")
 write.csv(sample_metdata, file = sample_metfile, row.names = FALSE)
 
@@ -31,8 +31,9 @@ sample_nutdata <- data.frame(
   nh4f = runif(13, 0, 10)
 )
 sample_nutdata$datetimestamp <- strftime(sample_nutdata$datetimestamp, format = '%m/%d/%Y %H:%M')
+sample_nutdata <- rbind(sample_nutdata, sample_nutdata[nrow(sample_nutdata), ])
 sample_nutdata2 <- sample_nutdata 
-sample_nutdata2$collmethd <- sample(c(1, 2), 13, replace = T)
+sample_nutdata2$collmethd <- sample(c(1, 2), 14, replace = T)
 sample_nutfile <- file.path(test_dir, "apacpnut.csv")
 sample_nutfile2 <- file.path(test_dir, "apacp2nut.csv")
 write.csv(sample_nutdata, file = sample_nutfile, row.names = FALSE)

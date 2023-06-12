@@ -61,6 +61,7 @@ test_that("Subset for datetimestamp as date", {
   
   swmpr_in <- apacpnut
   swmpr_in$datetimestamp <- as.Date(swmpr_in$datetimestamp)
+  attr(swmpr_in, 'stamp_class') <- 'Date'
   subset_obj <- subset(swmpr_in, subset = '2013-01-01 0:00', operator = '>=')
   
   expect_equal(nrow(subset_obj), 16)
