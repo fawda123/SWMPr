@@ -13,6 +13,12 @@ test_that("plot_summary function works correctly", {
   # Check if the plot object is of class "gtable"
   expect_s3_class(plot, 'gtable')
   
+  # Call the plot_summary function with nut
+  plot <- plot_summary(nut, param = "chla_n")
+  
+  # Check if the plot object is of class "gtable"
+  expect_s3_class(plot, 'gtable')
+  
 })
 
 # Test for correct handling of missing values

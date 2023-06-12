@@ -73,7 +73,7 @@ qaqc.swmpr <- function(swmpr_in,
   qaqc_sel <- grep('f_', names(dat), value = TRUE)
   
   # keep all if qaqc_in is NULL, otherwise process qaqc
-  if(is.null(qaqc_keep)){ 
+  if(length(qaqc_keep) == 0){ 
     
     rm_col <- c('datetimestamp', qaqc_sel)
     qaqc <- dat[, !names(dat) %in% rm_col]
