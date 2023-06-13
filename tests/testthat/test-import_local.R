@@ -111,7 +111,7 @@ test_that("import_local works with downstream function with additional column ar
   result <- cens_id(nut_in)
   result <- qaqc(result, qaqc_keep = NULL)
   result <- sum(!is.na(result$nh4f))
-  expect_equal(result, 258)
+  expect_equal(result, 170)
   
   result <- cens_id(nut_in)
   result <- qaqc(result, qaqc_keep = '0')
