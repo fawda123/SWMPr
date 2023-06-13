@@ -90,5 +90,24 @@ test_that("import_local returns error if files not found", {
   expect_error(import_local(dirname(sample_file), 'asdfwq', trace = T))
 })
 
+test_that("import_local works with downstream function with additional column arguments",{
+  
+  nut_in <- import_local('tests/testthat/importtest/', 'gndblnut', keep_qaqcstatus = T)
+  wq_in <- import_local('tests/testthat/importtest/', 'gndblwq', keep_qaqcstatus = T)
+  
+  result <- qaqc(nut_in)
+  result <- ncol(result)
+  expect_equal(result, 7)
+  
+  result <- cens_id(nut_in, select = 'nh4f')
+  result <- ncol(result)
+  expect_equal(result, 6)
+  
+  result <- suppressWarnings(aggreswmp(nut_in, by = 'years'))
+  result <- ncol(result)
+  expect_equal(result, 7)
+  
+})
+
 # Cleanup: Remove the temporary directory
 unlink(test_dir, recursive = TRUE)
