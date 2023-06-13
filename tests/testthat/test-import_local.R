@@ -92,20 +92,36 @@ test_that("import_local returns error if files not found", {
 
 test_that("import_local works with downstream function with additional column arguments",{
   
-  nut_in <- import_local('importtest/', 'gndblnut', keep_qaqcstatus = T)
-  wq_in <- import_local('importtest/', 'gndblwq', keep_qaqcstatus = T)
+  nut_in <- import_local('tests/testthat/importtest/', 'gndblnut', keep_qaqcstatus = T)
+  wq_in <- import_local('tests/testthat/importtest/', 'gndblwq', keep_qaqcstatus = T)
+  
+  result <- qaqc(nut_in, qaqc_keep = NULL)
+  result <- ncol(result)
+  expect_equal(result, 9)
   
   result <- qaqc(nut_in)
   result <- ncol(result)
-  expect_equal(result, 7)
+  expect_equal(result, 9)
   
   result <- cens_id(nut_in, select = 'nh4f')
-  result <- ncol(result)
-  expect_equal(result, 6)
+  result <- names(result)
+  expect_equal(result, c("datetimestamp", "historical", "provisionalplus", "nh4f", "f_nh4f", 
+                         "c_nh4f"))
+  
+  result <- cens_id(nut_in)
+  result <- qaqc(result, qaqc_keep = NULL)
+  result <- sum(!is.na(result$nh4f))
+  expect_equal(result, 258)
+  
+  result <- cens_id(nut_in)
+  result <- qaqc(result, qaqc_keep = '0')
+  result <- sum(!is.na(result$chla_n))
+  expect_equal(result, 226)
   
   result <- suppressWarnings(aggreswmp(nut_in, by = 'years'))
   result <- ncol(result)
   expect_equal(result, 7)
+  
   
 })
 

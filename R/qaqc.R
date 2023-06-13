@@ -71,12 +71,11 @@ qaqc.swmpr <- function(swmpr_in,
   
   #names of qaqc columns
   qaqc_sel <- grep('f_', names(dat), value = TRUE)
-  
+
   # keep all if qaqc_in is NULL, otherwise process qaqc
   if(length(qaqc_keep) == 0){ 
     
-    rm_col <- c('datetimestamp', qaqc_sel)
-    qaqc <- dat[, !names(dat) %in% rm_col]
+    qaqc <- dat[, names(dat) %in% gsub('f_', '', qaqc_sel)]
     
   } else {
     
@@ -101,8 +100,7 @@ qaqc.swmpr <- function(swmpr_in,
     
     #replace T values with NA
     #qaqc is corrected
-    qaqc_sel <- gsub('f_', '', qaqc_sel)
-    qaqc <- dat[, names(dat) %in% qaqc_sel, drop = FALSE]
+    qaqc <- dat[, names(dat) %in% gsub('f_', '', qaqc_sel), drop = FALSE]
     qaqc <- data.frame(sapply(
       names(qaqc),
       function(x){
@@ -114,42 +112,33 @@ qaqc.swmpr <- function(swmpr_in,
     ), stringsAsFactors = FALSE)
     
   }
-  
+
   ##
   # addl misc processing
   
-  # combine with datetimestamp and append to output list
-  out <- data.frame(datetimestamp = dat[,1], qaqc)
-  
   # convert columns to numeric, missing converted to NA
   # NA values from qaqc still included as NA
-  datetimestamp <- out[, 1]
-  nr <- nrow(out)
-  nc <- ncol(out) -1
-  out <- c(as.matrix(out[, -1]))
+  front <- dat[, !names(dat) %in% c(parameters, qaqc_sel), drop = FALSE]
+  nr <- nrow(dat)
+  nc <- length(parameters)
+  out <- c(as.matrix(qaqc))
   out[is.nan(out)] <- NA
   out[out %in%  c(-Inf, Inf, -99)] <- NA
   out <- matrix(out, nrow = nr, ncol = nc) 
   out <- data.frame(
-    datetimestamp = datetimestamp,
+    front,
     out
   )
-  names(out) <- c('datetimestamp', parameters)
+  names(out) <- c(names(front), parameters)
   
-  # add censored columns if present
+  # add back censored columns if present, in correct order
   if(cens_cols){
     
-    cens_dat <- dat[, grep('^c_', names(dat)), drop = FALSE]
-    out <- data.frame(out, cens_dat)
+    cens_nms <- paste0('c_', parameters)
+    frnt_nms <- names(front)[!names(front) %in% cens_nms]
+    nms <- c(frnt_nms, c(rbind(parameters, cens_nms)))
     
-    # sort columns  
-    inds <- seq(2, ncol(out), by = 2)
-    out[, inds] <- out[, parameters]
-    out[, inds + 1] <- cens_dat
-    
-    # get correct names
-    names(out)[inds] <- parameters
-    names(out)[inds + 1] <- names(cens_dat)
+    out <- out[, nms]
     
   }
   
