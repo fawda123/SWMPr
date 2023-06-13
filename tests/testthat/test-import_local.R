@@ -92,8 +92,8 @@ test_that("import_local returns error if files not found", {
 
 test_that("import_local works with downstream function with additional column arguments",{
   
-  nut_in <- import_local('tests/testthat/importtest/', 'gndblnut', keep_qaqcstatus = T)
-  wq_in <- import_local('tests/testthat/importtest/', 'gndblwq', keep_qaqcstatus = T)
+  nut_in <- import_local('importtest/', 'gndblnut', keep_qaqcstatus = T)
+  wq_in <- import_local('importtest/', 'gndblwq', keep_qaqcstatus = T)
   
   result <- qaqc(nut_in)
   result <- ncol(result)
