@@ -90,18 +90,14 @@ test_that("import_local returns error if files not found", {
   expect_error(import_local(dirname(sample_file), 'asdfwq', trace = T))
 })
 
-test_that("import_local works with downstream function with additional column arguments",{
+test_that("import_local works with downstream functions when keep_qaqcstatus = T",{
   
   nut_in <- import_local('importtest/', 'gndblnut', keep_qaqcstatus = T)
   wq_in <- import_local('importtest/', 'gndblwq', keep_qaqcstatus = T)
   
-  result <- qaqc(nut_in, qaqc_keep = NULL)
+  result <- suppressWarnings(aggreswmp(nut_in, by = 'years'))
   result <- ncol(result)
-  expect_equal(result, 9)
-  
-  result <- qaqc(nut_in)
-  result <- ncol(result)
-  expect_equal(result, 9)
+  expect_equal(result, 7)
   
   result <- cens_id(nut_in, select = 'nh4f')
   result <- names(result)
@@ -118,10 +114,54 @@ test_that("import_local works with downstream function with additional column ar
   result <- sum(!is.na(result$chla_n))
   expect_equal(result, 226)
   
-  result <- suppressWarnings(aggreswmp(nut_in, by = 'years'))
+  result <- suppressWarnings(comb(nut_in, wq_in, method = 'gndblwq'))
   result <- ncol(result)
-  expect_equal(result, 7)
+  expect_equal(result, 23)
   
+  result <- suppressWarnings(decomp_cj(nut_in, param = 'chla_n'))
+  expect_s3_class(result, 'ggplot')
+  
+  datin <- suppressWarnings(na.approx(wq_in, params = 'do_mgl', maxgap = 1e6))
+  result <- decomp(datin, param = 'do_mgl', frequency = 'daily')
+  expect_s3_class(result, "decomposed.ts")
+  
+  expect_type(overplot(wq_in, select = c('depth', 'do_mgl')), 'list')
+  
+  result <- suppressWarnings(plot_quants(nut_in, 'chla_n', yr = 2021, yrstart = 2020, yrend = 2021))
+  expect_s3_class(result, "ggplot")
+  
+  result <- suppressWarnings(plot_summary(nut_in, 'chla_n'))
+  expect_s3_class(result, 'gtable')
+  
+  result <- qaqc(nut_in, qaqc_keep = NULL)
+  result <- ncol(result)
+  expect_equal(result, 9)
+  
+  result <- qaqc(nut_in)
+  result <- ncol(result)
+  expect_equal(result, 9)
+  
+  result <- qaqcchk(wq_in)
+  expect_s3_class(result, 'data.frame')
+  
+  result <- suppressWarnings(rem_reps(nut_in))
+  result <- nrow(result)
+  expect_equal(result, 43)
+ 
+  result <- setstep(nut_in, timestep = 'years')
+  result <- nrow(result)
+  expect_equal(result, 3)
+  
+  result <- suppressWarnings(smoother(wq_in, window = 50, params = 'do_mgl'))
+  expect_equal(nrow(result), nrow(wq_in))
+               
+  result <- subset(wq_in, select = 'do_mgl')
+  result <- names(result)
+  expect_equal(result, c('datetimestamp', 'do_mgl', 'f_do_mgl'))
+  
+  result <- subset(nut_in, select = 'chla_n')
+  result <- names(result)
+  expect_equal(result, c('datetimestamp', 'chla_n', 'f_chla_n'))
   
 })
 
