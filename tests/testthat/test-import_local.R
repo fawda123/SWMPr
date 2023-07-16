@@ -10,7 +10,7 @@ sample_data <- data.frame(
 sample_data$datetimestamp <- strftime(sample_data$datetimestamp, format = '%m/%d/%Y %H:%M')
 sample_file <- file.path(test_dir, "apadbwq.csv")
 write.csv(sample_data, file = sample_file, row.names = FALSE)
-zip(paste0(test_dir, 'apadwq.zip'), sample_file)
+zip(paste0(test_dir, '\\apadwq.zip'), sample_file)
 
 # generate sample met data
 sample_metdata <- data.frame(
@@ -79,14 +79,14 @@ test_that("import_local raises an error for invalid station_code", {
 })
 
 test_that("import_local imports zip data correctly", {
-  result <- import_local(paste0(test_dir, 'apadwq'), 'apadbwq', trace = T)
+  result <- import_local(paste0(test_dir, '\\apadwq'), 'apadbwq', trace = T)
   expect_equal(ncol(result), 3)
   expect_equal(nrow(result), 217)
   expect_s3_class(result, 'swmpr')
 })
 
 test_that("import_local returns error if files not found", {
-  expect_error(import_local(paste0(test_dir, 'apadwq'), 'asdfwq', trace = T))
+  expect_error(import_local(paste0(test_dir, '\\apadwq'), 'asdfwq', trace = T))
   expect_error(import_local(dirname(sample_file), 'asdfwq', trace = T))
 })
 
