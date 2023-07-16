@@ -10,7 +10,6 @@ sample_data <- data.frame(
 sample_data$datetimestamp <- strftime(sample_data$datetimestamp, format = '%m/%d/%Y %H:%M')
 sample_file <- file.path(test_dir, "apadbwq.csv")
 write.csv(sample_data, file = sample_file, row.names = FALSE)
-zip(paste0(test_dir, '\\apadwq.zip'), sample_file)
 
 # generate sample met data
 sample_metdata <- data.frame(
@@ -79,6 +78,8 @@ test_that("import_local raises an error for invalid station_code", {
 })
 
 test_that("import_local imports zip data correctly", {
+  skip_on_cran()
+  zip(paste0(test_dir, '\\apadwq.zip'), sample_file)
   result <- import_local(paste0(test_dir, '\\apadwq'), 'apadbwq', trace = T)
   expect_equal(ncol(result), 3)
   expect_equal(nrow(result), 217)
@@ -166,6 +167,4 @@ test_that("import_local works with downstream functions when keep_qaqcstatus = T
 })
 
 # Cleanup: Remove the temporary directory
-fl <- list.files(test_dir, pattern = '\\.zip', full.names = TRUE)
-file.remove(fl)
-unlink(test_dir, recursive = TRUE, force = TRUE)
+unlink(test_dir, recursive = TRUE)
