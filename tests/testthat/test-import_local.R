@@ -166,4 +166,5 @@ test_that("import_local works with downstream functions when keep_qaqcstatus = T
 })
 
 # Cleanup: Remove the temporary directory
+file.remove(file.path(test_dir, 'apadwq.zip'))
 unlink(test_dir, recursive = TRUE)
