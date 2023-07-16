@@ -1,3 +1,8 @@
+## SWMPR 2.5.0
+
+* Added `keep_qaqcstatus` argument to `import_local()` to retain `historical` and `provisionalplus` columns in the output
+* Added unit testing for most functions
+
 ## SWMPr 2.4.3
 
 * Removed maptools dependency, replaced with `getSunlightTimes()` function from suncalc package to estimate metabolic days in `metab_day()` function
