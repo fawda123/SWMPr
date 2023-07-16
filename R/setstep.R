@@ -22,6 +22,7 @@
 #' The setstep function formats a swmpr object to a continuous time series at a given time step. This function is not necessary for most stations but can be useful for combining data or converting an existing time series to a set interval.  The first argument of the function, \code{timestep}, specifies the desired time step in minutes starting from the nearest hour of the first observation. The second argument, \code{differ}, specifies the allowable tolerance in minutes for matching existing observations to user-defined time steps in cases where the two are dissimilar. Values for \code{differ} that are greater than one half the value of timestep are not allowed to prevent duplication of existing data. Likewise, the default value for differ is one half the time step. Rows that do not match any existing data within the limits of the differ argument are not discarded. Output from the function can be used with \code{subset} and to create a time series at a set interval with empty data removed.
 #' 
 #' @examples
+#' \dontrun{
 #' ## import data
 #' data(apaebmet)
 #' dat <- apaebmet
@@ -30,7 +31,6 @@
 #' ## tolerance of +/- 30 minutes for matching existing data
 #' setstep(dat, timestep = 120, differ = 30)
 #' 
-#' \dontrun{
 #' ## convert a nutrient time series to a continuous time series
 #' ## then remove empty rows and columns
 #' data(apacpnut)
