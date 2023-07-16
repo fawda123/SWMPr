@@ -1,6 +1,7 @@
 ## SWMPR 2.5.0
 
 * Added `keep_qaqcstatus` argument to `import_local()` to retain `historical` and `provisionalplus` columns in the output
+
 * Added unit testing for most functions
 
 ## SWMPr 2.4.3
