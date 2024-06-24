@@ -1,3 +1,7 @@
+## SWMPR 2.5.1
+
+* Update `stat_locs` object for active stations in the NERR system. 
+
 ## SWMPR 2.5.0
 
 * Added `keep_qaqcstatus` argument to `import_local()` to retain `historical` and `provisionalplus` columns in the output
