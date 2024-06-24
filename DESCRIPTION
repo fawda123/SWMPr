@@ -2,7 +2,7 @@ Package: SWMPr
 Type: Package
 Title: Retrieving, Organizing, and Analyzing Estuary Monitoring Data
 Version: 2.5.0
-Date: 2023-07-16
+Date: 2023-06-24
 Author: Marcus W. Beck [aut, cre],
   Kimberly Cressman [ctb]
 Maintainer: Marcus W. Beck <mbeck@tbep.org>

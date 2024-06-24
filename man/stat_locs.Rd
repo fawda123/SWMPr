@@ -17,7 +17,7 @@ A \code{\link[base]{data.frame}} object with 161 rows and 4 variables:
 stat_locs
 }
 \description{
-Location of NERRS sites in decimal degress and time offset from Greenwich mean time.  Only active sites as of January 2015 are included.  Sites are identified by five letters indexing the reserve and site names.  The dataset is used to plot locations with the \code{\link{map_reserve}} function and to identify metabolic days with the \code{\link{ecometab}} function.
+Location of NERRS sites in decimal degrees and time offset from Greenwich mean time.  Only active sites are included.  Sites are identified by five letters indexing the reserve and site names.  The dataset is used to plot locations with the \code{\link{map_reserve}} function and to identify metabolic days with the \code{\link{ecometab}} function.  Created from sampling_locations.csv provided by CDMO.
 }
 \seealso{
 \code{\link{ecometab}}, \code{\link{map_reserve}}
