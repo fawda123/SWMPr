@@ -1,156 +1,54 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/404.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/CONTRIBUTING.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/ISSUE_TEMPLATE.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/articles/Overview.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/authors.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/index.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/news/index.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/aggremetab.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/aggreswmp.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/all_params.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/all_params_dtrng.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/apacpnut.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/apacpwq.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/apadbwq.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/apaebmet.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/calckl.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/cens_id.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/comb.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/decomp.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/decompTs.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/decomp_cj.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/ecometab.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/gradcols.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/hist.swmpr.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/import_local.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/map_reserve.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/metab_day.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/na.approx.swmpr.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/overplot.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/oxySol.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/param_names.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/parser.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/plot.swmpr.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/plot_metab.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/plot_quants.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/plot_summary.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/plot_wind.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/qaqc.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/qaqcchk.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/rem_reps.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/setstep.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/single_param.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/site_codes.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/site_codes_ind.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/smoother.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/stat_locs.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/subset.swmpr.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/swmpr.html</loc>
-  </url>
-  <url>
-    <loc>http://fawda123.github.io/SWMPr/reference/time_vec.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>http://fawda123.github.io/SWMPr/404.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/CONTRIBUTING.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/ISSUE_TEMPLATE.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/articles/Overview.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/articles/index.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/authors.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/index.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/news/index.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/aggremetab.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/aggreswmp.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/all_params.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/all_params_dtrng.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/apacpnut.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/apacpwq.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/apadbwq.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/apaebmet.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/calckl.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/cens_id.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/comb.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/decomp.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/decompTs.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/decomp_cj.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/ecometab.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/gradcols.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/hist.swmpr.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/import_local.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/index.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/map_reserve.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/metab_day.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/na.approx.swmpr.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/overplot.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/oxySol.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/param_names.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/parser.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/plot.swmpr.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/plot_metab.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/plot_quants.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/plot_summary.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/plot_wind.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/qaqc.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/qaqcchk.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/rem_reps.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/setstep.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/single_param.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/site_codes.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/site_codes_ind.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/smoother.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/stat_locs.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/subset.swmpr.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/swmpr.html</loc></url>
+<url><loc>http://fawda123.github.io/SWMPr/reference/time_vec.html</loc></url>
 </urlset>
+
