@@ -4,7 +4,7 @@
 [![pkgdown](https://github.com/fawda123/SWMPr/workflows/pkgdown/badge.svg)](https://github.com/fawda123/SWMPr/actions)
 [![Codecov test coverage](https://codecov.io/gh/fawda123/SWMPr/branch/master/graph/badge.svg)](https://app.codecov.io/gh/fawda123/SWMPr?branch=master)
 [![CRAN status](https://www.r-pkg.org/badges/version/SWMPr)](https://CRAN.R-project.org/package=SWMPr)
-[![Downloads from the RStudio CRAN mirror](http://cranlogs.r-pkg.org/badges/grand-total/SWMPr)](http://cran.rstudio.com/package=SWMPr)
+[![](https://cranlogs.r-pkg.org/badges/grand-total/SWMPr)](http://cran.rstudio.com/package=SWMPr)
 
 <img src="man/figures/swmpr_logo.png" align="center"/>
 
