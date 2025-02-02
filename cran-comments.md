@@ -1,6 +1,6 @@
 ## Resubmission 
 
-This is a version update to 2.5.1
+This is a version update to 2.5.2, fixes issue with ERROR on r-devel for difftime object
 
 ## Test environments
 * ubuntu 22.04.4 (devel, release, old release)
