@@ -107,7 +107,7 @@ decomp.default <- function(dat_in, param, date_col, type = 'additive', frequency
   
 
   # stop if time series is not standardized
-  chk_step <- unique(as.numeric(diff(dat_in[, date_col]))))
+  chk_step <- unique(as.numeric(diff(dat_in[, date_col])))
   if(length(chk_step) > 1)
     stop('The time step is not standardized, use setstep')
   
