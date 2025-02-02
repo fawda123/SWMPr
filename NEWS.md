@@ -1,3 +1,7 @@
+## SWMPR 2.5.2
+
+* Fix to `decomp()` for difftime object error on Linux builds.
+
 ## SWMPR 2.5.1
 
 * Update `stat_locs` object for active stations in the NERR system. 
