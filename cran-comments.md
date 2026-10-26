@@ -3,8 +3,8 @@
 This is a version update to 2.5.3, removes suncalc dependency
 
 ## Test environments
-* ubuntu 22.04.1 (devel, release, old release)
-* macOS Sonoma 14.7.2, R 4.4.2
+* ubuntu 24.04.5 (devel, release, old release)
+* macOS 26.6.2, R 4.6.1
 * win-builder [http://win-builder.r-project.org/](http://win-builder.r-project.org/) (devel, release, and old release)
 * local Windows 10 install, R 4.3.2
 
