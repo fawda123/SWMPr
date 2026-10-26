@@ -1,8 +1,8 @@
 Package: SWMPr
 Type: Package
 Title: Retrieving, Organizing, and Analyzing Estuary Monitoring Data
-Version: 2.5.2
-Date: 2025-02-02
+Version: 2.5.3
+Date: 2026-10-26
 Author: Marcus W. Beck [aut, cre],
   Kimberly Cressman [ctb]
 Maintainer: Marcus W. Beck <mbeck@tbep.org>
@@ -23,7 +23,6 @@ Imports:
     openair,
     RColorBrewer,
     reshape2,
-    suncalc,
     tictoc,
     tidyr,
     XML
@@ -47,7 +46,7 @@ Authors@R: c(
     role = c("ctb"),
     email = "kimberly.cressman@dmr.ms.gov")
     )
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 URL: http://fawda123.github.io/SWMPr/
 Config/testthat/edition: 3

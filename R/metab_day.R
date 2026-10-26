@@ -1,6 +1,6 @@
 #' Identify metabolic days in a time series
 #'
-#' Identify metabolic days in a time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.  The function calls the \code{\link[suncalc]{getSunlightTimes}} function from the suncalc package.
+#' Identify metabolic days in a time series based on sunrise and sunset times for a location and date.  The metabolic day is considered the 24 hour period between sunsets for two adjacent calendar days.  Sunrise and sunset times are estimated using \code{\link{sun_times}}.
 #' 
 #' @param dat_in data.frame
 #' @param tz chr string for timezone, e.g., 'America/Chicago'
@@ -13,8 +13,8 @@
 #' @details This function is only used within \code{\link{ecometab}} and should not be called explicitly.
 #' 
 #' @seealso 
-#' \code{\link{ecometab}}, \code{\link[suncalc]{getSunlightTimes}}
-#' 
+#' \code{\link{ecometab}}, \code{\link{sun_times}}
+#'
 metab_day <- function(dat_in, ...) UseMethod('metab_day')
 
 #' @rdname metab_day
@@ -34,7 +34,7 @@ metab_day.default <- function(dat_in, tz, lat, long, ...){
     by = "days"
   )
 
-  ss_dat <- suncalc::getSunlightTimes(date = as.Date(sequence, tz = tz), lat = lat, lon = long, tz = tz, keep = c('sunrise', 'sunset'))
+  ss_dat <- sun_times(date = as.Date(sequence, tz = tz), lat = lat, long = long, tz = tz)
   ss_dat <- ss_dat[, c('sunrise', 'sunset')]
   
   # remove duplicates, if any

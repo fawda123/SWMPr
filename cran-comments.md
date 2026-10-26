@@ -1,6 +1,6 @@
 ## Resubmission 
 
-This is a version update to 2.5.2, fixes issue with ERROR on r-devel for difftime object
+This is a version update to 2.5.3, removes suncalc dependency
 
 ## Test environments
 * ubuntu 22.04.1 (devel, release, old release)
@@ -12,4 +12,4 @@ This is a version update to 2.5.2, fixes issue with ERROR on r-devel for difftim
 There were no ERRORs, WARNINGs, or NOTEs. 
   
 ## Downstream dependencies
-R CMD check run on the SWMPrExtension downstream dependency for SWMPr. There were no ERRORs, WARNINGs, or NOTEs.
+None.

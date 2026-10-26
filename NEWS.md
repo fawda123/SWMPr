@@ -1,3 +1,7 @@
+## SWMPR 2.5.3
+
+* Removed suncalc dependency, replaced with a new exported `sun_times()` function that implements the same algorithm to estimate sunrise and sunset times in `metab_day()`
+
 ## SWMPR 2.5.2
 
 * Fix to `decomp()` for difftime object error on Linux builds.
