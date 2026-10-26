@@ -1,0 +1,125 @@
+# Import local CDMO data
+
+Import local data that were obtained from the CDMO through the zip
+downloads feature
+
+## Usage
+
+``` r
+import_local(
+  path,
+  station_code,
+  trace = FALSE,
+  collMethd = c("1", "2"),
+  keep_qaqcstatus = FALSE
+)
+```
+
+## Arguments
+
+- path:
+
+  chr string of full path to .csv files with raw data, can be a zipped
+  or unzipped directory where the former must include the .zip extension
+
+- station_code:
+
+  chr string of station to import, typically 7 or 8 characters including
+  wq, nut, or met extensions, may include full name with year, excluding
+  file extension
+
+- trace:
+
+  logical indicating if progress is sent to console, default `FALSE`
+
+- collMethd:
+
+  chr string of nutrient data to subset. 1 indicates monthly, 2
+  indicates diel. Default is both diel and monthly data.
+
+- keep_qaqcstatus:
+
+  logical indicating if the `historical` and `provisionalplus` columns
+  are retained in the output (default `FALSE`), see details
+
+## Value
+
+Returns a swmpr object with all parameters and QAQC columns for the
+station. The full date range in the raw data are also imported.
+
+## Details
+
+The function is designed to import local data that were downloaded from
+the CDMO outside of R. This approach works best for larger data
+requests, specifically those from the zip downloads feature in the
+advanced query section of the CDMO. The function may also work using
+data from the data export system, but this feature has not been
+extensively tested. The downloaded data will be in a compressed folder
+that includes multiple .csv files by year for a given data type (e.g.,
+apacpwq2002.csv, apacpwq2003.csv, apacpnut2002.csv, etc.). The
+import_local function can be used to import files directly from the
+compressed folder or after the folder is decompressed. In the former
+case, the requested files are extracted to a temporary directory and
+then deleted after they are loaded into the current session. An example
+dataset is available online to illustrate the format of the data
+provided through the zip downloads feature. See the link below to access
+these data. All example datasets included with the package were derived
+from these raw data.
+
+Occasionally, duplicate time stamps are present in the raw data. The
+function handles duplicate entries differently depending on the data
+type (water quality, weather, or nutrients). For water quality and
+nutrient data, duplicate time stamps are simply removed. Note that
+nutrient data often contain replicate samples with similar but not
+duplicated time stamps within a few minutes of each other. Replicates
+with unique time stamps are not removed but can be further processed
+using
+[`rem_reps`](http://fawda123.github.io/SWMPr/reference/rem_reps.md).
+Weather data prior to 2007 may contain duplicate time stamps at
+frequencies for 60 (hourly) and 144 (daily) averages, in addition to 15
+minute frequencies. Duplicate values that correspond to the smallest
+value in the frequency column (15 minutes) are retained.
+
+If `keep_qaqcstatus = TRUE`, the `historical` and `provisionalplus`
+columns are retained in the output. These two columns include integer
+values as 0 or 1. From the CDMO web page, a value of 0 in the
+`historical` column indicates that the data have not been through final
+QAQC by the CDMO. A value of 1 indicates that the data have been through
+final tertiary review at the CDMO and posted as the final authoritative
+data. A value of 0 in the `provisionalplus` column indicates that the
+data have been through the automated flagging process (primary QAQC)
+only and have not been checked by the Reserve. A value of 1 in the
+`provisionalplus` column indicates that the data have been through
+secondary QAQC at the Reserve using Excel macros (provided by the CDMO)
+to further QAQC the data.
+
+Zip download request through CDMO:
+<https://cdmo.baruch.sc.edu/aqs/zips.cfm>
+
+Example dataset: <https://s3.amazonaws.com/swmpexdata/zip_ex.zip>
+
+## See also
+
+[`all_params`](http://fawda123.github.io/SWMPr/reference/all_params.md),
+[`all_params_dtrng`](http://fawda123.github.io/SWMPr/reference/all_params_dtrng.md),
+[`rem_reps`](http://fawda123.github.io/SWMPr/reference/rem_reps.md),
+[`single_param`](http://fawda123.github.io/SWMPr/reference/single_param.md)
+
+## Examples
+
+``` r
+
+if (FALSE) { # \dontrun{
+## this is the path for csv example files, decompressed
+path <- 'C:/this/is/my/data/path'
+
+## import, do not include file extension
+import_local(path, 'apaebmet') 
+
+## this is the path for csv example files, zipped folder
+path <- 'C:/this/is/my/data/path.zip'
+
+## import, do not include file extension
+import_local(path, 'apaebmet') 
+} # }
+```

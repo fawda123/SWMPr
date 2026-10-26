@@ -1,0 +1,88 @@
+# Decompose a time series
+
+The function decomposes a time series into a long-term mean, annual,
+seasonal and "events" component. The decomposition can be multiplicative
+or additive, and based on median or mean centering. Function and
+documentation herein are from archived wq package.
+
+## Usage
+
+``` r
+decompTs(
+  x,
+  event = TRUE,
+  type = c("add", "mult"),
+  center = c("mean", "median")
+)
+```
+
+## Arguments
+
+- x:
+
+  a monthly time series vector
+
+- event:
+
+  whether or not an "events" component should be determined
+
+- type:
+
+  the type of decomposition, either multiplicative ("mult") or additive
+  ("add")
+
+- center:
+
+  the method of centering, either median or mean
+
+## Value
+
+A monthly time series matrix with the following individual time series:
+
+- original :
+
+  original time series
+
+- annual :
+
+  annual mean series
+
+- seasonal :
+
+  repeating seasonal component
+
+- events :
+
+  optionally, the residual or "events" series
+
+## Details
+
+The rationale for this simple approach to decomposing a time series,
+with examples of its application, is given by Cloern and Jassby (2010).
+It is motivated by the observation that many important events for
+estuaries (e.g., persistent dry periods, species invasions) start or
+stop suddenly. Smoothing to extract the annualized term, which can
+disguise the timing of these events and make analysis of them
+unnecessarily difficult, is not used.
+
+A multiplicative decomposition will typically be useful for a biological
+community- or population-related variable (e.g., chlorophyll-a) that
+experiences exponential changes in time and is approximately lognormal,
+whereas an additive decomposition is more suitable for a normal
+variable. The default centering method is the median, especially
+appropriate for series that have large, infrequent events.
+
+If `event = TRUE`, the seasonal component represents a recurring monthly
+pattern and the events component a residual series. Otherwise, the
+seasonal component becomes the residual series. The latter is
+appropriate when seasonal patterns change systematically over time.
+
+## References
+
+Cloern, J.E. and Jassby, A.D. (2010) Patterns and scales of
+phytoplankton variability in estuarine-coastal ecosystems. *Estuaries
+and Coasts* **33,** 230–241.
+
+## See also
+
+[`decomp_cj`](http://fawda123.github.io/SWMPr/reference/decomp_cj.md)
