@@ -15,7 +15,7 @@ data from SWMP. Please cite the package as follows:
 
 *Beck MW. 2016. SWMPr: An R package for retrieving, organizing, and
 analyzing environmental data for estuaries. The R Journal. 8(1):219-232.
-<https://journal.r-project.org/news/RJ-2016-1-beck/RJ-2016-1-beck.pdf>*
+<https://doi.org/10.32614/RJ-2016-015>*
 
 ## Installing the package
 
