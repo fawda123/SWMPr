@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 The System Wide Monitoring Program ([SWMP](https://coast.noaa.gov/digitalcoast/data/nerr.html)) was implemented by the National Estuarine Research Reserve System ([NERRS](https://coast.noaa.gov/nerrs/)) in 1995 to provide continuous monitoring data at over 140 continuous monitoring stations in 28 estuaries across the United States.  SWMPr (pronounced "swamper") is an R package for retrieving, organizing, and analyzing estuary monitoring data from SWMP. Please cite the package as follows:
 
-*Beck MW. 2016. SWMPr: An R package for retrieving, organizing, and analyzing environmental data for estuaries.  The R Journal. 8(1):219-232. https://journal.r-project.org/news/RJ-2016-1-beck/RJ-2016-1-beck.pdf*
+*Beck MW. 2016. SWMPr: An R package for retrieving, organizing, and analyzing environmental data for estuaries.  The R Journal. 8(1):219-232. https://doi.org/10.32614/RJ-2016-015*
 
 # Installing the package
 

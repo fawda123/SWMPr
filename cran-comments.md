@@ -1,6 +1,6 @@
 ## Resubmission 
 
-This is a version update to 2.5.3, removes suncalc dependency
+This is a version update to 2.5.3, removes suncalc dependency, fix broken links
 
 ## Test environments
 * ubuntu 24.04.5 (devel, release, old release)
