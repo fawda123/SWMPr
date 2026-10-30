@@ -2,6 +2,8 @@
 
 ## SWMPR 2.5.3
 
+CRAN release: 2026-10-28
+
 - Removed suncalc dependency, replaced with a new exported
   [`sun_times()`](http://fawda123.github.io/SWMPr/reference/sun_times.md)
   function that implements the same algorithm to estimate sunrise and

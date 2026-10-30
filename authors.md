@@ -9,7 +9,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/fawda123/SWMPr/blob/master/inst/CITATION)
+[`inst/CITATION`](https://github.com/fawda123/SWMPr/blob/v2.5.3/inst/CITATION)
 
 Beck MW (2016). “SWMPr: An R Package for Retrieving, Organizing, and
 Analyzing Environmental Data for Estuaries.” *The R Journal*, **8**(1),
